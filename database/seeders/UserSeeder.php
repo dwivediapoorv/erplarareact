@@ -453,6 +453,7 @@ class UserSeeder extends Seeder
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),
                 'email_verified_at' => now(),
+                'is_active' => 1,
             ]);
 
             // Create the corresponding employee record
