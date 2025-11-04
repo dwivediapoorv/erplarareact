@@ -67,4 +67,20 @@ class Project extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    /**
+     * Get the minutes of meetings (MOMs) for this project
+     */
+    public function moms(): HasMany
+    {
+        return $this->hasMany(MOM::class);
+    }
+
+    /**
+     * Get the client interactions for this project
+     */
+    public function interactions(): HasMany
+    {
+        return $this->hasMany(Interaction::class);
+    }
 }

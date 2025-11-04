@@ -13,11 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Run seeders in order (teams first, then services, then users, then projects)
+        // Run seeders in order (teams first, then services, roles/permissions, then users, assign admin roles, then projects)
         $this->call([
             TeamSeeder::class,
             ServicesSeeder::class,
+            RoleAndPermissionSeeder::class,
             UserSeeder::class,
+            AdminUserSeeder::class,
             ProjectSeeder::class,
         ]);
     }

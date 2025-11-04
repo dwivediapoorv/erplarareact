@@ -47,6 +47,7 @@ export default function CreateTask({ users, projects }: CreateTaskProps) {
         description: '',
         assigned_to: '',
         project_id: '',
+        due_date: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -152,6 +153,22 @@ export default function CreateTask({ users, projects }: CreateTaskProps) {
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.assigned_to} />
+                            </div>
+
+                            {/* Due Date */}
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="due_date">
+                                    Due Date
+                                </Label>
+                                <Input
+                                    id="due_date"
+                                    type="date"
+                                    value={data.due_date}
+                                    onChange={(e) =>
+                                        setData('due_date', e.target.value)
+                                    }
+                                />
+                                <InputError message={errors.due_date} />
                             </div>
                         </div>
 

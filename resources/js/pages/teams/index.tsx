@@ -75,7 +75,12 @@ export default function TeamsIndex({ teams: teamsList }: TeamsIndexProps) {
                                             className="hover:bg-sidebar-accent/50"
                                         >
                                             <td className="px-6 py-4 text-sm">
-                                                {team.name}
+                                                <Link
+                                                    href={teams.show(team.id).url}
+                                                    className="font-medium hover:underline"
+                                                >
+                                                    {team.name}
+                                                </Link>
                                             </td>
                                             <td className="px-6 py-4 text-sm">
                                                 {team.active_users_count}

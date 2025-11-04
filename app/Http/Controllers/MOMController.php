@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MOM;
+use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,9 +16,20 @@ class MOMController extends Controller
      */
     public function index(): Response
     {
-        $moms = MOM::select('id', 'title', 'description', 'meeting_date')
+        $moms = MOM::with('project:id,project_name')
+            ->select('id', 'project_id', 'title', 'description', 'meeting_date')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($mom) {
+                return [
+                    'id' => $mom->id,
+                    'project_id' => $mom->project_id,
+                    'project_name' => $mom->project?->project_name ?? 'N/A',
+                    'title' => $mom->title,
+                    'description' => $mom->description,
+                    'meeting_date' => $mom->meeting_date?->format('Y-m-d'),
+                ];
+            });
 
         return Inertia::render('minutes-of-meetings/index', [
             'moms' => $moms,
@@ -29,7 +41,14 @@ class MOMController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('minutes-of-meetings/create');
+        // Get all projects for the dropdown
+        $projects = Project::select('id', 'project_name')
+            ->orderBy('project_name', 'asc')
+            ->get();
+
+        return Inertia::render('minutes-of-meetings/create', [
+            'projects' => $projects,
+        ]);
     }
 
     /**
@@ -37,7 +56,13 @@ class MOMController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Convert empty string to null for meeting_date
+        $request->merge([
+            'meeting_date' => $request->meeting_date ?: null,
+        ]);
+
         $validated = $request->validate([
+            'project_id' => ['required', 'exists:projects,id'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'meeting_date' => ['nullable', 'date'],

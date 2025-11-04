@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('interactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             $table->string('client_name');
             $table->string('interaction_type'); // call, meeting, email, etc.
             $table->date('interaction_date');

@@ -15,6 +15,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Interaction {
     id: number;
+    project_id: number;
+    project_name: string;
     client_name: string;
     interaction_type: string;
     interaction_date: string;
@@ -63,6 +65,9 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                             <thead className="border-b border-sidebar-border/70 dark:border-sidebar-border">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-sm font-medium">
+                                        Project
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium">
                                         Client Name
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium">
@@ -86,6 +91,9 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                                             key={interaction.id}
                                             className="hover:bg-sidebar-accent/50"
                                         >
+                                            <td className="px-6 py-4 text-sm font-medium">
+                                                {interaction.project_name}
+                                            </td>
                                             <td className="px-6 py-4 text-sm">
                                                 {interaction.client_name}
                                             </td>
@@ -106,7 +114,7 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={5}
+                                            colSpan={6}
                                             className="px-6 py-8 text-center text-sm text-muted-foreground"
                                         >
                                             No client interactions found

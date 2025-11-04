@@ -16,11 +16,13 @@ class Task extends Model
         'assigned_to',
         'project_id',
         'status',
+        'due_date',
         'completed_at',
         'approved_by',
     ];
 
     protected $casts = [
+        'due_date' => 'date',
         'completed_at' => 'datetime',
     ];
 

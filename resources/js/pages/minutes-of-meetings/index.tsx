@@ -15,6 +15,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface MOM {
     id: number;
+    project_id: number;
+    project_name: string;
     title: string;
     description: string | null;
     meeting_date: string | null;
@@ -61,6 +63,9 @@ export default function MinutesOfMeetingsIndex({ moms: momsList }: MOMsIndexProp
                             <thead className="border-b border-sidebar-border/70 dark:border-sidebar-border">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-sm font-medium">
+                                        Project
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium">
                                         Title
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium">
@@ -78,6 +83,9 @@ export default function MinutesOfMeetingsIndex({ moms: momsList }: MOMsIndexProp
                                             key={mom.id}
                                             className="hover:bg-sidebar-accent/50"
                                         >
+                                            <td className="px-6 py-4 text-sm font-medium">
+                                                {mom.project_name}
+                                            </td>
                                             <td className="px-6 py-4 text-sm">
                                                 {mom.title}
                                             </td>
@@ -92,7 +100,7 @@ export default function MinutesOfMeetingsIndex({ moms: momsList }: MOMsIndexProp
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={3}
+                                            colSpan={4}
                                             className="px-6 py-8 text-center text-sm text-muted-foreground"
                                         >
                                             No minutes of meetings found

@@ -5,6 +5,14 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import InputError from '@/components/input-error';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -18,8 +26,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function CreateClientInteraction() {
+interface Project {
+    id: number;
+    project_name: string;
+}
+
+interface CreateClientInteractionProps {
+    projects: Project[];
+}
+
+export default function CreateClientInteraction({ projects }: CreateClientInteractionProps) {
     const { data, setData, post, processing, errors } = useForm({
+        project_id: '',
         client_name: '',
         interaction_type: '',
         interaction_date: '',
@@ -43,6 +61,34 @@ export default function CreateClientInteraction() {
                 <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
+                            {/* Project */}
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="project_id">
+                                    Project <span className="text-red-500">*</span>
+                                </Label>
+                                <Select
+                                    value={data.project_id}
+                                    onValueChange={(value) =>
+                                        setData('project_id', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a project" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {projects.map((project) => (
+                                            <SelectItem
+                                                key={project.id}
+                                                value={project.id.toString()}
+                                            >
+                                                {project.project_name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.project_id} />
+                            </div>
+
                             {/* Client Name */}
                             <div className="space-y-2">
                                 <Label htmlFor="client_name">
@@ -117,9 +163,8 @@ export default function CreateClientInteraction() {
                                 <Label htmlFor="notes">
                                     Notes
                                 </Label>
-                                <Input
+                                <Textarea
                                     id="notes"
-                                    type="text"
                                     value={data.notes}
                                     onChange={(e) =>
                                         setData('notes', e.target.value)

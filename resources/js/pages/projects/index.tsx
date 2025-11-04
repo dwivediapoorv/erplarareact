@@ -2,7 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { CheckCircle, Plus, Eye, Pencil } from 'lucide-react';
+import { CheckCircle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DataTable, type Column } from '@/components/data-table';
@@ -23,16 +23,22 @@ interface Project {
     project_status: 'Active' | 'On Hold' | 'Suspended';
     date_of_onboarding: string | null;
     project_start_date: string | null;
+    monthly_report_date: string | null;
     assigned_to_name: string;
+    assigned_to_id: number | null;
     project_manager_name: string;
+    project_manager_id: number | null;
     open_tasks_count: number;
 }
 
 interface ProjectsIndexProps {
     projects: Project[];
+    columnPreferences?: Record<string, boolean> | null;
+    filterType?: string;
+    filterName?: string;
 }
 
-export default function ProjectsIndex({ projects: projectsList }: ProjectsIndexProps) {
+export default function ProjectsIndex({ projects: projectsList, columnPreferences, filterType, filterName }: ProjectsIndexProps) {
     const { flash } = usePage().props as any;
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -44,12 +50,38 @@ export default function ProjectsIndex({ projects: projectsList }: ProjectsIndexP
         }
     }, [flash]);
 
+    // Format monthly report date to show only the day with ordinal suffix
+    const formatMonthlyReportDate = (date: string | null) => {
+        if (!date) return 'N/A';
+
+        const dateObj = new Date(date);
+        const day = dateObj.getDate();
+
+        // Add ordinal suffix (st, nd, rd, th)
+        const getOrdinalSuffix = (day: number) => {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        };
+
+        return `${day}${getOrdinalSuffix(day)} of every month`;
+    };
+
     const columns: Column<Project>[] = [
         {
             key: 'project_name',
             label: 'Project Name',
             render: (project) => (
-                <span className="font-medium">{project.project_name}</span>
+                <Link
+                    href={projects.show(project.id).url}
+                    className="font-medium hover:underline"
+                >
+                    {project.project_name}
+                </Link>
             ),
         },
         {
@@ -59,10 +91,34 @@ export default function ProjectsIndex({ projects: projectsList }: ProjectsIndexP
         {
             key: 'assigned_to_name',
             label: 'Assigned To',
+            render: (project) => (
+                project.assigned_to_id && project.assigned_to_name !== 'N/A' ? (
+                    <Link
+                        href={projects.byAssignedTo(project.assigned_to_id).url}
+                        className="hover:underline"
+                    >
+                        {project.assigned_to_name}
+                    </Link>
+                ) : (
+                    <span>{project.assigned_to_name}</span>
+                )
+            ),
         },
         {
             key: 'project_manager_name',
             label: 'Project Manager',
+            render: (project) => (
+                project.project_manager_id && project.project_manager_name !== 'N/A' ? (
+                    <Link
+                        href={projects.byProjectManager(project.project_manager_id).url}
+                        className="hover:underline"
+                    >
+                        {project.project_manager_name}
+                    </Link>
+                ) : (
+                    <span>{project.project_manager_name}</span>
+                )
+            ),
         },
         {
             key: 'open_tasks_count',
@@ -139,33 +195,10 @@ export default function ProjectsIndex({ projects: projectsList }: ProjectsIndexP
             render: (project) => project.project_start_date || 'N/A',
         },
         {
-            key: 'actions',
-            label: 'Actions',
-            filterable: false,
-            render: (project) => (
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                    >
-                        <Link href={projects.show(project.id).url}>
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                    >
-                        <Link href={projects.edit(project.id).url}>
-                            <Pencil className="h-4 w-4 mr-1" />
-                            Edit
-                        </Link>
-                    </Button>
-                </div>
-            ),
+            key: 'monthly_report_date',
+            label: 'Monthly Report Date',
+            defaultVisible: true,
+            render: (project) => formatMonthlyReportDate(project.monthly_report_date),
         },
     ];
 
@@ -180,19 +213,40 @@ export default function ProjectsIndex({ projects: projectsList }: ProjectsIndexP
                     </div>
                 )}
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-semibold">Projects</h1>
-                    <Button asChild>
-                        <Link href={projects.create().url}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Create Project
-                        </Link>
-                    </Button>
+                    <div>
+                        <h1 className="text-2xl font-semibold">
+                            {filterType && filterName ? (
+                                <>
+                                    Projects {filterType === 'assigned_to' ? 'Assigned to' : 'Managed by'} {filterName}
+                                </>
+                            ) : (
+                                'Projects'
+                            )}
+                        </h1>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {filterType && filterName && (
+                            <Button variant="outline" asChild>
+                                <Link href={projects.index().url}>
+                                    All Projects
+                                </Link>
+                            </Button>
+                        )}
+                        <Button asChild>
+                            <Link href={projects.create().url}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create Project
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
                 <DataTable
                     columns={columns}
                     data={projectsList}
                     searchPlaceholder="Search projects by name, client, or status..."
                     emptyMessage="No projects found"
+                    pageName="projects.index"
+                    savedPreferences={columnPreferences}
                 />
             </div>
         </AppLayout>

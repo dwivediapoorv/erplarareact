@@ -15,14 +15,24 @@ interface DashboardProps {
     activeUsersCount: number;
     totalProjects: number;
     openTasksCount: number;
+    greenProjectsCount: number;
+    orangeProjectsCount: number;
+    redProjectsCount: number;
 }
 
-export default function Dashboard({ activeUsersCount, totalProjects, openTasksCount }: DashboardProps) {
+export default function Dashboard({
+    activeUsersCount,
+    totalProjects,
+    openTasksCount,
+    greenProjectsCount,
+    orangeProjectsCount,
+    redProjectsCount
+}: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-6">
                     {/* Active Users Card */}
                     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
                         <p className="text-sm font-medium text-muted-foreground">Active Users</p>
@@ -39,6 +49,24 @@ export default function Dashboard({ activeUsersCount, totalProjects, openTasksCo
                     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
                         <p className="text-sm font-medium text-muted-foreground">Open Tasks</p>
                         <h3 className="text-3xl font-bold mt-2">{openTasksCount}</h3>
+                    </div>
+
+                    {/* Green Projects Card */}
+                    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                        <p className="text-sm font-medium text-muted-foreground">Green Projects</p>
+                        <h3 className="text-3xl font-bold mt-2 text-green-600 dark:text-green-400">{greenProjectsCount}</h3>
+                    </div>
+
+                    {/* Orange Projects Card */}
+                    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                        <p className="text-sm font-medium text-muted-foreground">Orange Projects</p>
+                        <h3 className="text-3xl font-bold mt-2 text-orange-600 dark:text-orange-400">{orangeProjectsCount}</h3>
+                    </div>
+
+                    {/* Red Projects Card */}
+                    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                        <p className="text-sm font-medium text-muted-foreground">Red Projects</p>
+                        <h3 className="text-3xl font-bold mt-2 text-red-600 dark:text-red-400">{redProjectsCount}</h3>
                     </div>
                 </div>
                 <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">

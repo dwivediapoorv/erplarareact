@@ -23,7 +23,7 @@ class TaskController extends Controller
             'project:id,project_name',
             'approver:id,name'
         ])
-            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'completed_at', 'approved_by', 'created_at')
+            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'completed_at', 'approved_by', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($task) {
@@ -35,6 +35,7 @@ class TaskController extends Controller
                     'assignee_name' => $task->assignee->name,
                     'project_name' => $task->project->project_name,
                     'status' => $task->status,
+                    'due_date' => $task->due_date?->format('Y-m-d'),
                     'completed_at' => $task->completed_at?->format('Y-m-d'),
                     'approver_name' => $task->approver?->name,
                     'created_at' => $task->created_at->format('Y-m-d'),
@@ -78,6 +79,7 @@ class TaskController extends Controller
             'description' => ['nullable', 'string'],
             'assigned_to' => ['required', 'exists:users,id'],
             'project_id' => ['required', 'exists:projects,id'],
+            'due_date' => ['nullable', 'date'],
         ]);
 
         Task::create([
@@ -86,10 +88,41 @@ class TaskController extends Controller
             'created_by' => auth()->id(),
             'assigned_to' => $validated['assigned_to'],
             'project_id' => $validated['project_id'],
+            'due_date' => $validated['due_date'] ?? null,
             'status' => 'Pending',
         ]);
 
         return to_route('tasks.index')->with('success', 'Task created successfully.');
+    }
+
+    /**
+     * Display the specified task.
+     */
+    public function show(Task $task): Response
+    {
+        $task->load([
+            'creator:id,name',
+            'assignee:id,name',
+            'project:id,project_name',
+            'approver:id,name'
+        ]);
+
+        return Inertia::render('tasks/show', [
+            'task' => [
+                'id' => $task->id,
+                'name' => $task->name,
+                'description' => $task->description,
+                'creator_name' => $task->creator->name,
+                'assignee_name' => $task->assignee->name,
+                'project_name' => $task->project->project_name,
+                'project_id' => $task->project_id,
+                'status' => $task->status,
+                'due_date' => $task->due_date?->format('d F Y'),
+                'completed_at' => $task->completed_at?->format('d F Y'),
+                'approver_name' => $task->approver?->name,
+                'created_at' => $task->created_at->format('d F Y'),
+            ],
+        ]);
     }
 
     /**

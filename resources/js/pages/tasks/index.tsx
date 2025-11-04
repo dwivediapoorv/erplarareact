@@ -22,6 +22,7 @@ interface Task {
     assignee_name: string;
     project_name: string;
     status: 'Pending' | 'Completed' | 'Approved';
+    due_date: string | null;
     completed_at: string | null;
     approver_name: string | null;
     created_at: string;
@@ -32,7 +33,7 @@ interface TasksIndexProps {
 }
 
 export default function TasksIndex({ tasks: tasksList }: TasksIndexProps) {
-    const { flash, auth } = usePage().props as any;
+    const { flash } = usePage().props as any;
     const [showSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
@@ -57,9 +58,22 @@ export default function TasksIndex({ tasks: tasksList }: TasksIndexProps) {
 
     const columns: Column<Task>[] = [
         {
+            key: 'id',
+            label: 'Task ID',
+            filterable: false,
+        },
+        {
             key: 'name',
             label: 'Task Name',
             filterable: true,
+            render: (task) => (
+                <Link
+                    href={tasks.show(task.id).url}
+                    className="font-medium hover:underline"
+                >
+                    {task.name}
+                </Link>
+            ),
         },
         {
             key: 'project_name',
@@ -101,6 +115,12 @@ export default function TasksIndex({ tasks: tasksList }: TasksIndexProps) {
                     </span>
                 );
             },
+        },
+        {
+            key: 'due_date',
+            label: 'Due Date',
+            filterable: false,
+            render: (task) => task.due_date || 'N/A',
         },
         {
             key: 'created_at',

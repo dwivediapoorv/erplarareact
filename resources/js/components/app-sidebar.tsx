@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -15,17 +14,18 @@ import clientInteractions from '@/routes/client-interactions';
 import minutesOfMeetings from '@/routes/minutes-of-meetings';
 import payments from '@/routes/payments';
 import payroll from '@/routes/payroll';
+import permissions from '@/routes/permissions';
 import projects from '@/routes/projects';
 import services from '@/routes/services';
 import tasks from '@/routes/tasks';
 import teams from '@/routes/teams';
 import users from '@/routes/users';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, Folder, LayoutGrid, MessageSquare, Settings, Users, UsersRound } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const allNavItems: (NavItem & { permission?: string })[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -35,63 +35,78 @@ const mainNavItems: NavItem[] = [
         title: 'Users',
         href: users.index(),
         icon: Users,
+        permission: 'view users',
     },
     {
         title: 'Teams',
         href: teams.index(),
         icon: UsersRound,
+        permission: 'view teams',
     },
     {
         title: 'Projects',
         href: projects.index(),
         icon: Briefcase,
+        permission: 'view projects',
     },
     {
         title: 'Tasks',
         href: tasks.index(),
         icon: CheckSquare,
+        permission: 'view tasks',
     },
     {
         title: 'Minutes of Meetings',
         href: minutesOfMeetings.index(),
         icon: ClipboardList,
+        permission: 'view minutes-of-meetings',
     },
     {
         title: 'Payroll',
         href: payroll.index(),
         icon: DollarSign,
+        permission: 'view payrolls',
     },
     {
         title: 'Payments',
         href: payments.index(),
         icon: CreditCard,
+        permission: 'view payments',
     },
     {
         title: 'Client Interactions',
         href: clientInteractions.index(),
         icon: MessageSquare,
+        permission: 'view client-interactions',
     },
     {
         title: 'Services',
         href: services.index(),
         icon: Settings,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        permission: 'view services',
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        title: 'Permissions',
+        href: permissions.index(),
+        icon: Shield,
+        permission: 'manage permissions',
     },
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage().props as any;
+    const userPermissions = auth.permissions || [];
+
+    // Filter nav items based on user permissions
+    const mainNavItems = allNavItems.filter((item) => {
+        // If no permission required, show the item (like Dashboard)
+        if (!item.permission) {
+            return true;
+        }
+        // Check if user has the required permission
+        return userPermissions.includes(item.permission);
+    });
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

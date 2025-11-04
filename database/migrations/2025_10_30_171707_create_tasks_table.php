@@ -28,6 +28,9 @@ return new class extends Migration
             // Task status: Pending, Completed, Approved (Closed)
             $table->enum('status', ['Pending', 'Completed', 'Approved'])->default('Pending');
 
+            // Due date for the task
+            $table->date('due_date')->nullable();
+
             // Timestamp when task was completed by assignee
             $table->timestamp('completed_at')->nullable();
 

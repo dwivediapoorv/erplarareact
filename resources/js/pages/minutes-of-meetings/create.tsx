@@ -5,6 +5,14 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import InputError from '@/components/input-error';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -18,8 +26,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function CreateMinutesOfMeeting() {
+interface Project {
+    id: number;
+    project_name: string;
+}
+
+interface CreateMinutesOfMeetingProps {
+    projects: Project[];
+}
+
+export default function CreateMinutesOfMeeting({ projects }: CreateMinutesOfMeetingProps) {
     const { data, setData, post, processing, errors } = useForm({
+        project_id: '',
         title: '',
         description: '',
         meeting_date: '',
@@ -41,6 +59,34 @@ export default function CreateMinutesOfMeeting() {
                 <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
+                            {/* Project */}
+                            <div className="space-y-2 md:col-span-2">
+                                <Label htmlFor="project_id">
+                                    Project <span className="text-red-500">*</span>
+                                </Label>
+                                <Select
+                                    value={data.project_id}
+                                    onValueChange={(value) =>
+                                        setData('project_id', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a project" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {projects.map((project) => (
+                                            <SelectItem
+                                                key={project.id}
+                                                value={project.id.toString()}
+                                            >
+                                                {project.project_name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.project_id} />
+                            </div>
+
                             {/* Title */}
                             <div className="space-y-2 md:col-span-2">
                                 <Label htmlFor="title">
@@ -63,13 +109,13 @@ export default function CreateMinutesOfMeeting() {
                                 <Label htmlFor="description">
                                     Description
                                 </Label>
-                                <Input
+                                <Textarea
                                     id="description"
-                                    type="text"
                                     value={data.description}
                                     onChange={(e) =>
                                         setData('description', e.target.value)
                                     }
+                                    rows={4}
                                 />
                                 <InputError message={errors.description} />
                             </div>

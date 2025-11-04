@@ -22,6 +22,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'contact@againstthegrainepoxy.com',
             'phone_number' => '+1-555-0100',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         // Project 2
@@ -33,6 +34,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '37',
         ]);
 
         // project 3
@@ -44,6 +46,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@biblehealingoil.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '37',
         ]);
 
         // Project 4
@@ -55,6 +58,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '21',
         ]);
 
         //Project 5
@@ -66,6 +70,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '37',
         ]);
 
         // Project 6
@@ -77,6 +82,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 7
@@ -88,6 +94,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         // Project 8
@@ -99,6 +106,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 9
@@ -110,6 +118,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '21',
         ]);
 
         // Project 10
@@ -121,6 +130,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 11
@@ -132,6 +142,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 12
@@ -143,6 +154,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 13
@@ -154,6 +166,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '21',
         ]);
 
         // Project 14
@@ -165,6 +178,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '21',
         ]);
 
         // Project 15
@@ -176,6 +190,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '21',
         ]);
 
         // Project 16
@@ -187,6 +202,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '37',
         ]);
 
         // Project 17
@@ -197,6 +213,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Furloom',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '21',
         ]);
 
         // Project 18
@@ -208,6 +226,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '37',
         ]);
 
         // Project 19
@@ -219,6 +238,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '37',
         ]);
 
         // Project 20
@@ -230,6 +250,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '37',
         ]);
 
         //Project 21
@@ -241,6 +262,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '37',
         ]);
 
         // Project 22
@@ -252,6 +274,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '37',
         ]);
 
         // Project 23
@@ -263,6 +286,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '21',
         ]);
 
         // Project 24
@@ -273,6 +297,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Axyloza',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '21',
         ]);
 
         // Project 25
@@ -284,6 +310,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '21',
         ]);
 
         // Project 26
@@ -295,6 +322,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '21',
         ]);
 
         //Project 27
@@ -306,6 +334,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '21',
         ]);
 
         // Project 28
@@ -316,6 +345,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Axyloza',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '37',
         ]);
 
         // Project 29
@@ -327,6 +358,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 30
@@ -338,6 +370,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '37',
         ]);
 
         // Project 31
@@ -349,6 +382,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         // Project 32
@@ -360,6 +394,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '37',
         ]);
 
         // Project 33
@@ -370,6 +405,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Axyloza',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '37',
         ]);
 
         // Project 34
@@ -381,6 +418,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '21',
         ]);
 
         // Project 35
@@ -392,6 +430,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '37',
         ]);
 
         // Project 36
@@ -402,6 +441,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Axyloza',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '21',
         ]);
 
         // Project 37
@@ -412,6 +453,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Axyloza',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '37',
         ]);
 
         // Project 38
@@ -423,6 +466,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '37',
         ]);
 
         // Project 39
@@ -434,6 +478,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
+            'project_manager_id' => '37',
         ]);
 
         // Project 40
@@ -445,6 +490,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '37',
         ]);
 
         // Project 41
@@ -456,6 +502,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '41',
+            'project_manager_id' => '21',
         ]);
         
         //Project 42
@@ -467,6 +514,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '21',
         ]);
 
         //Project 43
@@ -478,6 +526,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         //Project 44
@@ -489,6 +538,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         //Project 45
@@ -500,6 +550,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '37',
         ]);
 
         //Project 46
@@ -511,6 +562,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '20',
+            'project_manager_id' => '21',
         ]);
 
         //Project 47
@@ -522,6 +574,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         //Project 48
@@ -533,6 +586,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '23',
+            'project_manager_id' => '21',
         ]);
 
         //Project 49
@@ -544,6 +598,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
+            'project_manager_id' => '21',
         ]);
 
         //Project 50
@@ -555,6 +610,7 @@ class ProjectSeeder extends Seeder
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
             'assigned_to' => '32',
+            'project_manager_id' => '21',
         ]);
 
         //Project 51
@@ -565,6 +621,8 @@ class ProjectSeeder extends Seeder
             'client_name' => 'Axyloza',
             'email_address' => 'info@axyloza.com',
             'phone_number' => '+1-555-0200',
+            //'assigned_to' => '',
+            'project_manager_id' => '37',
         ]);
     }
 }

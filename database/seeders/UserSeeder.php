@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Aishwarya',
                 'last_name' => '',
                 'phone' => '+919999999902',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Aman Gupta',
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Aman',
                 'last_name' => 'Gupta',
                 'phone' => '+919999999903',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Anurag Sharma',
@@ -89,7 +89,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Gracie',
                 'last_name' => 'Lamnunnem Chongloi',
                 'phone' => '+919999999908',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
  
             [
@@ -153,16 +153,16 @@ class UserSeeder extends Seeder
                 'first_name' => 'Kanika',
                 'last_name' => 'Jain',
                 'phone' => '+919999999915',
-                'team_id' => '1',
+                'team_id' => '6',
             ],
             [
                 'name' => 'Keshav Pundir',
                 'email' => 'Keshav@digirockett.com',
                 'password' => 'password',
                 'first_name' => 'Keshav',
-                'last_name' => 'Keshav Pundir',
+                'last_name' => 'Pundir',
                 'phone' => '+919999999916',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Ketou Nakhro',
@@ -171,7 +171,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Ketou',
                 'last_name' => 'Nakhro',
                 'phone' => '+919999999917',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Lalit Nailwal',
@@ -252,7 +252,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Ravikant',
                 'last_name' => '',
                 'phone' => '+919999999927',
-                'team_id' => '1',
+                'team_id' => '4',
             ],
             [
                 'name' => 'Ritesh Saxena',
@@ -261,7 +261,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Ritesh',
                 'last_name' => 'Saxena',
                 'phone' => '+919999999928',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Ritika Singh',
@@ -279,7 +279,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Sakeena',
                 'last_name' => '',
                 'phone' => '+919999999930',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Sakshi Kushwaha',
@@ -288,7 +288,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Sakshi',
                 'last_name' => 'Kushwaha',
                 'phone' => '+919999999931',
-                'team_id' => '1',
+                'team_id' => '6',
             ],
             [
                 'name' => 'Samiksha Kaushik',
@@ -297,7 +297,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Samiksha',
                 'last_name' => 'Kaushik',
                 'phone' => '+919999999932',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Sanjeev Kumar',
@@ -333,7 +333,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Shreya',
                 'last_name' => 'Karkera',
                 'phone' => '+919999999936',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Shubhranshu Srivastava',
@@ -414,7 +414,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Suresh',
                 'last_name' => 'Vishnoi',
                 'phone' => '+919999999945',
-                'team_id' => '1',
+                'team_id' => '3',
             ],
             [
                 'name' => 'Swadha Mishra',
@@ -453,7 +453,6 @@ class UserSeeder extends Seeder
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),
                 'email_verified_at' => now(),
-                'is_active' => true,
             ]);
 
             // Create the corresponding employee record
