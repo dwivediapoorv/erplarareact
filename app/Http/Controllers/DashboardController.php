@@ -15,8 +15,13 @@ class DashboardController extends Controller
      */
     public function index(): Response
     {
+        // Check if current user is inactive
+        if (!auth()->user()->is_active) {
+            return Inertia::render('inactive');
+        }
+
         // Get total active users
-        $activeUsersCount = User::whereRaw('is_active = true')->count();
+        $activeUsersCount = User::where('is_active', true)->count();
 
         // Get total projects
         $totalProjects = Project::count();
@@ -29,6 +34,25 @@ class DashboardController extends Controller
         $orangeProjectsCount = Project::where('project_health', 'Orange')->count();
         $redProjectsCount = Project::where('project_health', 'Red')->count();
 
+        // Get users with their open task counts
+        $usersWithOpenTasks = User::where('is_active', true)
+            ->withCount(['assignedTasks as open_tasks_count' => function ($query) {
+                $query->whereIn('status', ['Pending', 'Completed']);
+            }])
+            ->get()
+            ->filter(function ($user) {
+                return $user->open_tasks_count > 0;
+            })
+            ->sortByDesc('open_tasks_count')
+            ->values()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'open_tasks_count' => $user->open_tasks_count,
+                ];
+            });
+
         return Inertia::render('dashboard', [
             'activeUsersCount' => $activeUsersCount,
             'totalProjects' => $totalProjects,
@@ -36,6 +60,7 @@ class DashboardController extends Controller
             'greenProjectsCount' => $greenProjectsCount,
             'orangeProjectsCount' => $orangeProjectsCount,
             'redProjectsCount' => $redProjectsCount,
+            'usersWithOpenTasks' => $usersWithOpenTasks,
         ]);
     }
 }

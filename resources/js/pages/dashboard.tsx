@@ -1,4 +1,3 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -11,6 +10,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface UserWithTasks {
+    id: number;
+    name: string;
+    open_tasks_count: number;
+}
+
 interface DashboardProps {
     activeUsersCount: number;
     totalProjects: number;
@@ -18,6 +23,7 @@ interface DashboardProps {
     greenProjectsCount: number;
     orangeProjectsCount: number;
     redProjectsCount: number;
+    usersWithOpenTasks: UserWithTasks[];
 }
 
 export default function Dashboard({
@@ -26,7 +32,8 @@ export default function Dashboard({
     openTasksCount,
     greenProjectsCount,
     orangeProjectsCount,
-    redProjectsCount
+    redProjectsCount,
+    usersWithOpenTasks
 }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -69,8 +76,37 @@ export default function Dashboard({
                         <h3 className="text-3xl font-bold mt-2 text-red-600 dark:text-red-400">{redProjectsCount}</h3>
                     </div>
                 </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                {/* Users with Open Tasks Table */}
+                <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border">
+                    <div className="border-b border-sidebar-border/70 bg-muted/50 p-4 dark:border-sidebar-border">
+                        <h3 className="text-lg font-semibold">Open Tasks</h3>
+                        {/* <p className="text-sm text-muted-foreground mt-1">
+                            {usersWithOpenTasks.length} user{usersWithOpenTasks.length !== 1 ? 's' : ''} with pending tasks
+                        </p> */}
+                    </div>
+                    <div className="overflow-x-auto">
+                        {usersWithOpenTasks.length === 0 ? (
+                            <p className="text-center text-sm text-muted-foreground py-8">No users with open tasks</p>
+                        ) : (
+                            <table className="w-full">
+                                <thead className="border-b border-sidebar-border/50 bg-muted/30">
+                                    <tr>
+                                        <th className="px-4 py-3 text-left text-sm font-semibold">User</th>
+                                        <th className="px-4 py-3 text-right text-sm font-semibold">Tasks</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-sidebar-border/30">
+                                    {usersWithOpenTasks.map((user) => (
+                                        <tr key={user.id} className="hover:bg-muted/30 transition-colors">
+                                            <td className="px-4 py-3 text-sm">{user.name}</td>
+                                            <td className="px-4 py-3 text-sm text-right font-medium">{user.open_tasks_count}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
                 </div>
             </div>
         </AppLayout>

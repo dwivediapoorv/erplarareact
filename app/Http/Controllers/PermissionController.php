@@ -84,6 +84,34 @@ class PermissionController extends Controller
     }
 
     /**
+     * Create a new role.
+     */
+    public function storeRole(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
+        ]);
+
+        Role::create(['name' => $validated['name']]);
+
+        return redirect()->route('permissions.index')->with('success', 'Role created successfully.');
+    }
+
+    /**
+     * Update role name.
+     */
+    public function updateRoleName(Request $request, Role $role): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
+        ]);
+
+        $role->update(['name' => $validated['name']]);
+
+        return redirect()->route('permissions.index')->with('success', 'Role name updated successfully.');
+    }
+
+    /**
      * Update role permissions.
      */
     public function updateRolePermissions(Request $request, Role $role): RedirectResponse
@@ -96,6 +124,26 @@ class PermissionController extends Controller
         $role->syncPermissions($validated['permissions'] ?? []);
 
         return redirect()->route('permissions.index')->with('success', 'Role permissions updated successfully.');
+    }
+
+    /**
+     * Delete a role.
+     */
+    public function deleteRole(Role $role): RedirectResponse
+    {
+        // Prevent deletion of super-admin role
+        if ($role->name === 'super-admin') {
+            return redirect()->route('permissions.index')->with('error', 'Cannot delete the super-admin role.');
+        }
+
+        // Check if role is assigned to any users
+        if ($role->users()->count() > 0) {
+            return redirect()->route('permissions.index')->with('error', 'Cannot delete role that is assigned to users.');
+        }
+
+        $role->delete();
+
+        return redirect()->route('permissions.index')->with('success', 'Role deleted successfully.');
     }
 
     /**

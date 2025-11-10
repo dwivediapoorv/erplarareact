@@ -1,10 +1,11 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { CheckCircle, Users, Shield } from 'lucide-react';
+import { CheckCircle, Users, Shield, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
     Card,
     CardContent,
@@ -71,6 +72,7 @@ export default function PermissionsIndex({
 }: PermissionsIndexProps) {
     const { flash } = usePage().props as any;
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState(false);
     const [selectedRole, setSelectedRole] = useState<number | null>(
         roles.length > 0 ? roles[0].id : null
     );
@@ -78,11 +80,19 @@ export default function PermissionsIndex({
     const [rolePermissions, setRolePermissions] = useState<number[]>([]);
     const [userPermissions, setUserPermissions] = useState<number[]>([]);
     const [userRoles, setUserRoles] = useState<number[]>([]);
+    const [newRoleName, setNewRoleName] = useState('');
+    const [editingRoleId, setEditingRoleId] = useState<number | null>(null);
+    const [editingRoleName, setEditingRoleName] = useState('');
 
     useEffect(() => {
         if (flash?.success) {
             setShowSuccess(true);
             const timer = setTimeout(() => setShowSuccess(false), 5000);
+            return () => clearTimeout(timer);
+        }
+        if (flash?.error) {
+            setShowError(true);
+            const timer = setTimeout(() => setShowError(false), 5000);
             return () => clearTimeout(timer);
         }
     }, [flash]);
@@ -170,6 +180,67 @@ export default function PermissionsIndex({
         );
     };
 
+    const handleCreateRole = () => {
+        if (!newRoleName.trim()) return;
+
+        router.post(
+            '/permissions/roles',
+            {
+                name: newRoleName,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setNewRoleName('');
+                },
+            }
+        );
+    };
+
+    const handleStartEditRole = (role: Role) => {
+        setEditingRoleId(role.id);
+        setEditingRoleName(role.name);
+    };
+
+    const handleCancelEditRole = () => {
+        setEditingRoleId(null);
+        setEditingRoleName('');
+    };
+
+    const handleSaveRoleName = () => {
+        if (!editingRoleId || !editingRoleName.trim()) return;
+
+        router.put(
+            `/permissions/roles/${editingRoleId}/name`,
+            {
+                name: editingRoleName,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setEditingRoleId(null);
+                    setEditingRoleName('');
+                },
+            }
+        );
+    };
+
+    const handleDeleteRole = (roleId: number) => {
+        if (!confirm('Are you sure you want to delete this role?')) return;
+
+        router.delete(`/permissions/roles/${roleId}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                if (selectedRole === roleId && roles.length > 0) {
+                    const remainingRoles = roles.filter((r) => r.id !== roleId);
+                    setSelectedRole(
+                        remainingRoles.length > 0 ? remainingRoles[0].id : null
+                    );
+                }
+            },
+        });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Permissions Management" />
@@ -178,6 +249,13 @@ export default function PermissionsIndex({
                     <div className="flex items-center gap-2 rounded-lg bg-green-50 px-4 py-3 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                         <CheckCircle className="h-5 w-5" />
                         <span>{flash.success}</span>
+                    </div>
+                )}
+
+                {showError && flash?.error && (
+                    <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                        <CheckCircle className="h-5 w-5" />
+                        <span>{flash.error}</span>
                     </div>
                 )}
 
@@ -201,6 +279,120 @@ export default function PermissionsIndex({
 
                     {/* Role Permissions Tab */}
                     <TabsContent value="roles" className="space-y-4">
+                        {/* Create New Role Card */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Create New Role</CardTitle>
+                                <CardDescription>
+                                    Add a new role to the system
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex gap-2">
+                                    <Input
+                                        placeholder="Enter role name"
+                                        value={newRoleName}
+                                        onChange={(e) =>
+                                            setNewRoleName(e.target.value)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleCreateRole();
+                                            }
+                                        }}
+                                    />
+                                    <Button onClick={handleCreateRole}>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Create Role
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Manage Existing Roles Card */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Manage Roles</CardTitle>
+                                <CardDescription>
+                                    Edit role names or delete roles
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                {roles.map((role) => (
+                                    <div
+                                        key={role.id}
+                                        className="flex items-center gap-2 rounded-lg border p-3"
+                                    >
+                                        {editingRoleId === role.id ? (
+                                            <>
+                                                <Input
+                                                    value={editingRoleName}
+                                                    onChange={(e) =>
+                                                        setEditingRoleName(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            handleSaveRoleName();
+                                                        } else if (
+                                                            e.key === 'Escape'
+                                                        ) {
+                                                            handleCancelEditRole();
+                                                        }
+                                                    }}
+                                                    className="flex-1"
+                                                    autoFocus
+                                                />
+                                                <Button
+                                                    size="sm"
+                                                    onClick={handleSaveRoleName}
+                                                >
+                                                    Save
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={handleCancelEditRole}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="flex-1 font-medium">
+                                                    {role.name}
+                                                </span>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() =>
+                                                        handleStartEditRole(role)
+                                                    }
+                                                >
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
+                                                {role.name !== 'super-admin' && (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            handleDeleteRole(
+                                                                role.id
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-red-600" />
+                                                    </Button>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+
+                        {/* Role Permissions Card */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Role Permissions</CardTitle>

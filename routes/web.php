@@ -23,6 +23,11 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Ex-employee page (no active middleware)
+    Route::inertia('ex-employee', 'inactive')->name('ex-employee');
+});
+
+Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // User routes
@@ -84,7 +89,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Permissions management routes
     Route::get('permissions', [PermissionController::class, 'index'])->middleware('permission:manage permissions')->name('permissions.index');
+
+    // Role CRUD routes
+    Route::post('permissions/roles', [PermissionController::class, 'storeRole'])->middleware('permission:manage permissions')->name('permissions.roles.store');
     Route::patch('permissions/roles/{role}', [PermissionController::class, 'updateRolePermissions'])->middleware('permission:manage permissions')->name('permissions.roles.update');
+    Route::put('permissions/roles/{role}/name', [PermissionController::class, 'updateRoleName'])->middleware('permission:manage permissions')->name('permissions.roles.update-name');
+    Route::delete('permissions/roles/{role}', [PermissionController::class, 'deleteRole'])->middleware('permission:manage permissions')->name('permissions.roles.delete');
+
+    // User permissions routes
     Route::patch('permissions/users/{user}/permissions', [PermissionController::class, 'updateUserPermissions'])->middleware('permission:manage permissions')->name('permissions.users.permissions.update');
     Route::patch('permissions/users/{user}/roles', [PermissionController::class, 'assignRoles'])->middleware('permission:assign roles')->name('permissions.users.roles.update');
 

@@ -5,6 +5,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import InputError from '@/components/input-error';
 import {
     Select,
@@ -30,18 +31,32 @@ interface Team {
     name: string;
 }
 
-interface CreateUserProps {
-    teams: Team[];
+interface Role {
+    id: number;
+    name: string;
 }
 
-export default function CreateUser({ teams }: CreateUserProps) {
+interface CreateUserProps {
+    teams: Team[];
+    roles: Role[];
+}
+
+export default function CreateUser({ teams, roles }: CreateUserProps) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         first_name: '',
         last_name: '',
         phone: '',
         team_id: '',
+        roles: [] as number[],
     });
+
+    const handleRoleToggle = (roleId: number) => {
+        const updatedRoles = data.roles.includes(roleId)
+            ? data.roles.filter((id) => id !== roleId)
+            : [...data.roles, roleId];
+        setData('roles', updatedRoles);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -155,6 +170,37 @@ export default function CreateUser({ teams }: CreateUserProps) {
                                 </Select>
                                 <InputError message={errors.team_id} />
                             </div>
+                        </div>
+
+                        {/* Roles Section */}
+                        <div className="space-y-3 rounded-lg border p-4">
+                            <h3 className="font-semibold">Assign Roles</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Select one or more roles for this user
+                            </p>
+                            <div className="grid gap-3 md:grid-cols-2">
+                                {roles.map((role) => (
+                                    <div
+                                        key={role.id}
+                                        className="flex items-center space-x-2"
+                                    >
+                                        <Checkbox
+                                            id={`role-${role.id}`}
+                                            checked={data.roles.includes(role.id)}
+                                            onCheckedChange={() =>
+                                                handleRoleToggle(role.id)
+                                            }
+                                        />
+                                        <Label
+                                            htmlFor={`role-${role.id}`}
+                                            className="cursor-pointer text-sm font-normal"
+                                        >
+                                            {role.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                            <InputError message={errors.roles} />
                         </div>
 
                         <div className="flex items-center justify-end gap-4">

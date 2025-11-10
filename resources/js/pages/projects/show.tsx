@@ -3,9 +3,17 @@ import projects from '@/routes/projects';
 import tasks from '@/routes/tasks';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil, CheckSquare, Calendar, Phone } from 'lucide-react';
+import { ArrowLeft, Pencil, CheckSquare, Calendar, Phone, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -77,6 +85,8 @@ interface ProjectShowProps {
 }
 
 export default function ProjectShow({ project, tasks: projectTasks, moms, interactions }: ProjectShowProps) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`View Project - ${project.project_name}`} />
@@ -91,228 +101,299 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                         </Button>
                         <h1 className="text-2xl font-semibold">{project.project_name}</h1>
                     </div>
-                    <Button asChild>
-                        <Link href={projects.edit(project.id).url}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit Project
-                        </Link>
-                    </Button>
+                    <div className="flex gap-2">
+                        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline">
+                                    <Info className="mr-2 h-4 w-4" />
+                                    Full Project Information
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="!max-w-6xl max-h-[85vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle>Full Project Information</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-6 mt-4">
+                                    {/* Project Information */}
+                                    <div>
+                                        {/* <h3 className="text-lg font-semibold mb-3">Project Information</h3> */}
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Project Name
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.project_name}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Website
+                                                </label>
+                                                <p className="mt-1 text-sm">
+                                                    {project.website ? (
+                                                        <a
+                                                            href={project.website}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-600 hover:underline dark:text-blue-400"
+                                                        >
+                                                            {project.website}
+                                                        </a>
+                                                    ) : (
+                                                        'N/A'
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Date of Onboarding
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.date_of_onboarding || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Project Start Date
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.project_start_date || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Client Information */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Client Information</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Client Name
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.client_name}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Email Address
+                                                </label>
+                                                <p className="mt-1 text-sm">
+                                                    <a href={`mailto:${project.email_address}`} className="text-blue-600 hover:underline dark:text-blue-400">
+                                                        {project.email_address}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Alternate Email
+                                                </label>
+                                                <p className="mt-1 text-sm">
+                                                    {project.alternate_email_address ? (
+                                                        <a href={`mailto:${project.alternate_email_address}`} className="text-blue-600 hover:underline dark:text-blue-400">
+                                                            {project.alternate_email_address}
+                                                        </a>
+                                                    ) : (
+                                                        'N/A'
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Phone Number
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.phone_number}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Alternate Phone
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.alternate_phone_number || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Project Assignment */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Project Assignment</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Assigned To (SEO Team)
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.assigned_to_name}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Project Manager
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.project_manager_name}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Services & Blog Information */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Services & Blog Information</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div className="md:col-span-2">
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Services Offered
+                                                </label>
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    {project.services.length > 0 ? (
+                                                        project.services.map((service) => (
+                                                            <Badge key={service.id} variant="secondary">
+                                                                {service.name}
+                                                            </Badge>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-sm">N/A</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Blogs Count
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.blogs_count ?? 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Monthly Report Date
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.monthly_report_date || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Project Status */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Project Status</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Project Health
+                                                </label>
+                                                <div className="mt-2">
+                                                    <Badge
+                                                        variant={
+                                                            project.project_health === 'Green'
+                                                                ? 'default'
+                                                                : project.project_health === 'Orange'
+                                                                ? 'secondary'
+                                                                : 'destructive'
+                                                        }
+                                                    >
+                                                        {project.project_health}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Project Status
+                                                </label>
+                                                <div className="mt-2">
+                                                    <Badge
+                                                        variant={
+                                                            project.project_status === 'Active'
+                                                                ? 'default'
+                                                                : 'outline'
+                                                        }
+                                                    >
+                                                        {project.project_status}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Onboarding Notes */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Onboarding Notes</h3>
+                                        <p className="text-sm whitespace-pre-wrap">
+                                            {project.onboarding_notes || 'N/A'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                        <Button asChild>
+                            <Link href={projects.edit(project.id).url}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit Project
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
+                {/* Essential Project Information */}
                 <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
-                    <div className="space-y-6">
-                        {/* Project Information */}
+                    <h2 className="text-lg font-semibold mb-4">Essential Information</h2>
+                    <div className="grid gap-4 md:grid-cols-3">
                         <div>
-                            <h2 className="text-lg font-semibold mb-4">Project Information</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Project Name
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.project_name}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Website
-                                    </label>
-                                    <p className="mt-1 text-sm">
-                                        {project.website ? (
-                                            <a
-                                                href={project.website}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:underline dark:text-blue-400"
-                                            >
-                                                {project.website}
-                                            </a>
-                                        ) : (
-                                            'N/A'
-                                        )}
-                                    </p>
-                                </div>
-                                <div className="md:col-span-2">
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Onboarding Notes
-                                    </label>
-                                    <p className="mt-1 text-sm whitespace-pre-wrap">
-                                        {project.onboarding_notes || 'N/A'}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Date of Onboarding
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.date_of_onboarding || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Project Start Date
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.project_start_date || 'N/A'}</p>
-                                </div>
-                            </div>
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Project Name
+                            </label>
+                            <p className="mt-1 text-sm">{project.project_name}</p>
                         </div>
-
-                        {/* Client Information */}
                         <div>
-                            <h2 className="text-lg font-semibold mb-4">Client Information</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Client Name
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.client_name}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Email Address
-                                    </label>
-                                    <p className="mt-1 text-sm">
-                                        <a href={`mailto:${project.email_address}`} className="text-blue-600 hover:underline dark:text-blue-400">
-                                            {project.email_address}
-                                        </a>
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Alternate Email
-                                    </label>
-                                    <p className="mt-1 text-sm">
-                                        {project.alternate_email_address ? (
-                                            <a href={`mailto:${project.alternate_email_address}`} className="text-blue-600 hover:underline dark:text-blue-400">
-                                                {project.alternate_email_address}
-                                            </a>
-                                        ) : (
-                                            'N/A'
-                                        )}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Phone Number
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.phone_number}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Alternate Phone
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.alternate_phone_number || 'N/A'}</p>
-                                </div>
-                            </div>
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Website
+                            </label>
+                            <p className="mt-1 text-sm">
+                                {project.website ? (
+                                    <a
+                                        href={project.website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline dark:text-blue-400"
+                                    >
+                                        {project.website}
+                                    </a>
+                                ) : (
+                                    'N/A'
+                                )}
+                            </p>
                         </div>
-
-                        {/* Project Assignment */}
                         <div>
-                            <h2 className="text-lg font-semibold mb-4">Project Assignment</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Assigned To (SEO Team)
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.assigned_to_name}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Project Manager
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.project_manager_name}</p>
-                                </div>
-                            </div>
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Date of Onboarding
+                            </label>
+                            <p className="mt-1 text-sm">{project.date_of_onboarding || 'N/A'}</p>
                         </div>
-
-                        {/* Services & Blog Information */}
                         <div>
-                            <h2 className="text-lg font-semibold mb-4">Services & Blog Information</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="md:col-span-2">
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Services Offered
-                                    </label>
-                                    <div className="mt-2 flex flex-wrap gap-2">
-                                        {project.services.length > 0 ? (
-                                            project.services.map((service) => (
-                                                <Badge key={service.id} variant="secondary">
-                                                    {service.name}
-                                                </Badge>
-                                            ))
-                                        ) : (
-                                            <p className="text-sm">N/A</p>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Blogs Count
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.blogs_count ?? 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Monthly Report Date
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.monthly_report_date || 'N/A'}</p>
-                                </div>
-                            </div>
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Monthly Report Date
+                            </label>
+                            <p className="mt-1 text-sm">{project.monthly_report_date || 'N/A'}</p>
                         </div>
-
-                        {/* Project Status */}
                         <div>
-                            <h2 className="text-lg font-semibold mb-4">Project Status</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Project Health
-                                    </label>
-                                    <div className="mt-2">
-                                        <Badge
-                                            variant={
-                                                project.project_health === 'Green'
-                                                    ? 'default'
-                                                    : project.project_health === 'Orange'
-                                                    ? 'secondary'
-                                                    : 'destructive'
-                                            }
-                                        >
-                                            {project.project_health}
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Client Name
+                            </label>
+                            <p className="mt-1 text-sm">{project.client_name}</p>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Assigned To (SEO Team)
+                            </label>
+                            <p className="mt-1 text-sm">{project.assigned_to_name}</p>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Project Manager
+                            </label>
+                            <p className="mt-1 text-sm">{project.project_manager_name}</p>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Services Offered
+                            </label>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                                {project.services.length > 0 ? (
+                                    project.services.map((service) => (
+                                        <Badge key={service.id} variant="secondary">
+                                            {service.name}
                                         </Badge>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Project Status
-                                    </label>
-                                    <div className="mt-2">
-                                        <Badge
-                                            variant={
-                                                project.project_status === 'Active'
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                        >
-                                            {project.project_status}
-                                        </Badge>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* System Information */}
-                        <div>
-                            <h2 className="text-lg font-semibold mb-4">System Information</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Created At
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.created_at}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">
-                                        Last Updated
-                                    </label>
-                                    <p className="mt-1 text-sm">{project.updated_at}</p>
-                                </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm">N/A</p>
+                                )}
                             </div>
                         </div>
                     </div>

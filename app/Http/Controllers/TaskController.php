@@ -17,12 +17,15 @@ class TaskController extends Controller
      */
     public function index(): Response
     {
-        $tasks = Task::with([
-            'creator:id,name',
+        $userId = auth()->id();
+
+        // Tasks created by the current user
+        $tasksCreatedByUser = Task::with([
             'assignee:id,name',
             'project:id,project_name',
             'approver:id,name'
         ])
+            ->where('created_by', $userId)
             ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'completed_at', 'approved_by', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -31,7 +34,6 @@ class TaskController extends Controller
                     'id' => $task->id,
                     'name' => $task->name,
                     'description' => $task->description,
-                    'creator_name' => $task->creator->name,
                     'assignee_name' => $task->assignee->name,
                     'project_name' => $task->project->project_name,
                     'status' => $task->status,
@@ -42,8 +44,34 @@ class TaskController extends Controller
                 ];
             });
 
+        // Tasks assigned to the current user
+        $tasksAssignedToUser = Task::with([
+            'creator:id,name',
+            'project:id,project_name',
+            'approver:id,name'
+        ])
+            ->where('assigned_to', $userId)
+            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'completed_at', 'approved_by', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'name' => $task->name,
+                    'description' => $task->description,
+                    'creator_name' => $task->creator->name,
+                    'project_name' => $task->project->project_name,
+                    'status' => $task->status,
+                    'due_date' => $task->due_date?->format('Y-m-d'),
+                    'completed_at' => $task->completed_at?->format('Y-m-d'),
+                    'approver_name' => $task->approver?->name,
+                    'created_at' => $task->created_at->format('Y-m-d'),
+                ];
+            });
+
         return Inertia::render('tasks/index', [
-            'tasks' => $tasks,
+            'tasksCreatedByUser' => $tasksCreatedByUser,
+            'tasksAssignedToUser' => $tasksAssignedToUser,
         ]);
     }
 

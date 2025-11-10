@@ -9,9 +9,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -45,9 +47,11 @@ class UserController extends Controller
     public function create(): Response
     {
         $teams = Team::select('id', 'name')->get();
+        $roles = Role::select('id', 'name')->get();
 
         return Inertia::render('users/create', [
             'teams' => $teams,
+            'roles' => $roles,
         ]);
     }
 
@@ -62,6 +66,8 @@ class UserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20', 'unique:employees'],
             'team_id' => ['required', 'exists:teams,id'],
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['integer', 'exists:roles,id'],
         ]);
 
         DB::beginTransaction();
@@ -87,6 +93,11 @@ class UserController extends Controller
                 'phone' => $validated['phone'],
                 'team_id' => $validated['team_id'],
             ]);
+
+            // Assign roles to the user
+            if (!empty($validated['roles'])) {
+                $user->assignRole($validated['roles']);
+            }
 
             DB::commit();
 
@@ -161,6 +172,9 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
+            // Check if is_active status is changing
+            $statusChanged = $user->is_active !== $validated['is_active'];
+
             // Concatenate first name and last name to create full name
             $fullName = $validated['first_name'] . ' ' . $validated['last_name'];
 
@@ -178,6 +192,13 @@ class UserController extends Controller
                 'phone' => $validated['phone'],
                 'team_id' => $validated['team_id'],
             ]);
+
+            // If status changed, invalidate user's sessions to force re-login
+            if ($statusChanged) {
+                DB::table('sessions')
+                    ->where('user_id', $user->id)
+                    ->delete();
+            }
 
             DB::commit();
 
