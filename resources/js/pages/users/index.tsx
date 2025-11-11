@@ -2,7 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import users from '@/routes/users';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Plus, CheckCircle, Eye, Pencil } from 'lucide-react';
+import { Plus, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DataTable, type Column } from '@/components/data-table';
 import { useEffect, useState } from 'react';
@@ -19,14 +19,28 @@ interface User {
     name: string;
     email: string;
     is_active: boolean;
+    first_name: string;
+    last_name: string;
+    phone: string;
     team_label: string;
+    date_of_joining: string | null;
+    date_of_exit: string | null;
+    salary: string | null;
+    reporting_manager: string | null;
+    aadhar_number: string | null;
+    pan_number: string | null;
+    uan_number: string | null;
+    account_holder_name: string | null;
+    account_number: string | null;
+    ifsc_code: string | null;
 }
 
 interface UsersIndexProps {
     users: User[];
+    columnPreferences?: Record<string, boolean> | null;
 }
 
-export default function UsersIndex({ users: usersList }: UsersIndexProps) {
+export default function UsersIndex({ users: usersList, columnPreferences }: UsersIndexProps) {
     const { flash } = usePage().props as any;
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -43,7 +57,12 @@ export default function UsersIndex({ users: usersList }: UsersIndexProps) {
             key: 'name',
             label: 'Name',
             render: (user) => (
-                <span className="font-medium">{user.name}</span>
+                <Link
+                    href={users.show(user.id).url}
+                    className="font-medium hover:underline"
+                >
+                    {user.name}
+                </Link>
             ),
         },
         {
@@ -51,8 +70,75 @@ export default function UsersIndex({ users: usersList }: UsersIndexProps) {
             label: 'Email',
         },
         {
+            key: 'phone',
+            label: 'Phone',
+            defaultVisible: true,
+            render: (user) => user.phone || 'N/A',
+        },
+        {
             key: 'team_label',
             label: 'Team',
+            defaultVisible: true,
+        },
+        {
+            key: 'date_of_joining',
+            label: 'Date of Joining',
+            defaultVisible: false,
+            render: (user) => user.date_of_joining || 'N/A',
+        },
+        {
+            key: 'date_of_exit',
+            label: 'Date of Exit',
+            defaultVisible: false,
+            render: (user) => user.date_of_exit || 'N/A',
+        },
+        {
+            key: 'salary',
+            label: 'Salary',
+            defaultVisible: false,
+            render: (user) => user.salary ? `₹${user.salary}` : 'N/A',
+        },
+        {
+            key: 'reporting_manager',
+            label: 'Reporting Manager',
+            defaultVisible: false,
+            render: (user) => user.reporting_manager || 'N/A',
+        },
+        {
+            key: 'aadhar_number',
+            label: 'Aadhar Number',
+            defaultVisible: false,
+            render: (user) => user.aadhar_number || 'N/A',
+        },
+        {
+            key: 'pan_number',
+            label: 'PAN Number',
+            defaultVisible: false,
+            render: (user) => user.pan_number || 'N/A',
+        },
+        {
+            key: 'uan_number',
+            label: 'UAN Number',
+            defaultVisible: false,
+            render: (user) => user.uan_number || 'N/A',
+        },
+        {
+            key: 'account_holder_name',
+            label: 'Account Holder Name',
+            defaultVisible: false,
+            render: (user) => user.account_holder_name || 'N/A',
+        },
+        {
+            key: 'account_number',
+            label: 'Account Number',
+            defaultVisible: false,
+            render: (user) => user.account_number || 'N/A',
+        },
+        {
+            key: 'ifsc_code',
+            label: 'IFSC Code',
+            defaultVisible: false,
+            render: (user) => user.ifsc_code || 'N/A',
         },
         {
             key: 'is_active',
@@ -68,35 +154,6 @@ export default function UsersIndex({ users: usersList }: UsersIndexProps) {
                         Inactive
                     </span>
                 )
-            ),
-        },
-        {
-            key: 'actions',
-            label: 'Actions',
-            filterable: false,
-            render: (user) => (
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                    >
-                        <Link href={users.show(user.id).url}>
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                    >
-                        <Link href={users.edit(user.id).url}>
-                            <Pencil className="h-4 w-4 mr-1" />
-                            Edit
-                        </Link>
-                    </Button>
-                </div>
             ),
         },
     ];
@@ -125,6 +182,8 @@ export default function UsersIndex({ users: usersList }: UsersIndexProps) {
                     data={usersList}
                     searchPlaceholder="Search users by name, email, or team..."
                     emptyMessage="No users found"
+                    pageName="users.index"
+                    savedPreferences={columnPreferences}
                 />
             </div>
         </AppLayout>

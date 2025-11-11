@@ -498,4 +498,35 @@ class ProjectController extends Controller
             'filterName' => $employee->first_name . ' ' . $employee->last_name,
         ]);
     }
+
+    /**
+     * Display a list of employees with their assigned project counts.
+     * Only counts active projects.
+     */
+    public function assignedProjects(): Response
+    {
+        // Get all employees with their active assigned project counts
+        $employeesWithProjects = Employee::whereHas('assignedProjects', function ($query) {
+                $query->where('project_status', 'Active');
+            })
+            ->withCount(['assignedProjects as assigned_projects_count' => function ($query) {
+                $query->where('project_status', 'Active');
+            }])
+            ->with('user:id,name')
+            ->orderBy('first_name', 'asc')
+            ->orderBy('last_name', 'asc')
+            ->get()
+            ->map(function ($employee) {
+                return [
+                    'id' => $employee->id,
+                    'name' => $employee->first_name . ' ' . $employee->last_name,
+                    'user_name' => $employee->user?->name,
+                    'assigned_projects_count' => $employee->assigned_projects_count,
+                ];
+            });
+
+        return Inertia::render('projects/assigned', [
+            'employees' => $employeesWithProjects,
+        ]);
+    }
 }

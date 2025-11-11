@@ -36,12 +36,19 @@ interface Role {
     name: string;
 }
 
+interface Employee {
+    id: number;
+    first_name: string;
+    last_name: string;
+}
+
 interface CreateUserProps {
     teams: Team[];
     roles: Role[];
+    employees: Employee[];
 }
 
-export default function CreateUser({ teams, roles }: CreateUserProps) {
+export default function CreateUser({ teams, roles, employees }: CreateUserProps) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         first_name: '',
@@ -49,6 +56,16 @@ export default function CreateUser({ teams, roles }: CreateUserProps) {
         phone: '',
         team_id: '',
         roles: [] as number[],
+        date_of_joining: '',
+        date_of_exit: '',
+        salary: '',
+        reporting_manager_id: '',
+        aadhar_number: '',
+        pan_number: '',
+        uan_number: '',
+        account_holder_name: '',
+        account_number: '',
+        ifsc_code: '',
     });
 
     const handleRoleToggle = (roleId: number) => {
@@ -169,6 +186,141 @@ export default function CreateUser({ teams, roles }: CreateUserProps) {
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.team_id} />
+                            </div>
+
+                            {/* Date of Joining */}
+                            <div className="space-y-2">
+                                <Label htmlFor="date_of_joining">Date of Joining</Label>
+                                <Input
+                                    id="date_of_joining"
+                                    type="date"
+                                    value={data.date_of_joining}
+                                    onChange={(e) => setData('date_of_joining', e.target.value)}
+                                />
+                                <InputError message={errors.date_of_joining} />
+                            </div>
+
+                            {/* Date of Exit */}
+                            <div className="space-y-2">
+                                <Label htmlFor="date_of_exit">Date of Exit</Label>
+                                <Input
+                                    id="date_of_exit"
+                                    type="date"
+                                    value={data.date_of_exit}
+                                    onChange={(e) => setData('date_of_exit', e.target.value)}
+                                />
+                                <InputError message={errors.date_of_exit} />
+                            </div>
+
+                            {/* Salary */}
+                            <div className="space-y-2">
+                                <Label htmlFor="salary">Salary</Label>
+                                <Input
+                                    id="salary"
+                                    type="number"
+                                    step="0.01"
+                                    value={data.salary}
+                                    onChange={(e) => setData('salary', e.target.value)}
+                                    placeholder="0.00"
+                                />
+                                <InputError message={errors.salary} />
+                            </div>
+
+                            {/* Reporting Manager */}
+                            <div className="space-y-2">
+                                <Label htmlFor="reporting_manager_id">Reporting Manager</Label>
+                                <Select
+                                    value={data.reporting_manager_id}
+                                    onValueChange={(value) => setData('reporting_manager_id', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select reporting manager" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {employees.map((emp) => (
+                                            <SelectItem key={emp.id} value={emp.id.toString()}>
+                                                {emp.first_name} {emp.last_name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.reporting_manager_id} />
+                            </div>
+
+                            {/* Aadhar Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="aadhar_number">Aadhar Card Number</Label>
+                                <Input
+                                    id="aadhar_number"
+                                    type="text"
+                                    value={data.aadhar_number}
+                                    onChange={(e) => setData('aadhar_number', e.target.value)}
+                                    placeholder="XXXX-XXXX-XXXX"
+                                />
+                                <InputError message={errors.aadhar_number} />
+                            </div>
+
+                            {/* PAN Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="pan_number">PAN Card Number</Label>
+                                <Input
+                                    id="pan_number"
+                                    type="text"
+                                    value={data.pan_number}
+                                    onChange={(e) => setData('pan_number', e.target.value)}
+                                    placeholder="ABCDE1234F"
+                                />
+                                <InputError message={errors.pan_number} />
+                            </div>
+
+                            {/* UAN Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="uan_number">UAN Number</Label>
+                                <Input
+                                    id="uan_number"
+                                    type="text"
+                                    value={data.uan_number}
+                                    onChange={(e) => setData('uan_number', e.target.value)}
+                                    placeholder="XXXXXXXXXXXX"
+                                />
+                                <InputError message={errors.uan_number} />
+                            </div>
+
+                            {/* Account Holder Name */}
+                            <div className="space-y-2">
+                                <Label htmlFor="account_holder_name">Account Holder Name</Label>
+                                <Input
+                                    id="account_holder_name"
+                                    type="text"
+                                    value={data.account_holder_name}
+                                    onChange={(e) => setData('account_holder_name', e.target.value)}
+                                />
+                                <InputError message={errors.account_holder_name} />
+                            </div>
+
+                            {/* Account Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="account_number">Bank Account Number</Label>
+                                <Input
+                                    id="account_number"
+                                    type="text"
+                                    value={data.account_number}
+                                    onChange={(e) => setData('account_number', e.target.value)}
+                                />
+                                <InputError message={errors.account_number} />
+                            </div>
+
+                            {/* IFSC Code */}
+                            <div className="space-y-2">
+                                <Label htmlFor="ifsc_code">IFSC Code</Label>
+                                <Input
+                                    id="ifsc_code"
+                                    type="text"
+                                    value={data.ifsc_code}
+                                    onChange={(e) => setData('ifsc_code', e.target.value)}
+                                    placeholder="ABCD0123456"
+                                />
+                                <InputError message={errors.ifsc_code} />
                             </div>
                         </div>
 

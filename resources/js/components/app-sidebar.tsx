@@ -22,7 +22,7 @@ import teams from '@/routes/teams';
 import users from '@/routes/users';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound } from 'lucide-react';
+import { Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound, FileText } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const allNavItems: (NavItem & { permission?: string })[] = [
@@ -50,10 +50,21 @@ const allNavItems: (NavItem & { permission?: string })[] = [
         permission: 'view projects',
     },
     {
+        title: 'Projects Assigned',
+        href: '/projects/assigned',
+        icon: Briefcase,
+        permission: 'view projects',
+    },
+    {
         title: 'Tasks',
         href: tasks.index(),
         icon: CheckSquare,
         permission: 'view tasks',
+    },
+    {
+        title: 'Content Flows',
+        href: '/content-flows',
+        icon: FileText,
     },
     {
         title: 'Minutes of Meetings',

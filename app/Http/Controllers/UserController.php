@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\UserPreference;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,9 +21,9 @@ class UserController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $users = User::with(['employee.team:id,name'])
+        $users = User::with(['employee.team:id,name', 'employee.reportingManager:id,first_name,last_name'])
             ->select('id', 'name', 'email', 'is_active')
             ->orderBy('name', 'asc')
             ->get()
@@ -32,12 +33,34 @@ class UserController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'is_active' => $user->is_active,
+                    'first_name' => $user->employee?->first_name,
+                    'last_name' => $user->employee?->last_name,
+                    'phone' => $user->employee?->phone,
                     'team_label' => $user->employee?->team?->name ?? 'N/A',
+                    'date_of_joining' => $user->employee?->date_of_joining?->format('Y-m-d'),
+                    'date_of_exit' => $user->employee?->date_of_exit?->format('Y-m-d'),
+                    'salary' => $user->employee?->salary,
+                    'reporting_manager' => $user->employee?->reportingManager
+                        ? $user->employee->reportingManager->first_name . ' ' . $user->employee->reportingManager->last_name
+                        : null,
+                    'aadhar_number' => $user->employee?->aadhar_number,
+                    'pan_number' => $user->employee?->pan_number,
+                    'uan_number' => $user->employee?->uan_number,
+                    'account_holder_name' => $user->employee?->account_holder_name,
+                    'account_number' => $user->employee?->account_number,
+                    'ifsc_code' => $user->employee?->ifsc_code,
                 ];
             });
 
+        // Get user's column visibility preferences
+        $columnPreferences = UserPreference::where('user_id', $request->user()->id)
+            ->where('page', 'users.index')
+            ->where('preference_key', 'column_visibility')
+            ->first();
+
         return Inertia::render('users/index', [
             'users' => $users,
+            'columnPreferences' => $columnPreferences?->preference_value ?? null,
         ]);
     }
 
@@ -48,10 +71,12 @@ class UserController extends Controller
     {
         $teams = Team::select('id', 'name')->get();
         $roles = Role::select('id', 'name')->get();
+        $employees = Employee::select('id', 'first_name', 'last_name')->get();
 
         return Inertia::render('users/create', [
             'teams' => $teams,
             'roles' => $roles,
+            'employees' => $employees,
         ]);
     }
 
@@ -68,6 +93,16 @@ class UserController extends Controller
             'team_id' => ['required', 'exists:teams,id'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['integer', 'exists:roles,id'],
+            'date_of_joining' => ['nullable', 'date'],
+            'date_of_exit' => ['nullable', 'date'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
+            'reporting_manager_id' => ['nullable', 'exists:employees,id'],
+            'aadhar_number' => ['nullable', 'string', 'max:255'],
+            'pan_number' => ['nullable', 'string', 'max:255'],
+            'uan_number' => ['nullable', 'string', 'max:255'],
+            'account_holder_name' => ['nullable', 'string', 'max:255'],
+            'account_number' => ['nullable', 'string', 'max:255'],
+            'ifsc_code' => ['nullable', 'string', 'max:255'],
         ]);
 
         DB::beginTransaction();
@@ -85,13 +120,23 @@ class UserController extends Controller
                 'is_active' => true,
             ]);
 
-            // Create the employee record with team assignment
+            // Create the employee record with all details
             Employee::create([
                 'user_id' => $user->id,
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'phone' => $validated['phone'],
                 'team_id' => $validated['team_id'],
+                'date_of_joining' => $validated['date_of_joining'] ?? null,
+                'date_of_exit' => $validated['date_of_exit'] ?? null,
+                'salary' => $validated['salary'] ?? null,
+                'reporting_manager_id' => $validated['reporting_manager_id'] ?? null,
+                'aadhar_number' => $validated['aadhar_number'] ?? null,
+                'pan_number' => $validated['pan_number'] ?? null,
+                'uan_number' => $validated['uan_number'] ?? null,
+                'account_holder_name' => $validated['account_holder_name'] ?? null,
+                'account_number' => $validated['account_number'] ?? null,
+                'ifsc_code' => $validated['ifsc_code'] ?? null,
             ]);
 
             // Assign roles to the user

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContentFlowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\MOMController;
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
     // Project routes
     Route::get('projects', [ProjectController::class, 'index'])->middleware('permission:view projects')->name('projects.index');
+    Route::get('projects/assigned', [ProjectController::class, 'assignedProjects'])->middleware('permission:view projects')->name('projects.assigned');
     Route::get('projects/assigned-to/{employee}', [ProjectController::class, 'byAssignedTo'])->middleware('permission:view projects')->name('projects.by-assigned-to');
     Route::get('projects/managed-by/{employee}', [ProjectController::class, 'byProjectManager'])->middleware('permission:view projects')->name('projects.by-project-manager');
     Route::get('projects/create', [ProjectController::class, 'create'])->middleware('permission:create projects')->name('projects.create');
@@ -86,6 +88,15 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('client-interactions', [InteractionController::class, 'index'])->middleware('permission:view client-interactions')->name('client-interactions.index');
     Route::get('client-interactions/create', [InteractionController::class, 'create'])->middleware('permission:create client-interactions')->name('client-interactions.create');
     Route::post('client-interactions', [InteractionController::class, 'store'])->middleware('permission:create client-interactions')->name('client-interactions.store');
+
+    // Content Flow routes
+    Route::get('content-flows', [ContentFlowController::class, 'index'])->name('content-flows.index');
+    Route::get('content-flows/create', [ContentFlowController::class, 'create'])->name('content-flows.create');
+    Route::post('content-flows', [ContentFlowController::class, 'store'])->name('content-flows.store');
+    Route::get('content-flows/{contentFlow}', [ContentFlowController::class, 'show'])->name('content-flows.show');
+    Route::get('content-flows/{contentFlow}/edit', [ContentFlowController::class, 'edit'])->name('content-flows.edit');
+    Route::put('content-flows/{contentFlow}', [ContentFlowController::class, 'update'])->name('content-flows.update');
+    Route::delete('content-flows/{contentFlow}', [ContentFlowController::class, 'destroy'])->name('content-flows.destroy');
 
     // Permissions management routes
     Route::get('permissions', [PermissionController::class, 'index'])->middleware('permission:manage permissions')->name('permissions.index');
