@@ -1,9 +1,11 @@
 import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import tasks from '@/routes/tasks';
+import minutesOfMeetings from '@/routes/minutes-of-meetings';
+import clientInteractions from '@/routes/client-interactions';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil, CheckSquare, Calendar, Phone, Info } from 'lucide-react';
+import { ArrowLeft, Pencil, CheckSquare, Calendar, Phone, Info, Plus, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -399,8 +401,8 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                     </div>
                 </div>
 
-                {/* Three Cards Row - Tasks, MOMs, and Interactions */}
-                <div className="grid gap-4 md:grid-cols-3">
+                {/* Four Cards Row - Tasks, Content Flows, MOMs, and Interactions */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {/* Tasks Card */}
                     <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
                         <div className="flex items-center justify-between mb-4">
@@ -408,7 +410,14 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <CheckSquare className="h-5 w-5 text-muted-foreground" />
                                 <h3 className="text-lg font-semibold">Tasks</h3>
                             </div>
-                            <span className="text-sm text-muted-foreground">{projectTasks.length}</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">{projectTasks.length}</span>
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link href={`${tasks.create().url}?project_id=${project.id}`}>
+                                        <Plus className="h-3 w-3" />
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
                         <div className="space-y-3">
                             {projectTasks.length > 0 ? (
@@ -440,6 +449,26 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                         </div>
                     </div>
 
+                    {/* Content Flows Card */}
+                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <FileText className="h-5 w-5 text-muted-foreground" />
+                                <h3 className="text-lg font-semibold">Content Flows</h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link href={`/content-flows/create?project_id=${project.id}`}>
+                                        <Plus className="h-3 w-3" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                            <p className="text-sm text-muted-foreground">Click + to create content flow</p>
+                        </div>
+                    </div>
+
                     {/* Minutes of Meetings Card */}
                     <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
                         <div className="flex items-center justify-between mb-4">
@@ -447,7 +476,14 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <Calendar className="h-5 w-5 text-muted-foreground" />
                                 <h3 className="text-lg font-semibold">Minutes of Meetings</h3>
                             </div>
-                            <span className="text-sm text-muted-foreground">{moms.length}</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">{moms.length}</span>
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link href={`${minutesOfMeetings.create().url}?project_id=${project.id}`}>
+                                        <Plus className="h-3 w-3" />
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
                         <div className="space-y-3">
                             {moms.length > 0 ? (
@@ -477,7 +513,14 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <Phone className="h-5 w-5 text-muted-foreground" />
                                 <h3 className="text-lg font-semibold">Call Interactions</h3>
                             </div>
-                            <span className="text-sm text-muted-foreground">{interactions.length}</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">{interactions.length}</span>
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link href={`${clientInteractions.create().url}?project_id=${project.id}`}>
+                                        <Plus className="h-3 w-3" />
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
                         <div className="space-y-3">
                             {interactions.length > 0 ? (

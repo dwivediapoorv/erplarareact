@@ -36,8 +36,11 @@ interface CreateMinutesOfMeetingProps {
 }
 
 export default function CreateMinutesOfMeeting({ projects }: CreateMinutesOfMeetingProps) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectIdFromUrl = urlParams.get('project_id') || '';
+
     const { data, setData, post, processing, errors } = useForm({
-        project_id: '',
+        project_id: projectIdFromUrl,
         title: '',
         description: '',
         meeting_date: '',

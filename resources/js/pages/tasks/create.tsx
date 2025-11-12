@@ -42,11 +42,14 @@ interface CreateTaskProps {
 }
 
 export default function CreateTask({ users, projects }: CreateTaskProps) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectIdFromUrl = urlParams.get('project_id') || '';
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
         assigned_to: '',
-        project_id: '',
+        project_id: projectIdFromUrl,
         due_date: '',
     });
 

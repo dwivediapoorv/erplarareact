@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContentFlow;
 use App\Models\Project;
+use App\Models\UserPreference;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +15,7 @@ class ContentFlowController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $contentFlows = ContentFlow::with(['project:id,project_name', 'creator:id,name'])
             ->orderBy('created_at', 'desc')
@@ -23,6 +24,7 @@ class ContentFlowController extends Controller
                 return [
                     'id' => $flow->id,
                     'title' => $flow->title,
+                    'project_id' => $flow->project_id,
                     'project_name' => $flow->project->project_name,
                     'primary_keyword' => $flow->primary_keyword,
                     'approval_status' => $flow->approval_status,
@@ -33,8 +35,52 @@ class ContentFlowController extends Controller
                 ];
             });
 
+        // Get user's column visibility preferences
+        $columnPreferences = UserPreference::where('user_id', $request->user()->id)
+            ->where('page', 'content-flows.index')
+            ->where('preference_key', 'column_visibility')
+            ->first();
+
         return Inertia::render('content-flows/index', [
             'contentFlows' => $contentFlows,
+            'columnPreferences' => $columnPreferences?->preference_value ?? null,
+        ]);
+    }
+
+    /**
+     * Display content flows filtered by project.
+     */
+    public function byProject(Request $request, Project $project): Response
+    {
+        $contentFlows = ContentFlow::with(['project:id,project_name', 'creator:id,name'])
+            ->where('project_id', $project->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($flow) {
+                return [
+                    'id' => $flow->id,
+                    'title' => $flow->title,
+                    'project_id' => $flow->project_id,
+                    'project_name' => $flow->project->project_name,
+                    'primary_keyword' => $flow->primary_keyword,
+                    'approval_status' => $flow->approval_status,
+                    'published_on' => $flow->published_on?->format('Y-m-d'),
+                    'ai_score' => $flow->ai_score,
+                    'creator_name' => $flow->creator->name,
+                    'created_at' => $flow->created_at->format('Y-m-d'),
+                ];
+            });
+
+        // Get user's column visibility preferences
+        $columnPreferences = UserPreference::where('user_id', $request->user()->id)
+            ->where('page', 'content-flows.index')
+            ->where('preference_key', 'column_visibility')
+            ->first();
+
+        return Inertia::render('content-flows/index', [
+            'contentFlows' => $contentFlows,
+            'columnPreferences' => $columnPreferences?->preference_value ?? null,
+            'filteredProject' => $project->project_name,
         ]);
     }
 

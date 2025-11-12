@@ -91,6 +91,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
     // Content Flow routes
     Route::get('content-flows', [ContentFlowController::class, 'index'])->name('content-flows.index');
+    Route::get('content-flows/by-project/{project}', [ContentFlowController::class, 'byProject'])->name('content-flows.by-project');
     Route::get('content-flows/create', [ContentFlowController::class, 'create'])->name('content-flows.create');
     Route::post('content-flows', [ContentFlowController::class, 'store'])->name('content-flows.store');
     Route::get('content-flows/{contentFlow}', [ContentFlowController::class, 'show'])->name('content-flows.show');

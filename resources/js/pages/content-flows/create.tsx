@@ -35,8 +35,11 @@ interface CreateContentFlowProps {
 }
 
 export default function CreateContentFlow({ projects }: CreateContentFlowProps) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectIdFromUrl = urlParams.get('project_id') || '';
+
     const { data, setData, post, processing, errors } = useForm({
-        project_id: '',
+        project_id: projectIdFromUrl,
         title: '',
         primary_keyword: '',
         secondary_keywords: '',

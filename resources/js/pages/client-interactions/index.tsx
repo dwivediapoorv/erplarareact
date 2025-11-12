@@ -65,6 +65,9 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                             <thead className="border-b border-sidebar-border/70 dark:border-sidebar-border">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-sm font-medium">
+                                        ID
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium">
                                         Project
                                     </th>
                                     <th className="px-6 py-3 text-left text-sm font-medium">
@@ -91,6 +94,9 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                                             key={interaction.id}
                                             className="hover:bg-sidebar-accent/50"
                                         >
+                                            <td className="px-6 py-4 text-sm">
+                                                {interaction.id}
+                                            </td>
                                             <td className="px-6 py-4 text-sm font-medium">
                                                 {interaction.project_name}
                                             </td>
@@ -114,7 +120,7 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={6}
+                                            colSpan={7}
                                             className="px-6 py-8 text-center text-sm text-muted-foreground"
                                         >
                                             No client interactions found

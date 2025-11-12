@@ -125,6 +125,7 @@ export default function TasksIndex({ tasksCreatedByUser, tasksAssignedToUser }: 
                                                     href={tasks.show(task.id).url}
                                                     className="flex-1 min-w-0"
                                                 >
+                                                    <div className="text-xs text-muted-foreground mb-1">ID: {task.id}</div>
                                                     <h4 className="font-medium text-base group-hover:text-primary transition-colors line-clamp-2">
                                                         {task.name}
                                                     </h4>
@@ -191,6 +192,7 @@ export default function TasksIndex({ tasksCreatedByUser, tasksAssignedToUser }: 
                                                     href={tasks.show(task.id).url}
                                                     className="flex-1 min-w-0"
                                                 >
+                                                    <div className="text-xs text-muted-foreground mb-1">ID: {task.id}</div>
                                                     <h4 className="font-medium text-base group-hover:text-primary transition-colors line-clamp-2">
                                                         {task.name}
                                                     </h4>
