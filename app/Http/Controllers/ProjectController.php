@@ -393,7 +393,7 @@ class ProjectController extends Controller
 
             DB::commit();
 
-            return to_route('projects.index')->with('success', 'Project updated successfully.');
+            return to_route('projects.show', $project)->with('success', 'Project updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Project update failed: ' . $e->getMessage());

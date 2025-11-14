@@ -71,4 +71,34 @@ class Employee extends Model
     {
         return $this->hasMany(Project::class, 'assigned_to');
     }
+
+    /**
+     * Calculate salary breakdown based on total salary
+     *
+     * Formula:
+     * - Basic Salary: 50% of total salary
+     * - HRA: 40% of basic salary
+     * - Special Allowance: 30% of basic salary
+     * - Conveyance Allowance: 30% of basic salary
+     *
+     * @return array
+     */
+    public function calculateSalaryBreakdown(): array
+    {
+        $totalSalary = (float) $this->salary;
+        $basicSalary = $totalSalary * 0.50;
+        $hra = $basicSalary * 0.40;
+        $specialAllowance = $basicSalary * 0.30;
+        $conveyanceAllowance = $basicSalary * 0.30;
+        $totalAllowances = $hra + $specialAllowance + $conveyanceAllowance;
+
+        return [
+            'basic_salary' => round($basicSalary, 2),
+            'hra' => round($hra, 2),
+            'special_allowance' => round($specialAllowance, 2),
+            'conveyance_allowance' => round($conveyanceAllowance, 2),
+            'total_allowances' => round($totalAllowances, 2),
+            'gross_salary' => round($basicSalary + $totalAllowances, 2),
+        ];
+    }
 }

@@ -183,8 +183,12 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
-        $user->load('employee');
+        $user->load(['employee', 'roles']);
         $teams = Team::select('id', 'name')->get();
+        $roles = Role::select('id', 'name')->get();
+        $employees = Employee::where('id', '!=', $user->employee?->id)
+            ->select('id', 'first_name', 'last_name')
+            ->get();
 
         return Inertia::render('users/edit', [
             'user' => [
@@ -195,8 +199,21 @@ class UserController extends Controller
                 'last_name' => $user->employee?->last_name,
                 'phone' => $user->employee?->phone,
                 'team_id' => $user->employee?->team_id,
+                'date_of_joining' => $user->employee?->date_of_joining?->format('Y-m-d'),
+                'date_of_exit' => $user->employee?->date_of_exit?->format('Y-m-d'),
+                'salary' => $user->employee?->salary,
+                'reporting_manager_id' => $user->employee?->reporting_manager_id,
+                'aadhar_number' => $user->employee?->aadhar_number,
+                'pan_number' => $user->employee?->pan_number,
+                'uan_number' => $user->employee?->uan_number,
+                'account_holder_name' => $user->employee?->account_holder_name,
+                'account_number' => $user->employee?->account_number,
+                'ifsc_code' => $user->employee?->ifsc_code,
+                'role_ids' => $user->roles->pluck('id')->toArray(),
             ],
             'teams' => $teams,
+            'roles' => $roles,
+            'employees' => $employees,
         ]);
     }
 
@@ -212,6 +229,18 @@ class UserController extends Controller
             'phone' => ['required', 'string', 'max:20', 'unique:employees,phone,' . $user->employee?->id],
             'team_id' => ['required', 'exists:teams,id'],
             'is_active' => ['required', 'boolean'],
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['integer', 'exists:roles,id'],
+            'date_of_joining' => ['nullable', 'date'],
+            'date_of_exit' => ['nullable', 'date'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
+            'reporting_manager_id' => ['nullable', 'exists:employees,id'],
+            'aadhar_number' => ['nullable', 'string', 'max:255'],
+            'pan_number' => ['nullable', 'string', 'max:255'],
+            'uan_number' => ['nullable', 'string', 'max:255'],
+            'account_holder_name' => ['nullable', 'string', 'max:255'],
+            'account_number' => ['nullable', 'string', 'max:255'],
+            'ifsc_code' => ['nullable', 'string', 'max:255'],
         ]);
 
         DB::beginTransaction();
@@ -236,7 +265,22 @@ class UserController extends Controller
                 'last_name' => $validated['last_name'],
                 'phone' => $validated['phone'],
                 'team_id' => $validated['team_id'],
+                'date_of_joining' => $validated['date_of_joining'] ?? null,
+                'date_of_exit' => $validated['date_of_exit'] ?? null,
+                'salary' => $validated['salary'] ?? null,
+                'reporting_manager_id' => $validated['reporting_manager_id'] ?? null,
+                'aadhar_number' => $validated['aadhar_number'] ?? null,
+                'pan_number' => $validated['pan_number'] ?? null,
+                'uan_number' => $validated['uan_number'] ?? null,
+                'account_holder_name' => $validated['account_holder_name'] ?? null,
+                'account_number' => $validated['account_number'] ?? null,
+                'ifsc_code' => $validated['ifsc_code'] ?? null,
             ]);
+
+            // Sync roles
+            if (isset($validated['roles'])) {
+                $user->syncRoles($validated['roles']);
+            }
 
             // If status changed, invalidate user's sessions to force re-login
             if ($statusChanged) {

@@ -89,13 +89,13 @@ export default function EditProject({ project, seoEmployees, projectManagers, se
 
     const [showBlogFields, setShowBlogFields] = useState(false);
 
-    // Check if "Blogs" service is selected
+    // Check if "Content Marketing" service is selected
     useEffect(() => {
-        const blogsService = services.find(
-            (service) => service.name.toLowerCase().includes('blog')
+        const contentMarketingService = services.find(
+            (service) => service.name.toLowerCase().includes('content marketing')
         );
-        if (blogsService) {
-            setShowBlogFields(data.service_ids.includes(blogsService.id));
+        if (contentMarketingService) {
+            setShowBlogFields(data.service_ids.includes(contentMarketingService.id));
         }
     }, [data.service_ids, services]);
 

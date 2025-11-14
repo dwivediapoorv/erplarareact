@@ -1,13 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\SalarySlipController as AdminSalarySlipController;
 use App\Http\Controllers\ContentFlowController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\MOMController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SalarySlipController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
@@ -114,6 +118,23 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
     // User preferences route
     Route::post('user-preferences', [UserPreferenceController::class, 'update'])->name('user-preferences.update');
+
+    // Employee routes (self-service)
+    Route::get('employee/my-details', [EmployeeController::class, 'myDetails'])->name('employee.my-details');
+    Route::get('employee/salary-slips', [SalarySlipController::class, 'index'])->name('employee.salary-slips');
+    Route::get('employee/salary-slips/{salarySlip}/view', [SalarySlipController::class, 'view'])->name('employee.salary-slips.view');
+    Route::get('employee/salary-slips/{salarySlip}/download', [SalarySlipController::class, 'download'])->name('employee.salary-slips.download');
+
+    // Organization Calendar / Holiday routes
+    Route::get('calendar', [HolidayController::class, 'index'])->name('calendar.index');
+    Route::get('calendar/create', [HolidayController::class, 'create'])->middleware('permission:create holidays')->name('calendar.create');
+    Route::post('calendar', [HolidayController::class, 'store'])->middleware('permission:create holidays')->name('calendar.store');
+    Route::delete('calendar/{holiday}', [HolidayController::class, 'destroy'])->middleware('permission:delete holidays')->name('calendar.destroy');
+
+    // Admin Salary Slip Management routes
+    Route::get('admin/salary-slips', [AdminSalarySlipController::class, 'index'])->middleware('permission:view salary-slips')->name('admin.salary-slips.index');
+    Route::post('admin/salary-slips/generate', [AdminSalarySlipController::class, 'generate'])->middleware('permission:generate salary-slips')->name('admin.salary-slips.generate');
+    Route::delete('admin/salary-slips/{salarySlip}', [AdminSalarySlipController::class, 'destroy'])->middleware('permission:delete salary-slips')->name('admin.salary-slips.destroy');
 });
 
 require __DIR__.'/settings.php';

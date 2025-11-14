@@ -624,5 +624,66 @@ class ProjectSeeder extends Seeder
             'assigned_to' => '19',
             'project_manager_id' => '31',
         ]);
+
+        //Project 52
+        Project::create([
+            'project_name' => 'Crates and Curious',
+            'website' => 'https://cratesandcurios.com',
+            'onboarding_notes' => 'UI/UX+ SEO+ Performance marketing',
+            'client_name' => 'Joyross',
+            'email_address' => 'info@axyloza.com',
+            'phone_number' => '+1-555-0200',
+            'assigned_to' => '13',
+            'project_manager_id' => '31',
+        ]);
+
+        //Project 53
+        Project::create([
+            'project_name' => 'Home Well Supplies',
+            'website' => 'https://homewellsupplies.com',
+            'onboarding_notes' => 'Website redesign+Setup of Google Properties+Competitor research+Ecom SEO+ Performance marketing',
+            'client_name' => 'Yaniv',
+            'email_address' => 'info@axyloza.com',
+            'phone_number' => '+1-555-0200',
+            'assigned_to' => '33',
+            'project_manager_id' => '20',
+        ]);
+
+        //Project 54
+        Project::create([
+            'project_name' => 'JV Beauty Supply',
+            'website' => 'https://jvbeautysupply.com',
+            'onboarding_notes' => 'Ecommerce SEO + Website Redesign + GMB Optimization + FB Market place + Google/Meta ads',
+            'client_name' => 'Anthony',
+            'email_address' => 'info@axyloza.com',
+            'phone_number' => '+1-555-0200',
+            'assigned_to' => '33',
+            'project_manager_id' => '20',
+        ]);
+
+        //Project 55
+        Project::create([
+            'project_name' => 'Lucia Friends',
+            'website' => 'https://luciafriends.com',
+            'onboarding_notes' => 'One-time Website design + Market Research (Products, pricing, collections,etc) + Drop shipping Integration + One-time Technical SEO ',
+            'client_name' => 'Rajan',
+            'email_address' => 'info@axyloza.com',
+            'phone_number' => '+1-555-0200',
+            'assigned_to' => '27',
+            'project_manager_id' => '31',
+        ]);
+
+        //Project 56
+        Project::create([
+            'project_name' => 'Outtcom',
+            'website' => 'https://outtcom.com',
+            'onboarding_notes' => '(Inclined towards Online Reputation Management) - Basic SEO + Amazon Marketing (Main focus) + Backlinks on Quora/Reddit + Etsy Marketing + 1 blog per month',
+            'client_name' => 'Fahaad',
+            'email_address' => 'info@axyloza.com',
+            'phone_number' => '+1-555-0200',
+            'assigned_to' => '34',
+            'project_manager_id' => '31',
+        ]);
+
     }
 }

@@ -89,6 +89,27 @@ interface ProjectShowProps {
 export default function ProjectShow({ project, tasks: projectTasks, moms, interactions }: ProjectShowProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // Format monthly report date to show only the day with ordinal suffix
+    const formatMonthlyReportDate = (date: string | null) => {
+        if (!date) return 'N/A';
+
+        const dateObj = new Date(date);
+        const day = dateObj.getDate();
+
+        // Add ordinal suffix (st, nd, rd, th)
+        const getOrdinalSuffix = (day: number) => {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        };
+
+        return `${day}${getOrdinalSuffix(day)} of every month`;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`View Project - ${project.project_name}`} />
@@ -323,167 +344,209 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                     </div>
                 </div>
 
-                {/* Essential Project Information */}
-                <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
-                    <h2 className="text-lg font-semibold mb-4">Essential Information</h2>
-                    <div className="grid gap-4 md:grid-cols-3">
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Project Name
-                            </label>
-                            <p className="mt-1 text-sm">{project.project_name}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Website
-                            </label>
-                            <p className="mt-1 text-sm">
-                                {project.website ? (
-                                    <a
-                                        href={project.website}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 hover:underline dark:text-blue-400"
-                                    >
-                                        {project.website}
-                                    </a>
-                                ) : (
-                                    'N/A'
-                                )}
-                            </p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Date of Onboarding
-                            </label>
-                            <p className="mt-1 text-sm">{project.date_of_onboarding || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Monthly Report Date
-                            </label>
-                            <p className="mt-1 text-sm">{project.monthly_report_date || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Client Name
-                            </label>
-                            <p className="mt-1 text-sm">{project.client_name}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Assigned To (SEO Team)
-                            </label>
-                            <p className="mt-1 text-sm">{project.assigned_to_name}</p>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Project Manager
-                            </label>
-                            <p className="mt-1 text-sm">{project.project_manager_name}</p>
-                        </div>
-                        <div className="md:col-span-2">
-                            <label className="text-sm font-medium text-muted-foreground">
-                                Services Offered
-                            </label>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                {project.services.length > 0 ? (
-                                    project.services.map((service) => (
-                                        <Badge key={service.id} variant="secondary">
-                                            {service.name}
-                                        </Badge>
+                {/* Main Layout: Pendencies on Left, Sidebar on Right */}
+                <div className="grid gap-4 lg:grid-cols-12">
+                    {/* Left Side - Pendencies */}
+                    <div className="lg:col-span-9 space-y-4">
+                        {/* Open Tasks */}
+                        <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <CheckSquare className="h-5 w-5 text-muted-foreground" />
+                                    <h3 className="text-lg font-semibold">Open Tasks</h3>
+                                    <Badge variant="secondary">{projectTasks.filter(t => t.status === 'Pending').length}</Badge>
+                                </div>
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link href={`${tasks.create().url}?project_id=${project.id}`}>
+                                        <Plus className="h-4 w-4 mr-1.5" />
+                                        Add Task
+                                    </Link>
+                                </Button>
+                            </div>
+                            <div className="space-y-3">
+                                {projectTasks.filter(t => t.status === 'Pending').length > 0 ? (
+                                    projectTasks.filter(t => t.status === 'Pending').map((task) => (
+                                        <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-sidebar-border/50 hover:border-sidebar-border hover:bg-sidebar-accent/50 transition-colors">
+                                            <div className="flex-1 min-w-0">
+                                                <Link href={tasks.show(task.id).url} className="hover:underline">
+                                                    <p className="text-sm font-medium">{task.name}</p>
+                                                </Link>
+                                                <div className="flex items-center gap-3 mt-1.5">
+                                                    <span className="text-xs text-muted-foreground">
+                                                        Assigned to: {task.assignee_name}
+                                                    </span>
+                                                    {task.due_date && (
+                                                        <span className="text-xs text-muted-foreground">
+                                                            Due: {task.due_date}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <Badge variant="outline" className="ml-3">
+                                                {task.status}
+                                            </Badge>
+                                        </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm">N/A</p>
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <CheckSquare className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                                        <p className="text-sm">No open tasks</p>
+                                    </div>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Open Content Workflows */}
+                        <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <FileText className="h-5 w-5 text-muted-foreground" />
+                                    <h3 className="text-lg font-semibold">Open Content Workflows</h3>
+                                    <Badge variant="secondary">0</Badge>
+                                </div>
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link href={`/content-flows/create?project_id=${project.id}`}>
+                                        <Plus className="h-4 w-4 mr-1.5" />
+                                        Add Content Flow
+                                    </Link>
+                                </Button>
+                            </div>
+                            <div className="text-center py-8 text-muted-foreground">
+                                <FileText className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                                <p className="text-sm">No open content workflows</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Sidebar - Project Details */}
+                    <div className="lg:col-span-3">
+                        <div className="rounded-xl border border-sidebar-border/70 bg-card p-3 dark:border-sidebar-border space-y-3">
+                            {/* Project Overview */}
+                            <div>
+                                <h3 className="text-base font-semibold mb-2">Project Overview</h3>
+                                <div className="space-y-2">
+                                    <div>
+                                        <label className="text-xs font-medium text-muted-foreground uppercase">
+                                            Client Name
+                                        </label>
+                                        <p className="mt-0.5 text-sm font-medium">{project.client_name}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-muted-foreground uppercase">
+                                            Website
+                                        </label>
+                                        <p className="mt-0.5 text-sm">
+                                            {project.website ? (
+                                                <a
+                                                    href={project.website}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline dark:text-blue-400"
+                                                >
+                                                    {project.website}
+                                                </a>
+                                            ) : (
+                                                'N/A'
+                                            )}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-sidebar-border/50" />
+
+                            {/* Team */}
+                            <div>
+                                <h3 className="text-base font-semibold mb-2">Team</h3>
+                                <div className="space-y-2">
+                                    <div>
+                                        <label className="text-xs font-medium text-muted-foreground uppercase">
+                                            SEO Team
+                                        </label>
+                                        <p className="mt-0.5 text-sm font-medium">{project.assigned_to_name}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-muted-foreground uppercase">
+                                            Project Manager
+                                        </label>
+                                        <p className="mt-0.5 text-sm font-medium">{project.project_manager_name}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-sidebar-border/50" />
+
+                            {/* Services */}
+                            <div>
+                                <h3 className="text-base font-semibold mb-2">Services</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {project.services.length > 0 ? (
+                                        project.services.map((service) => (
+                                            <Badge key={service.id} variant="secondary">
+                                                {service.name}
+                                            </Badge>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">No services</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="border-t border-sidebar-border/50" />
+
+                            {/* Quick Stats */}
+                            <div>
+                                <h3 className="text-base font-semibold mb-2">Quick Stats</h3>
+                                <div className="space-y-1.5">
+                                    <div className="flex items-center justify-between p-2 rounded-lg bg-sidebar-accent/30">
+                                        <div className="flex items-center gap-2">
+                                            <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                                            <span className="text-sm">Pending Tasks</span>
+                                        </div>
+                                        <span className="text-sm font-semibold">{projectTasks.filter(t => t.status === 'Pending').length}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between p-2 rounded-lg bg-sidebar-accent/30">
+                                        <div className="flex items-center gap-2">
+                                            <FileText className="h-4 w-4 text-muted-foreground" />
+                                            <span className="text-sm">Pending Workflows</span>
+                                        </div>
+                                        <span className="text-sm font-semibold">0</span>
+                                    </div>
+                                    <div className="flex items-center justify-between p-2 rounded-lg bg-sidebar-accent/30">
+                                        <div className="flex items-center gap-2">
+                                            <FileText className="h-4 w-4 text-muted-foreground" />
+                                            <span className="text-sm">Blogs</span>
+                                        </div>
+                                        <span className="text-sm font-semibold">{project.blogs_count ?? 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-sidebar-border/50" />
+
+                            {/* Monthly Report Date */}
+                            <div>
+                                <h3 className="text-base font-semibold mb-2">Monthly Report Date</h3>
+                                <p className="text-sm">{formatMonthlyReportDate(project.monthly_report_date)}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Four Cards Row - Tasks, Content Flows, MOMs, and Interactions */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    {/* Tasks Card */}
-                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                                <CheckSquare className="h-5 w-5 text-muted-foreground" />
-                                <h3 className="text-lg font-semibold">Tasks</h3>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">{projectTasks.length}</span>
-                                <Button size="sm" variant="outline" asChild>
-                                    <Link href={`${tasks.create().url}?project_id=${project.id}`}>
-                                        <Plus className="h-3 w-3" />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="space-y-3">
-                            {projectTasks.length > 0 ? (
-                                projectTasks.map((task) => (
-                                    <div key={task.id} className="border-b border-sidebar-border/50 pb-3 last:border-0">
-                                        <Link href={tasks.show(task.id).url} className="hover:underline">
-                                            <p className="text-sm font-medium">{task.name}</p>
-                                        </Link>
-                                        <div className="flex items-center justify-between mt-1">
-                                            <span className="text-xs text-muted-foreground">{task.assignee_name}</span>
-                                            <Badge
-                                                variant={
-                                                    task.status === 'Pending'
-                                                        ? 'outline'
-                                                        : task.status === 'Completed'
-                                                        ? 'secondary'
-                                                        : 'default'
-                                                }
-                                                className="text-xs"
-                                            >
-                                                {task.status}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-sm text-muted-foreground">No tasks found</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Content Flows Card */}
-                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-muted-foreground" />
-                                <h3 className="text-lg font-semibold">Content Flows</h3>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button size="sm" variant="outline" asChild>
-                                    <Link href={`/content-flows/create?project_id=${project.id}`}>
-                                        <Plus className="h-3 w-3" />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="space-y-3">
-                            <p className="text-sm text-muted-foreground">Click + to create content flow</p>
-                        </div>
-                    </div>
-
+                {/* All Activities - MOMs and Interactions */}
+                <div className="grid gap-4 md:grid-cols-2">
                     {/* Minutes of Meetings Card */}
-                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-5 w-5 text-muted-foreground" />
                                 <h3 className="text-lg font-semibold">Minutes of Meetings</h3>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">{moms.length}</span>
-                                <Button size="sm" variant="outline" asChild>
-                                    <Link href={`${minutesOfMeetings.create().url}?project_id=${project.id}`}>
-                                        <Plus className="h-3 w-3" />
-                                    </Link>
-                                </Button>
-                            </div>
+                            <Button size="sm" variant="outline" asChild>
+                                <Link href={`${minutesOfMeetings.create().url}?project_id=${project.id}`}>
+                                    <Plus className="h-3 w-3" />
+                                </Link>
+                            </Button>
                         </div>
                         <div className="space-y-3">
                             {moms.length > 0 ? (
@@ -507,20 +570,17 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                     </div>
 
                     {/* Call Interactions Card */}
-                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <Phone className="h-5 w-5 text-muted-foreground" />
                                 <h3 className="text-lg font-semibold">Call Interactions</h3>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">{interactions.length}</span>
-                                <Button size="sm" variant="outline" asChild>
-                                    <Link href={`${clientInteractions.create().url}?project_id=${project.id}`}>
-                                        <Plus className="h-3 w-3" />
-                                    </Link>
-                                </Button>
-                            </div>
+                            <Button size="sm" variant="outline" asChild>
+                                <Link href={`${clientInteractions.create().url}?project_id=${project.id}`}>
+                                    <Plus className="h-3 w-3" />
+                                </Link>
+                            </Button>
                         </div>
                         <div className="space-y-3">
                             {interactions.length > 0 ? (

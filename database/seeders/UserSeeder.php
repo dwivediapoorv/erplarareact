@@ -22,8 +22,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Aarti',
                 'last_name' => 'Rathi',
-                'phone' => '+919999999901',
+                'phone' => '+919910281749',
                 'team_id' => '2',
+                'salary' => 21600,
+                'date_of_joining' => '2024-02-05',
             ],
             [
                 'name' => 'Aishwarya',
@@ -33,6 +35,8 @@ class UserSeeder extends Seeder
                 'last_name' => '',
                 'phone' => '+919999999902',
                 'team_id' => '3',
+                'salary' => 15000,
+                'date_of_joining' => '2025-08-20',
             ],
             [
                 'name' => 'Aman Gupta',
@@ -42,6 +46,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Gupta',
                 'phone' => '+919999999903',
                 'team_id' => '3',
+                'salary' => 42000,
+                'date_of_joining' => '2022-07-20',
             ],
             [
                 'name' => 'Anurag Sharma',
@@ -49,8 +55,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Anurag',
                 'last_name' => 'Sharma',
-                'phone' => '+919999999904',
+                'phone' => '+919354517293',
                 'team_id' => '7',
+                'salary' => 59800,
+                'date_of_joining' => '2023-10-17',
             ],
             [
                 'name' => 'Apoorv Dwivedi',
@@ -58,10 +66,12 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Apoorv',
                 'last_name' => 'Dwivedi',
-                'phone' => '+919999999905',
+                'phone' => '+919711574747',
                 'team_id' => '1',
+                'salary' => 60000,
+                'date_of_joining' => '2023-07-19',
             ],
- 
+
             [
                 'name' => 'Bhumika Singh',
                 'email' => 'Bhumika@digirockett.com',
@@ -70,18 +80,22 @@ class UserSeeder extends Seeder
                 'last_name' => 'Singh',
                 'phone' => '+919999999906',
                 'team_id' => '8',
+                'salary' => 30000,
+                'date_of_joining' => '2025-07-21',
             ],
- 
+
             [
                 'name' => 'Garvit Sharma',
                 'email' => 'garvit.sharma@digirockett.com',
                 'password' => 'password',
                 'first_name' => 'Garvit',
                 'last_name' => 'Sharma',
-                'phone' => '+919999999907',
+                'phone' => '+917976079825',
                 'team_id' => '5',
+                'salary' => 35000,
+                'date_of_joining' => '2024-12-02',
             ],
- 
+
             [
                 'name' => 'Gracie Lamnunnem Chongloi',
                 'email' => 'gracie@digirockett.com',
@@ -90,8 +104,10 @@ class UserSeeder extends Seeder
                 'last_name' => 'Lamnunnem Chongloi',
                 'phone' => '+919999999908',
                 'team_id' => '3',
+                'salary' => 38000,
+                'date_of_joining' => '2025-10-21',
             ],
- 
+
             [
                 'name' => 'Harsh Bhargav',
                 'email' => 'harsh.b@digirockett.com',
@@ -100,7 +116,9 @@ class UserSeeder extends Seeder
                 'last_name' => 'Bhargav',
                 'phone' => '+919999999909',
                 'team_id' => '3',
-            ], 
+                'salary' => 32500,
+                'date_of_joining' => '2024-09-16',
+            ],
             [
                 'name' => 'Harsh Raj',
                 'email' => 'Harsh.raj@digirockett.com',
@@ -109,6 +127,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Raj',
                 'phone' => '+919999999910',
                 'team_id' => '3',
+                'salary' => 39000,
+                'date_of_joining' => '2024-07-17',
             ],
             [
                 'name' => 'Harshdeep Singh',
@@ -118,6 +138,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Singh',
                 'phone' => '+919999999911',
                 'team_id' => '6',
+                'salary' => 15000,
+                'date_of_joining' => '2025-10-06',
             ],
             [
                 'name' => 'Harshit Singla',
@@ -125,8 +147,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Harshit',
                 'last_name' => 'Singla',
-                'phone' => '+919999999912',
+                'phone' => '+919991665833',
                 'team_id' => '7',
+                'salary' => 10000,
+                'date_of_joining' => '2025-08-08',
             ],
             [
                 'name' => 'Kajal Singh',
@@ -136,6 +160,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Singh',
                 'phone' => '+919999999914',
                 'team_id' => '5',
+                'salary' => 10000,
+                'date_of_joining' => '2025-07-04',
             ],
             [
                 'name' => 'Kanika Jain',
@@ -145,6 +171,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Jain',
                 'phone' => '+919999999915',
                 'team_id' => '6',
+                'salary' => 15000,
+                'date_of_joining' => '2025-08-25',
             ],
             [
                 'name' => 'Keshav Pundir',
@@ -154,6 +182,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Pundir',
                 'phone' => '+919999999916',
                 'team_id' => '3',
+                'salary' => 30000,
+                'date_of_joining' => '2025-08-08',
             ],
             [
                 'name' => 'Ketou Nakhro',
@@ -163,6 +193,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Nakhro',
                 'phone' => '+919999999917',
                 'team_id' => '3',
+                'salary' => 30000,
+                'date_of_joining' => '2025-10-10',
             ],
             [
                 'name' => 'Lalit Nailwal',
@@ -172,6 +204,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Nailwal',
                 'phone' => '+919999999918',
                 'team_id' => '3',
+                'salary' => 100000,
+                'date_of_joining' => '2025-09-25',
             ],
             [
                 'name' => 'Mahfooz Alam',
@@ -179,8 +213,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Mahfooz',
                 'last_name' => 'Alam',
-                'phone' => '+919999999919',
+                'phone' => '+919650237385',
                 'team_id' => '4',
+                'salary' => 15000,
+                'date_of_joining' => '202-02-12',
             ],
             [
                 'name' => 'Navneet Raj',
@@ -190,6 +226,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Raj',
                 'phone' => '+919999999920',
                 'team_id' => '5',
+                'salary' => 24000,
+                'date_of_joining' => '2024-08-08',
             ],
             [
                 'name' => 'Nikhar Makkar',
@@ -197,8 +235,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Nikhar',
                 'last_name' => 'Makkar',
-                'phone' => '+919999999921',
+                'phone' => '+918837614969',
                 'team_id' => '10',
+                'salary' => 44000,
+                'date_of_joining' => '2022-05-02',
             ],
             [
                 'name' => 'Nitesh Srivastava',
@@ -206,8 +246,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Nitesh',
                 'last_name' => 'Srivastava',
-                'phone' => '+919999999923',
+                'phone' => '+919451743582',
                 'team_id' => '5',
+                'salary' => 26000,
+                'date_of_joining' => '2022-07-25',
             ],
             [
                 'name' => 'Pratyaksh Srivastava ',
@@ -217,6 +259,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Srivastava',
                 'phone' => '+919999999924',
                 'team_id' => '6',
+                'salary' => 27500,
+                'date_of_joining' => '2024-12-15',
             ],
             [
                 'name' => 'Radhika Sharma',
@@ -226,6 +270,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Sharma',
                 'phone' => '+919999999926',
                 'team_id' => '10',
+                'salary' => 25000,
+                'date_of_joining' => '2025-10-22',
             ],
             [
                 'name' => 'Ritesh Saxena',
@@ -235,6 +281,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Saxena',
                 'phone' => '+919999999928',
                 'team_id' => '3',
+                'salary' => 42000,
+                'date_of_joining' => '2025-07-21',
             ],
             [
                 'name' => 'Ritika Singh',
@@ -242,8 +290,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Ritika',
                 'last_name' => 'Singh',
-                'phone' => '+919999999929',
+                'phone' => '+919905484507',
                 'team_id' => '4',
+                'salary' => 30000,
+                'date_of_joining' => '2025-05-19',
             ],
             [
                 'name' => 'Sakshi Kushwaha',
@@ -253,6 +303,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Kushwaha',
                 'phone' => '+919999999931',
                 'team_id' => '6',
+                'salary' => 20000,
+                'date_of_joining' => '2025-05-01',
             ],
             [
                 'name' => 'Sanjeev Kumar',
@@ -260,8 +312,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Sanjeev',
                 'last_name' => 'Kumar',
-                'phone' => '+919999999933',
+                'phone' => '+917004202248',
                 'team_id' => '5',
+                'salary' => 32000,
+                'date_of_joining' => '2022-08-01',
             ],
             [
                 'name' => 'Shashwat Srivastava',
@@ -269,9 +323,11 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Shashwat',
                 'last_name' => 'Srivastava',
-                'phone' => '+919999999934',
+                'phone' => '+918948628976',
                 'team_id' => '7',
-            ],      
+                'salary' => 30000,
+                'date_of_joining' => '2024-07-15',
+            ],
             [
                 'name' => 'Shreya Karkera',
                 'email' => 'Shreya@digirockett.com',
@@ -280,6 +336,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Karkera',
                 'phone' => '+919999999936',
                 'team_id' => '3',
+                'salary' => 39000,
+                'date_of_joining' => '2023-07-03',
             ],
             [
                 'name' => 'Shubhranshu Srivastava',
@@ -287,8 +345,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Shubhranshu',
                 'last_name' => 'Srivastava',
-                'phone' => '+919999999937',
+                'phone' => '+918860301476',
                 'team_id' => '1',
+                'salary' => 200000,
+                'date_of_joining' => '2022-04-01',
             ],
             [
                 'name' => 'Shweta Singh',
@@ -298,6 +358,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Singh',
                 'phone' => '+919999999938',
                 'team_id' => '10',
+                'salary' => 25000,
+                'date_of_joining' => '2025-05-09',
             ],
             [
                 'name' => 'Sidharth Anant',
@@ -305,8 +367,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Sidharth',
                 'last_name' => 'Anant',
-                'phone' => '+919999999939',
+                'phone' => '+917830010567',
                 'team_id' => '10',
+                'salary' => 80000,
+                'date_of_joining' => '2022-07-04',
             ],
             [
                 'name' => 'Sohan Kumar',
@@ -314,8 +378,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Sohan',
                 'last_name' => 'Kumar',
-                'phone' => '+919999999940',
+                'phone' => '+919113782646',
                 'team_id' => '5',
+                'salary' => 26000,
+                'date_of_joining' => '2023-07-25',
             ],
             [
                 'name' => 'Sumit Sisodiya',
@@ -325,6 +391,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Sisodiya',
                 'phone' => '+919999999942',
                 'team_id' => '5',
+                'salary' => 15000,
+                'date_of_joining' => '2025-06-23',
             ],
             [
                 'name' => 'Sunny Kumar',
@@ -332,8 +400,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Sunny',
                 'last_name' => 'Kumar',
-                'phone' => '+919999999943',
+                'phone' => '+918505902240',
                 'team_id' => '1',
+                'salary' => 200000,
+                'date_of_joining' => '2022-04-01',
             ],
             [
                 'name' => 'Suraj Kumar',
@@ -341,8 +411,10 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Suraj',
                 'last_name' => 'Kumar',
-                'phone' => '+919999999944',
+                'phone' => '+918340207969',
                 'team_id' => '3',
+                'salary' => 39000,
+                'date_of_joining' => '2023-07-17',
             ],
             [
                 'name' => 'Suresh Vishnoi',
@@ -352,6 +424,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Vishnoi',
                 'phone' => '+919999999945',
                 'team_id' => '3',
+                'salary' => 30000,
+                'date_of_joining' => '2025-09-16',
             ],
             [
                 'name' => 'Swadha Mishra',
@@ -361,6 +435,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Mishra',
                 'phone' => '+919999999946',
                 'team_id' => '5',
+                'salary' => 25000,
+                'date_of_joining' => '2025-01-06',
             ],
             [
                 'name' => 'Ujjawal Srivastava',
@@ -370,6 +446,8 @@ class UserSeeder extends Seeder
                 'last_name' => 'Srivastava',
                 'phone' => '+919999999947',
                 'team_id' => '5',
+                'salary' => 10000,
+                'date_of_joining' => '2025-07-05',
             ],
             [
                 'name' => 'Upasana Rathore',
@@ -377,9 +455,23 @@ class UserSeeder extends Seeder
                 'password' => 'password',
                 'first_name' => 'Upasana',
                 'last_name' => 'Rathore',
+                'phone' => '+917033249191',
+                'team_id' => '4',
+                'salary' => 40700,
+                'date_of_joining' => '2023-06-12',
+            ],
+            [
+                'name' => 'Aman Mahto',
+                'email' => 'aman.m@digirockett.com',
+                'password' => 'password',
+                'first_name' => 'Aman',
+                'last_name' => 'Mahto',
                 'phone' => '+919999999948',
                 'team_id' => '4',
+                'salary' => 25000,
+                'date_of_joining' => '2023-11-13',
             ],
+            // [
             // [
             //     'name' => 'Harshvardhan Singh',
             //     'email' => 'Harshvardhan@digirockett.com',
@@ -450,7 +542,7 @@ class UserSeeder extends Seeder
             //     'team_id' => '4',
             //     'reporting_manager_id' => '',
             // ],
- 
+
         ];
 
         foreach ($users as $userData) {
@@ -471,6 +563,8 @@ class UserSeeder extends Seeder
                 'last_name' => $userData['last_name'],
                 'phone' => $userData['phone'],
                 'team_id' => $userData['team_id'],
+                'salary' => $userData['salary'],
+                'date_of_joining' => $userData['date_of_joining'],
             ]);
         }
     }

@@ -5,6 +5,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import InputError from '@/components/input-error';
 import {
     Select,
@@ -30,6 +31,17 @@ interface Team {
     name: string;
 }
 
+interface Role {
+    id: number;
+    name: string;
+}
+
+interface Employee {
+    id: number;
+    first_name: string;
+    last_name: string;
+}
+
 interface User {
     id: number;
     email: string;
@@ -38,14 +50,27 @@ interface User {
     last_name: string;
     phone: string;
     team_id: number;
+    date_of_joining?: string;
+    date_of_exit?: string;
+    salary?: string;
+    reporting_manager_id?: number;
+    aadhar_number?: string;
+    pan_number?: string;
+    uan_number?: string;
+    account_holder_name?: string;
+    account_number?: string;
+    ifsc_code?: string;
+    role_ids: number[];
 }
 
 interface EditUserProps {
     user: User;
     teams: Team[];
+    roles: Role[];
+    employees: Employee[];
 }
 
-export default function EditUser({ user, teams }: EditUserProps) {
+export default function EditUser({ user, teams, roles, employees }: EditUserProps) {
     const { data, setData, put, processing, errors } = useForm({
         email: user.email || '',
         first_name: user.first_name || '',
@@ -53,7 +78,25 @@ export default function EditUser({ user, teams }: EditUserProps) {
         phone: user.phone || '',
         team_id: user.team_id?.toString() || '',
         is_active: user.is_active,
+        roles: user.role_ids || [] as number[],
+        date_of_joining: user.date_of_joining || '',
+        date_of_exit: user.date_of_exit || '',
+        salary: user.salary || '',
+        reporting_manager_id: user.reporting_manager_id?.toString() || '',
+        aadhar_number: user.aadhar_number || '',
+        pan_number: user.pan_number || '',
+        uan_number: user.uan_number || '',
+        account_holder_name: user.account_holder_name || '',
+        account_number: user.account_number || '',
+        ifsc_code: user.ifsc_code || '',
     });
+
+    const handleRoleToggle = (roleId: number) => {
+        const updatedRoles = data.roles.includes(roleId)
+            ? data.roles.filter((id) => id !== roleId)
+            : [...data.roles, roleId];
+        setData('roles', updatedRoles);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,23 +148,6 @@ export default function EditUser({ user, teams }: EditUserProps) {
                                 <InputError message={errors.last_name} />
                             </div>
 
-                            {/* Email */}
-                            <div className="space-y-2">
-                                <Label htmlFor="email">
-                                    Email <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) =>
-                                        setData('email', e.target.value)
-                                    }
-                                    required
-                                />
-                                <InputError message={errors.email} />
-                            </div>
-
                             {/* Phone */}
                             <div className="space-y-2">
                                 <Label htmlFor="phone">
@@ -137,6 +163,23 @@ export default function EditUser({ user, teams }: EditUserProps) {
                                     required
                                 />
                                 <InputError message={errors.phone} />
+                            </div>
+
+                            {/* Email */}
+                            <div className="space-y-2">
+                                <Label htmlFor="email">
+                                    Email <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
+                                    required
+                                />
+                                <InputError message={errors.email} />
                             </div>
 
                             {/* Team */}
@@ -168,6 +211,141 @@ export default function EditUser({ user, teams }: EditUserProps) {
                                 <InputError message={errors.team_id} />
                             </div>
 
+                            {/* Date of Joining */}
+                            <div className="space-y-2">
+                                <Label htmlFor="date_of_joining">Date of Joining</Label>
+                                <Input
+                                    id="date_of_joining"
+                                    type="date"
+                                    value={data.date_of_joining}
+                                    onChange={(e) => setData('date_of_joining', e.target.value)}
+                                />
+                                <InputError message={errors.date_of_joining} />
+                            </div>
+
+                            {/* Date of Exit */}
+                            <div className="space-y-2">
+                                <Label htmlFor="date_of_exit">Date of Exit</Label>
+                                <Input
+                                    id="date_of_exit"
+                                    type="date"
+                                    value={data.date_of_exit}
+                                    onChange={(e) => setData('date_of_exit', e.target.value)}
+                                />
+                                <InputError message={errors.date_of_exit} />
+                            </div>
+
+                            {/* Salary */}
+                            <div className="space-y-2">
+                                <Label htmlFor="salary">Salary</Label>
+                                <Input
+                                    id="salary"
+                                    type="number"
+                                    step="0.01"
+                                    value={data.salary}
+                                    onChange={(e) => setData('salary', e.target.value)}
+                                    placeholder="0.00"
+                                />
+                                <InputError message={errors.salary} />
+                            </div>
+
+                            {/* Reporting Manager */}
+                            <div className="space-y-2">
+                                <Label htmlFor="reporting_manager_id">Reporting Manager</Label>
+                                <Select
+                                    value={data.reporting_manager_id}
+                                    onValueChange={(value) => setData('reporting_manager_id', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select reporting manager" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {employees.map((emp) => (
+                                            <SelectItem key={emp.id} value={emp.id.toString()}>
+                                                {emp.first_name} {emp.last_name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.reporting_manager_id} />
+                            </div>
+
+                            {/* Aadhar Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="aadhar_number">Aadhar Card Number</Label>
+                                <Input
+                                    id="aadhar_number"
+                                    type="text"
+                                    value={data.aadhar_number}
+                                    onChange={(e) => setData('aadhar_number', e.target.value)}
+                                    placeholder="XXXX-XXXX-XXXX"
+                                />
+                                <InputError message={errors.aadhar_number} />
+                            </div>
+
+                            {/* PAN Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="pan_number">PAN Card Number</Label>
+                                <Input
+                                    id="pan_number"
+                                    type="text"
+                                    value={data.pan_number}
+                                    onChange={(e) => setData('pan_number', e.target.value)}
+                                    placeholder="ABCDE1234F"
+                                />
+                                <InputError message={errors.pan_number} />
+                            </div>
+
+                            {/* UAN Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="uan_number">UAN Number</Label>
+                                <Input
+                                    id="uan_number"
+                                    type="text"
+                                    value={data.uan_number}
+                                    onChange={(e) => setData('uan_number', e.target.value)}
+                                    placeholder="XXXXXXXXXXXX"
+                                />
+                                <InputError message={errors.uan_number} />
+                            </div>
+
+                            {/* Account Holder Name */}
+                            <div className="space-y-2">
+                                <Label htmlFor="account_holder_name">Account Holder Name</Label>
+                                <Input
+                                    id="account_holder_name"
+                                    type="text"
+                                    value={data.account_holder_name}
+                                    onChange={(e) => setData('account_holder_name', e.target.value)}
+                                />
+                                <InputError message={errors.account_holder_name} />
+                            </div>
+
+                            {/* Account Number */}
+                            <div className="space-y-2">
+                                <Label htmlFor="account_number">Bank Account Number</Label>
+                                <Input
+                                    id="account_number"
+                                    type="text"
+                                    value={data.account_number}
+                                    onChange={(e) => setData('account_number', e.target.value)}
+                                />
+                                <InputError message={errors.account_number} />
+                            </div>
+
+                            {/* IFSC Code */}
+                            <div className="space-y-2">
+                                <Label htmlFor="ifsc_code">IFSC Code</Label>
+                                <Input
+                                    id="ifsc_code"
+                                    type="text"
+                                    value={data.ifsc_code}
+                                    onChange={(e) => setData('ifsc_code', e.target.value)}
+                                    placeholder="ABCD0123456"
+                                />
+                                <InputError message={errors.ifsc_code} />
+                            </div>
+
                             {/* Status */}
                             <div className="space-y-2">
                                 <Label htmlFor="is_active">
@@ -190,6 +368,37 @@ export default function EditUser({ user, teams }: EditUserProps) {
                                 </Select>
                                 <InputError message={errors.is_active} />
                             </div>
+                        </div>
+
+                        {/* Roles Section */}
+                        <div className="space-y-3 rounded-lg border p-4">
+                            <h3 className="font-semibold">Assign Roles</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Select one or more roles for this user
+                            </p>
+                            <div className="grid gap-3 md:grid-cols-2">
+                                {roles.map((role) => (
+                                    <div
+                                        key={role.id}
+                                        className="flex items-center space-x-2"
+                                    >
+                                        <Checkbox
+                                            id={`role-${role.id}`}
+                                            checked={data.roles.includes(role.id)}
+                                            onCheckedChange={() =>
+                                                handleRoleToggle(role.id)
+                                            }
+                                        />
+                                        <Label
+                                            htmlFor={`role-${role.id}`}
+                                            className="cursor-pointer text-sm font-normal"
+                                        >
+                                            {role.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                            <InputError message={errors.roles} />
                         </div>
 
                         <div className="flex items-center justify-end gap-4">

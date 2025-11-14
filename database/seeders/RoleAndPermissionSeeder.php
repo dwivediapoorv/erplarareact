@@ -74,6 +74,17 @@ class RoleAndPermissionSeeder extends Seeder
                 'edit client-interactions',
                 'delete client-interactions',
             ],
+            'Holiday' => [
+                'view holidays',
+                'create holidays',
+                'edit holidays',
+                'delete holidays',
+            ],
+            'Salary Slip' => [
+                'view salary-slips',
+                'generate salary-slips',
+                'delete salary-slips',
+            ],
             'Permission' => [
                 'manage permissions',
                 'assign roles',
@@ -97,7 +108,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         // Assign specific permissions to Manager
         $managerPermissions = [
-            'view users', 'view teams',
+            'view teams',
             'view projects', 'create projects', 'edit projects',
             'view tasks', 'create tasks', 'edit tasks', 'complete tasks', 'approve tasks',
             'view services',
