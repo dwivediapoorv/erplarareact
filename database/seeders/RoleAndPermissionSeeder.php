@@ -85,6 +85,11 @@ class RoleAndPermissionSeeder extends Seeder
                 'generate salary-slips',
                 'delete salary-slips',
             ],
+            'Leave Request' => [
+                'view leave-requests',
+                'approve leave-requests',
+                'reject leave-requests',
+            ],
             'Permission' => [
                 'manage permissions',
                 'assign roles',

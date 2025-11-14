@@ -25,13 +25,23 @@ interface Holiday {
     is_recurring: boolean;
 }
 
+interface LeaveRequest {
+    id: number;
+    start_date: string;
+    end_date: string;
+    leave_type: string;
+    status: 'pending' | 'approved';
+    total_days: number;
+}
+
 interface CalendarIndexProps {
     holidays: Holiday[];
+    leaveRequests: LeaveRequest[];
     currentYear: number;
     currentMonth: number;
 }
 
-export default function CalendarIndex({ holidays, currentYear, currentMonth }: CalendarIndexProps) {
+export default function CalendarIndex({ holidays, leaveRequests, currentYear, currentMonth }: CalendarIndexProps) {
     const { auth } = usePage().props as any;
     const canCreateHolidays = auth.permissions?.includes('create holidays');
     const [year, setYear] = useState(currentYear);
@@ -61,6 +71,17 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
         return holidays.filter(h => h.date === dateString);
     };
 
+    const getLeaveRequestsForDate = (date: Date): LeaveRequest[] => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+
+        return leaveRequests.filter(leave => {
+            return dateString >= leave.start_date && dateString <= leave.end_date;
+        });
+    };
+
     // Calendar data
     const calendarData = useMemo(() => {
         const firstDay = new Date(year, month - 1, 1);
@@ -79,6 +100,7 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month - 1, day);
             const dayHolidays = getHolidaysForDate(date);
+            const dayLeaves = getLeaveRequestsForDate(date);
             const isSat2nd4th = isSecondOrFourthSaturday(date);
             const isSun = isSunday(date);
 
@@ -86,6 +108,7 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
                 date: day,
                 dateObj: date,
                 holidays: dayHolidays,
+                leaves: dayLeaves,
                 isSecondOrFourthSaturday: isSat2nd4th,
                 isSunday: isSun,
                 isNonWorking: isSat2nd4th || isSun || dayHolidays.length > 0,
@@ -93,7 +116,7 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
         }
 
         return days;
-    }, [year, month, holidays]);
+    }, [year, month, holidays, leaveRequests]);
 
     const handlePrevMonth = () => {
         if (month === 1) {
@@ -215,8 +238,9 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
                                                     <div className={`text-sm font-semibold ${day.isNonWorking ? 'text-red-600 dark:text-red-400' : ''}`}>
                                                         {day.date}
                                                     </div>
-                                                    <div className="flex-1 mt-1 overflow-y-auto">
-                                                        {day.holidays.length > 0 ? (
+                                                    <div className="flex-1 mt-1 overflow-y-auto space-y-1">
+                                                        {/* Holidays */}
+                                                        {day.holidays.length > 0 && (
                                                             <div className="space-y-1">
                                                                 {day.holidays.map((holiday) => (
                                                                     <div key={holiday.id} className="text-xs font-medium text-red-600 dark:text-red-400 line-clamp-2">
@@ -224,7 +248,28 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
                                                                     </div>
                                                                 ))}
                                                             </div>
-                                                        ) : (
+                                                        )}
+
+                                                        {/* Leave Requests */}
+                                                        {day.leaves && day.leaves.length > 0 && (
+                                                            <div className="space-y-1">
+                                                                {day.leaves.map((leave) => (
+                                                                    <div
+                                                                        key={leave.id}
+                                                                        className={`text-xs px-1 py-0.5 rounded ${
+                                                                            leave.status === 'approved'
+                                                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                                                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                                                        }`}
+                                                                    >
+                                                                        {leave.status === 'approved' ? 'On Leave' : 'Pending'}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Weekend labels (only if no holidays or leaves) */}
+                                                        {day.holidays.length === 0 && (!day.leaves || day.leaves.length === 0) && (
                                                             <>
                                                                 {day.isSunday && (
                                                                     <div className="text-xs text-muted-foreground">
@@ -261,6 +306,14 @@ export default function CalendarIndex({ holidays, currentYear, currentMonth }: C
                                 <div className="flex items-center gap-2">
                                     <div className="w-4 h-4 rounded bg-blue-50 dark:bg-blue-950 border border-blue-500"></div>
                                     <span>Today</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 rounded bg-purple-100 dark:bg-purple-900 border border-purple-300 dark:border-purple-700"></div>
+                                    <span>Approved Leave</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 rounded bg-yellow-100 dark:bg-yellow-900 border border-yellow-300 dark:border-yellow-700"></div>
+                                    <span>Pending Leave</span>
                                 </div>
                             </div>
                             <div className="mt-4 pt-4 border-t border-sidebar-border/50">

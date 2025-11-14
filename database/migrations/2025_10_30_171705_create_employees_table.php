@@ -23,12 +23,18 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('phone')->nullable();
+            $table->string('ein')->unique()->nullable(); // Employee Identification Number
+            $table->string('designation')->nullable();
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
 
             // Employment Details
             $table->date('date_of_joining')->nullable();
             $table->date('date_of_exit')->nullable();
             $table->decimal('salary', 10, 2)->nullable();
             $table->unsignedBigInteger('reporting_manager_id')->nullable();
+
+            // Leave Balance (2 leaves per month accumulated)
+            $table->decimal('leave_balance', 5, 2)->default(0);
 
             // Identity Documents
             $table->string('aadhar_number')->nullable();

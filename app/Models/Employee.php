@@ -14,10 +14,14 @@ class Employee extends Model
         'first_name',
         'last_name',
         'phone',
+        'ein',
+        'designation',
+        'gender',
         'date_of_joining',
         'date_of_exit',
         'salary',
         'reporting_manager_id',
+        'leave_balance',
         'aadhar_number',
         'pan_number',
         'uan_number',
@@ -30,6 +34,7 @@ class Employee extends Model
         'date_of_joining' => 'date',
         'date_of_exit' => 'date',
         'salary' => 'decimal:2',
+        'leave_balance' => 'decimal:2',
     ];
 
     /**
@@ -73,6 +78,14 @@ class Employee extends Model
     }
 
     /**
+     * Get the leave requests for this employee.
+     */
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    /**
      * Calculate salary breakdown based on total salary
      *
      * Formula:
@@ -100,5 +113,56 @@ class Employee extends Model
             'total_allowances' => round($totalAllowances, 2),
             'gross_salary' => round($basicSalary + $totalAllowances, 2),
         ];
+    }
+
+    /**
+     * Calculate accumulated leave balance
+     * Employees earn 2 leaves per month from their joining date
+     *
+     * @return float
+     */
+    public function calculateAccumulatedLeaveBalance(): float
+    {
+        if (!$this->date_of_joining) {
+            return 0;
+        }
+
+        $joiningDate = $this->date_of_joining;
+        $today = now();
+
+        // Calculate months of service
+        $monthsOfService = $joiningDate->diffInMonths($today);
+
+        // 2 leaves per month
+        $accumulated = $monthsOfService * 2;
+
+        // Subtract used leaves (approved leaves that are not unpaid)
+        $usedLeaves = $this->leaveRequests()
+            ->where('status', 'approved')
+            ->where('leave_type', '!=', 'unpaid')
+            ->sum('total_days');
+
+        return max(0, $accumulated - $usedLeaves);
+    }
+
+    /**
+     * Get available leave balance
+     *
+     * @return float
+     */
+    public function getAvailableLeaveBalance(): float
+    {
+        return (float) $this->leave_balance;
+    }
+
+    /**
+     * Update leave balance to current accumulated amount
+     *
+     * @return void
+     */
+    public function updateLeaveBalance(): void
+    {
+        $this->leave_balance = $this->calculateAccumulatedLeaveBalance();
+        $this->save();
     }
 }

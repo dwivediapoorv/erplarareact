@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\LeaveRequest;
 use App\Models\SalarySlip;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,18 +30,40 @@ class SalarySlipController extends Controller
         $cycleEndDate = $defaultProcessingDate->copy()->subMonth()->day(25);
         $cycleStartDate = $cycleEndDate->copy()->subMonth()->addDay();
 
-        $query = SalarySlip::with('employee.user')
-            ->orderBy('payment_date', 'desc');
+        // Get all salary slips grouped by month
+        $salarySlips = SalarySlip::with('employee.user')
+            ->orderBy('payment_date', 'desc')
+            ->get();
 
-        // Filter by month if provided
-        if ($request->filled('month')) {
-            $query->where('month', $request->month);
-        }
+        // Group by month
+        $groupedByMonth = $salarySlips->groupBy('month')->map(function ($slips, $month) {
+            // Sort slips alphabetically by employee name
+            $sortedSlips = $slips->sortBy(function ($slip) {
+                return strtolower($slip->employee->first_name . ' ' . $slip->employee->last_name);
+            });
 
-        $salarySlips = $query->paginate(20);
+            return [
+                'month' => $month,
+                'payment_date' => $slips->first()->payment_date->format('Y-m-d'),
+                'count' => $slips->count(),
+                'slips' => $sortedSlips->map(function ($slip) {
+                    return [
+                        'id' => $slip->id,
+                        'employee' => [
+                            'id' => $slip->employee->id,
+                            'first_name' => $slip->employee->first_name,
+                            'last_name' => $slip->employee->last_name,
+                        ],
+                        'month' => $slip->month,
+                        'payment_date' => $slip->payment_date->format('Y-m-d'),
+                        'net_salary' => $slip->net_salary,
+                    ];
+                })->values(),
+            ];
+        })->values();
 
         return Inertia::render('admin/salary-slips/index', [
-            'salarySlips' => $salarySlips,
+            'groupedSalarySlips' => $groupedByMonth,
             'defaultValues' => [
                 'processing_date' => $defaultProcessingDate->format('Y-m-d'),
                 'month' => $defaultProcessingDate->copy()->subMonth()->format('F Y'),
@@ -59,11 +82,24 @@ class SalarySlipController extends Controller
             'month' => 'required|string',
             'payment_date' => 'required|date',
             'deduction_percentage' => 'nullable|numeric|min:0|max:100',
+            'cycle_start' => 'required|date',
+            'cycle_end' => 'required|date',
         ]);
 
-        $employees = Employee::with('user')->whereNotNull('salary')->get();
+        // Get only active employees (no exit date or exit date is in the future)
+        $employees = Employee::with('user')
+            ->whereNotNull('salary')
+            ->where(function ($query) use ($validated) {
+                $query->whereNull('date_of_exit')
+                    ->orWhere('date_of_exit', '>', $validated['cycle_end']);
+            })
+            ->get();
+
         $generatedCount = 0;
         $errors = [];
+
+        $cycleStartDate = Carbon::parse($validated['cycle_start']);
+        $cycleEndDate = Carbon::parse($validated['cycle_end']);
 
         foreach ($employees as $employee) {
             try {
@@ -80,10 +116,58 @@ class SalarySlipController extends Controller
                 // Calculate salary breakdown
                 $breakdown = $employee->calculateSalaryBreakdown();
 
-                // Calculate deductions (if any)
+                // Get approved unpaid leave days for this salary cycle
+                $unpaidLeaveDays = LeaveRequest::where('employee_id', $employee->id)
+                    ->where('status', 'approved')
+                    ->where('leave_type', 'unpaid')
+                    ->where(function ($query) use ($cycleStartDate, $cycleEndDate) {
+                        // Leave period overlaps with salary cycle
+                        $query->whereBetween('start_date', [$cycleStartDate, $cycleEndDate])
+                            ->orWhereBetween('end_date', [$cycleStartDate, $cycleEndDate])
+                            ->orWhere(function ($q) use ($cycleStartDate, $cycleEndDate) {
+                                $q->where('start_date', '<=', $cycleStartDate)
+                                  ->where('end_date', '>=', $cycleEndDate);
+                            });
+                    })
+                    ->get()
+                    ->sum('total_days');
+
+                // Calculate working days in the salary cycle (Mon-Sat, excluding Sundays)
+                $totalWorkingDays = 0;
+                $currentDate = $cycleStartDate->copy();
+
+                while ($currentDate->lte($cycleEndDate)) {
+                    if (!$currentDate->isSunday()) {
+                        $totalWorkingDays++;
+                    }
+                    $currentDate->addDay();
+                }
+
+                // Calculate per-day salary
+                $perDaySalary = $totalWorkingDays > 0 ? $breakdown['gross_salary'] / $totalWorkingDays : 0;
+
+                // Calculate leave deduction
+                $leaveDeduction = $unpaidLeaveDays * $perDaySalary;
+
+                // Calculate other deductions (percentage-based)
                 $deductionPercentage = $validated['deduction_percentage'] ?? 0;
-                $deductions = ($breakdown['gross_salary'] * $deductionPercentage) / 100;
-                $netSalary = $breakdown['gross_salary'] - $deductions;
+                $percentageDeductions = ($breakdown['gross_salary'] * $deductionPercentage) / 100;
+
+                // Total deductions
+                $totalDeductions = $leaveDeduction + $percentageDeductions;
+
+                // Net salary
+                $netSalary = $breakdown['gross_salary'] - $totalDeductions;
+
+                // Build notes
+                $notes = [];
+                if ($deductionPercentage > 0) {
+                    $notes[] = "Other deductions: {$deductionPercentage}% of gross salary (₹" . number_format($percentageDeductions, 2) . ")";
+                }
+                if ($unpaidLeaveDays > 0) {
+                    $notes[] = "Unpaid leave: {$unpaidLeaveDays} days deducted (₹" . number_format($leaveDeduction, 2) . ")";
+                    $notes[] = "Per day salary: ₹" . number_format($perDaySalary, 2) . " (based on {$totalWorkingDays} working days)";
+                }
 
                 // Create salary slip
                 SalarySlip::create([
@@ -94,10 +178,10 @@ class SalarySlipController extends Controller
                     'hra' => $breakdown['hra'],
                     'special_allowance' => $breakdown['special_allowance'],
                     'conveyance_allowance' => $breakdown['conveyance_allowance'],
-                    'deductions' => $deductions,
+                    'deductions' => $totalDeductions,
                     'gross_salary' => $breakdown['gross_salary'],
                     'net_salary' => $netSalary,
-                    'notes' => $deductionPercentage > 0 ? "Deductions: {$deductionPercentage}% of gross salary" : null,
+                    'notes' => !empty($notes) ? implode("\n", $notes) : null,
                 ]);
 
                 $generatedCount++;

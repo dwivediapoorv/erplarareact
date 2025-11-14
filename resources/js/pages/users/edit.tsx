@@ -49,6 +49,9 @@ interface User {
     first_name: string;
     last_name: string;
     phone: string;
+    ein?: string;
+    designation?: string;
+    gender?: string;
     team_id: number;
     date_of_joining?: string;
     date_of_exit?: string;
@@ -76,6 +79,9 @@ export default function EditUser({ user, teams, roles, employees }: EditUserProp
         first_name: user.first_name || '',
         last_name: user.last_name || '',
         phone: user.phone || '',
+        ein: user.ein || '',
+        designation: user.designation || '',
+        gender: user.gender || '',
         team_id: user.team_id?.toString() || '',
         is_active: user.is_active,
         roles: user.role_ids || [] as number[],
@@ -163,6 +169,57 @@ export default function EditUser({ user, teams, roles, employees }: EditUserProp
                                     required
                                 />
                                 <InputError message={errors.phone} />
+                            </div>
+
+                            {/* Employee ID (EIN) */}
+                            <div className="space-y-2">
+                                <Label htmlFor="ein">Employee ID (EIN)</Label>
+                                <Input
+                                    id="ein"
+                                    type="text"
+                                    value={data.ein}
+                                    onChange={(e) =>
+                                        setData('ein', e.target.value)
+                                    }
+                                    placeholder="e.g., EMP001"
+                                />
+                                <InputError message={errors.ein} />
+                            </div>
+
+                            {/* Designation */}
+                            <div className="space-y-2">
+                                <Label htmlFor="designation">Designation</Label>
+                                <Input
+                                    id="designation"
+                                    type="text"
+                                    value={data.designation}
+                                    onChange={(e) =>
+                                        setData('designation', e.target.value)
+                                    }
+                                    placeholder="e.g., Software Engineer"
+                                />
+                                <InputError message={errors.designation} />
+                            </div>
+
+                            {/* Gender */}
+                            <div className="space-y-2">
+                                <Label htmlFor="gender">Gender</Label>
+                                <Select
+                                    value={data.gender}
+                                    onValueChange={(value) =>
+                                        setData('gender', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select gender" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="male">Male</SelectItem>
+                                        <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.gender} />
                             </div>
 
                             {/* Email */}

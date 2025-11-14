@@ -3,9 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { Calendar, Download, FileText, IndianRupee, Trash2, AlertCircle } from 'lucide-react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Calendar, FileText, Trash2, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -29,29 +37,15 @@ interface SalarySlip {
     id: number;
     month: string;
     payment_date: string;
-    basic_salary: string;
-    hra: string;
-    special_allowance: string;
-    conveyance_allowance: string;
-    deductions: string;
-    gross_salary: string;
     net_salary: string;
     employee: Employee;
 }
 
-interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
-
-interface PaginatedSalarySlips {
-    data: SalarySlip[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    links: PaginationLink[];
+interface MonthGroup {
+    month: string;
+    payment_date: string;
+    count: number;
+    slips: SalarySlip[];
 }
 
 interface DefaultValues {
@@ -62,43 +56,59 @@ interface DefaultValues {
 }
 
 interface AdminSalarySlipsIndexProps {
-    salarySlips: PaginatedSalarySlips;
+    groupedSalarySlips: MonthGroup[];
     defaultValues: DefaultValues;
 }
 
-export default function AdminSalarySlipsIndex({ salarySlips, defaultValues }: AdminSalarySlipsIndexProps) {
+export default function AdminSalarySlipsIndex({ groupedSalarySlips, defaultValues }: AdminSalarySlipsIndexProps) {
     const { auth } = usePage().props as any;
     const canGenerate = auth.permissions?.includes('generate salary-slips');
     const canDelete = auth.permissions?.includes('delete salary-slips');
+
+    const [expandedMonths, setExpandedMonths] = useState<string[]>([]);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         month: defaultValues.month,
         payment_date: defaultValues.processing_date,
         deduction_percentage: '0',
+        cycle_start: defaultValues.cycle_start,
+        cycle_end: defaultValues.cycle_end,
     });
 
     const handleGenerate = (e: React.FormEvent) => {
         e.preventDefault();
-        if (confirm(`Are you sure you want to generate salary slips for ${data.month}? This will create slips for all employees.`)) {
-            post('/admin/salary-slips/generate', {
-                onSuccess: () => {
-                    // Reset form to next month's defaults
-                    const nextMonth = new Date(data.payment_date);
-                    nextMonth.setMonth(nextMonth.getMonth() + 1);
-                    setData({
-                        month: nextMonth.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
-                        payment_date: nextMonth.toISOString().split('T')[0],
-                        deduction_percentage: '0',
-                    });
-                },
-            });
-        }
+        setShowConfirmDialog(true);
+    };
+
+    const confirmGenerate = () => {
+        setShowConfirmDialog(false);
+        post('/admin/salary-slips/generate', {
+            onSuccess: () => {
+                // Reset form to next month's defaults
+                const nextMonth = new Date(data.payment_date);
+                nextMonth.setMonth(nextMonth.getMonth() + 1);
+                setData({
+                    month: nextMonth.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
+                    payment_date: nextMonth.toISOString().split('T')[0],
+                    deduction_percentage: '0',
+                });
+            },
+        });
     };
 
     const handleDelete = (salarySlip: SalarySlip) => {
         if (confirm(`Delete salary slip for ${salarySlip.employee.first_name} ${salarySlip.employee.last_name} (${salarySlip.month})?`)) {
             router.delete(`/admin/salary-slips/${salarySlip.id}`);
         }
+    };
+
+    const toggleMonth = (month: string) => {
+        setExpandedMonths(prev =>
+            prev.includes(month)
+                ? prev.filter(m => m !== month)
+                : [...prev, month]
+        );
     };
 
     const formatCurrency = (amount: string) => {
@@ -189,10 +199,10 @@ export default function AdminSalarySlipsIndex({ salarySlips, defaultValues }: Ad
 
                 <div className="rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <div className="p-4 border-b border-sidebar-border/70 dark:border-sidebar-border">
-                        <h2 className="text-lg font-semibold">Generated Salary Slips ({salarySlips.total})</h2>
+                        <h2 className="text-lg font-semibold">Generated Salary Slips</h2>
                     </div>
 
-                    {salarySlips.data.length === 0 ? (
+                    {groupedSalarySlips.length === 0 ? (
                         <div className="flex flex-col items-center justify-center p-12">
                             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
                             <h3 className="text-lg font-semibold mb-2">No Salary Slips Generated</h3>
@@ -202,86 +212,110 @@ export default function AdminSalarySlipsIndex({ salarySlips, defaultValues }: Ad
                         </div>
                     ) : (
                         <div className="divide-y divide-sidebar-border/50">
-                            {salarySlips.data.map((slip) => (
-                                <div key={slip.id} className="p-4 hover:bg-muted/50 transition-colors">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <h3 className="font-semibold">
-                                                    {slip.employee.first_name} {slip.employee.last_name}
-                                                </h3>
-                                                <span className="text-sm text-muted-foreground">•</span>
-                                                <span className="text-sm font-medium">{slip.month}</span>
-                                                <span className="text-sm text-muted-foreground">
-                                                    <Calendar className="h-3 w-3 inline mr-1" />
-                                                    Paid on {formatDate(slip.payment_date)}
-                                                </span>
-                                            </div>
-
-                                            <div className="grid gap-2 md:grid-cols-5 text-sm">
+                            {groupedSalarySlips.map((monthGroup) => (
+                                <div key={monthGroup.month}>
+                                    {/* Month Header - Clickable */}
+                                    <div
+                                        className="p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                                        onClick={() => toggleMonth(monthGroup.month)}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                {expandedMonths.includes(monthGroup.month) ? (
+                                                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                                ) : (
+                                                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                                )}
+                                                <Calendar className="h-5 w-5 text-muted-foreground" />
                                                 <div>
-                                                    <span className="text-muted-foreground">Basic:</span>
-                                                    <span className="ml-1 font-medium">{formatCurrency(slip.basic_salary)}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-muted-foreground">HRA:</span>
-                                                    <span className="ml-1 font-medium text-green-600">{formatCurrency(slip.hra)}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-muted-foreground">Allowances:</span>
-                                                    <span className="ml-1 font-medium text-green-600">
-                                                        {formatCurrency((parseFloat(slip.special_allowance) + parseFloat(slip.conveyance_allowance)).toString())}
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-muted-foreground">Deductions:</span>
-                                                    <span className="ml-1 font-medium text-red-600">-{formatCurrency(slip.deductions)}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-muted-foreground">Net Salary:</span>
-                                                    <span className="ml-1 font-semibold text-blue-600">{formatCurrency(slip.net_salary)}</span>
+                                                    <h3 className="font-semibold text-lg">{monthGroup.month}</h3>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Payment Date: {formatDate(monthGroup.payment_date)} • {monthGroup.count} {monthGroup.count === 1 ? 'slip' : 'slips'}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {canDelete && (
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleDelete(slip)}
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        )}
                                     </div>
+
+                                    {/* Expanded Slips */}
+                                    {expandedMonths.includes(monthGroup.month) && (
+                                        <div className="bg-muted/20 divide-y divide-sidebar-border/30">
+                                            {monthGroup.slips.map((slip) => (
+                                                <div key={slip.id} className="px-4 py-3 hover:bg-muted/30 transition-colors">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-4 flex-1">
+                                                            <div className="flex-1">
+                                                                <h4 className="font-medium">
+                                                                    {slip.employee.first_name} {slip.employee.last_name}
+                                                                </h4>
+                                                            </div>
+                                                            <div className="text-sm">
+                                                                <span className="text-muted-foreground">Net Salary:</span>
+                                                                <span className="ml-2 font-semibold text-blue-600">
+                                                                    {formatCurrency(slip.net_salary)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {canDelete && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleDelete(slip)}
+                                                                className="text-red-600 hover:text-red-700 hover:bg-red-50 ml-4"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     )}
-
-                    {salarySlips.last_page > 1 && (
-                        <div className="p-4 border-t border-sidebar-border/70 dark:border-sidebar-border">
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm text-muted-foreground">
-                                    Showing {salarySlips.data.length} of {salarySlips.total} salary slips
-                                </p>
-                                <div className="flex gap-2">
-                                    {salarySlips.links.map((link, index) => (
-                                        <Button
-                                            key={index}
-                                            variant={link.active ? 'default' : 'outline'}
-                                            size="sm"
-                                            disabled={!link.url}
-                                            onClick={() => link.url && router.get(link.url)}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
+
+                {/* Confirmation Dialog */}
+                <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Generate Salary Slips</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to generate salary slips for <strong>{data.month}</strong>?
+                                <br /><br />
+                                This will create salary slips for all employees with a configured salary.
+                                {data.deduction_percentage !== '0' && (
+                                    <>
+                                        <br /><br />
+                                        <span className="text-amber-600 font-medium">
+                                            A deduction of {data.deduction_percentage}% will be applied to all salary slips.
+                                        </span>
+                                    </>
+                                )}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowConfirmDialog(false)}
+                                disabled={processing}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={confirmGenerate}
+                                disabled={processing}
+                            >
+                                {processing ? 'Generating...' : 'Generate Salary Slips'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );

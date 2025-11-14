@@ -20,6 +20,9 @@ interface Employee {
     first_name: string;
     last_name: string;
     phone: string | null;
+    ein: string | null;
+    designation: string | null;
+    gender: 'male' | 'female' | 'other' | null;
     date_of_joining: string | null;
     date_of_exit: string | null;
     salary: string | null;
@@ -109,6 +112,12 @@ export default function MyDetails({ employee }: MyDetailsProps) {
                                 </label>
                                 <p className="mt-1 text-sm font-medium">{employee.phone || 'N/A'}</p>
                             </div>
+                            <div>
+                                <label className="text-sm font-medium text-muted-foreground uppercase">
+                                    Gender
+                                </label>
+                                <p className="mt-1 text-sm font-medium capitalize">{employee.gender || 'N/A'}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -119,6 +128,18 @@ export default function MyDetails({ employee }: MyDetailsProps) {
                             <h2 className="text-lg font-semibold">Work Information</h2>
                         </div>
                         <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <label className="text-sm font-medium text-muted-foreground uppercase">
+                                    Employee ID (EIN)
+                                </label>
+                                <p className="mt-1 text-sm font-medium font-mono">{employee.ein || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-muted-foreground uppercase">
+                                    Designation
+                                </label>
+                                <p className="mt-1 text-sm font-medium">{employee.designation || 'N/A'}</p>
+                            </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground uppercase flex items-center gap-1">
                                     <Users className="h-3 w-3" />

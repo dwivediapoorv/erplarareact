@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\LeaveRequestController as AdminLeaveRequestController;
 use App\Http\Controllers\Admin\SalarySlipController as AdminSalarySlipController;
 use App\Http\Controllers\ContentFlowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\InteractionController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\MOMController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PayrollController;
@@ -125,6 +127,13 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('employee/salary-slips/{salarySlip}/view', [SalarySlipController::class, 'view'])->name('employee.salary-slips.view');
     Route::get('employee/salary-slips/{salarySlip}/download', [SalarySlipController::class, 'download'])->name('employee.salary-slips.download');
 
+    // Leave Request routes (self-service)
+    Route::get('leave-requests', [LeaveController::class, 'index'])->name('leave-requests.index');
+    Route::get('leave-requests/create', [LeaveController::class, 'create'])->name('leave-requests.create');
+    Route::post('leave-requests', [LeaveController::class, 'store'])->name('leave-requests.store');
+    Route::post('leave-requests/calculate-days', [LeaveController::class, 'calculateDays'])->name('leave-requests.calculate-days');
+    Route::delete('leave-requests/{leaveRequest}', [LeaveController::class, 'destroy'])->name('leave-requests.destroy');
+
     // Organization Calendar / Holiday routes
     Route::get('calendar', [HolidayController::class, 'index'])->name('calendar.index');
     Route::get('calendar/create', [HolidayController::class, 'create'])->middleware('permission:create holidays')->name('calendar.create');
@@ -135,6 +144,11 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('admin/salary-slips', [AdminSalarySlipController::class, 'index'])->middleware('permission:view salary-slips')->name('admin.salary-slips.index');
     Route::post('admin/salary-slips/generate', [AdminSalarySlipController::class, 'generate'])->middleware('permission:generate salary-slips')->name('admin.salary-slips.generate');
     Route::delete('admin/salary-slips/{salarySlip}', [AdminSalarySlipController::class, 'destroy'])->middleware('permission:delete salary-slips')->name('admin.salary-slips.destroy');
+
+    // Admin Leave Request Management routes
+    Route::get('admin/leave-requests', [AdminLeaveRequestController::class, 'index'])->middleware('permission:view leave-requests')->name('admin.leave-requests.index');
+    Route::post('admin/leave-requests/{leaveRequest}/approve', [AdminLeaveRequestController::class, 'approve'])->middleware('permission:approve leave-requests')->name('admin.leave-requests.approve');
+    Route::post('admin/leave-requests/{leaveRequest}/reject', [AdminLeaveRequestController::class, 'reject'])->middleware('permission:reject leave-requests')->name('admin.leave-requests.reject');
 });
 
 require __DIR__.'/settings.php';

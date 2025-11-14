@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Holiday;
+use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -31,8 +33,33 @@ class HolidayController extends Controller
                 ];
             });
 
+        // Get user's leave requests for the year
+        $user = $request->user();
+        $employee = Employee::where('user_id', $user->id)->first();
+
+        $leaveRequests = [];
+        if ($employee) {
+            $leaveRequests = LeaveRequest::where('employee_id', $employee->id)
+                ->whereYear('start_date', '<=', $year)
+                ->whereYear('end_date', '>=', $year)
+                ->where('status', '!=', 'rejected')
+                ->orderBy('start_date')
+                ->get()
+                ->map(function ($leave) {
+                    return [
+                        'id' => $leave->id,
+                        'start_date' => $leave->start_date->format('Y-m-d'),
+                        'end_date' => $leave->end_date->format('Y-m-d'),
+                        'leave_type' => $leave->leave_type,
+                        'status' => $leave->status,
+                        'total_days' => $leave->total_days,
+                    ];
+                });
+        }
+
         return Inertia::render('calendar/index', [
             'holidays' => $holidays,
+            'leaveRequests' => $leaveRequests,
             'currentYear' => (int) $year,
             'currentMonth' => (int) $month,
         ]);

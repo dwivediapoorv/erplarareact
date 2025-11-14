@@ -54,6 +54,9 @@ export default function CreateUser({ teams, roles, employees }: CreateUserProps)
         first_name: '',
         last_name: '',
         phone: '',
+        ein: '',
+        designation: '',
+        gender: '',
         team_id: '',
         roles: [] as number[],
         date_of_joining: '',
@@ -140,6 +143,57 @@ export default function CreateUser({ teams, roles, employees }: CreateUserProps)
                                     required
                                 />
                                 <InputError message={errors.phone} />
+                            </div>
+
+                            {/* Employee ID (EIN) */}
+                            <div className="space-y-2">
+                                <Label htmlFor="ein">Employee ID (EIN)</Label>
+                                <Input
+                                    id="ein"
+                                    type="text"
+                                    value={data.ein}
+                                    onChange={(e) =>
+                                        setData('ein', e.target.value)
+                                    }
+                                    placeholder="e.g., EMP001"
+                                />
+                                <InputError message={errors.ein} />
+                            </div>
+
+                            {/* Designation */}
+                            <div className="space-y-2">
+                                <Label htmlFor="designation">Designation</Label>
+                                <Input
+                                    id="designation"
+                                    type="text"
+                                    value={data.designation}
+                                    onChange={(e) =>
+                                        setData('designation', e.target.value)
+                                    }
+                                    placeholder="e.g., Software Engineer"
+                                />
+                                <InputError message={errors.designation} />
+                            </div>
+
+                            {/* Gender */}
+                            <div className="space-y-2">
+                                <Label htmlFor="gender">Gender</Label>
+                                <Select
+                                    value={data.gender}
+                                    onValueChange={(value) =>
+                                        setData('gender', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select gender" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="male">Male</SelectItem>
+                                        <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.gender} />
                             </div>
 
                             {/* Email */}

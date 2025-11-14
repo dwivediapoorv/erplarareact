@@ -12,7 +12,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, Calendar, FileText, User } from 'lucide-react';
+import { ArrowLeft, Calendar, FileText, User, Plane, PlaneTakeoff } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const selfServiceNavItems: NavItem[] = [
@@ -25,6 +25,16 @@ const selfServiceNavItems: NavItem[] = [
         title: 'My Details',
         href: '/employee/my-details',
         icon: User,
+    },
+    {
+        title: 'Apply for Leave',
+        href: '/leave-requests/create',
+        icon: PlaneTakeoff,
+    },
+    {
+        title: 'Leave History',
+        href: '/leave-requests',
+        icon: Plane,
     },
     {
         title: 'Salary Slips',

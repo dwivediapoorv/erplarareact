@@ -166,111 +166,77 @@
             <th colspan="2">Deductions</th>
             <th style="width: 8%;">INR</th>
         </tr>
-        <!-- <tr style="font-size: 7px; font-weight: bold;">
-            <td colspan="2"></td>
-            <td class="amount">INR</td>
-            <td colspan="2"></td>
-            <td class="amount">INR</td>
-            <td colspan="2"></td>
-            <td class="amount">INR</td>
-        </tr> -->
+       
         <tr>
             <td colspan="2">Basic Salary</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->basic_salary, 2) }}</td>
             <td colspan="2">Basic Salary</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->basic_salary, 2) }}</td>
             <td colspan="2">Medical Prem. Recoverable</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
         </tr>
         <tr>
             <td colspan="2">HRA</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->hra, 2) }}</td>
             <td colspan="2">HRA</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->hra, 2) }}</td>
             <td colspan="2">Prev. month salary hold</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
         </tr>
         <tr>
             <td colspan="2">Special Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->special_allowance, 2) }}</td>
             <td colspan="2">Special Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->special_allowance, 2) }}</td>
             <td colspan="2">Ee PF contribution</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
         </tr>
         <tr>
             <td colspan="2">Conveyance Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->conveyance_allowance, 2) }}</td>
             <td colspan="2">Conveyance Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->conveyance_allowance, 2) }}</td>
             <td colspan="2">Other Deductions</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->deductions, 2) }}</td>
         </tr>
         <tr>
             <td colspan="2">Medical Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2">Medical Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2"></td>
-            <!-- <td></td> -->
             <td class="amount"></td>
         </tr>
         <tr>
             <td colspan="2">Process Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2">Process Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2"></td>
-            <!-- <td></td> -->
             <td class="amount"></td>
         </tr>
         <tr>
             <td colspan="2">Compensatory Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2">Compensatory Allowance</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2"></td>
-            <!-- <td></td> -->
             <td class="amount"></td>
         </tr>
         <tr>
             <td colspan="2"></td>
-            <!-- <td></td> -->
             <td class="amount"></td>
             <td colspan="2">Carry-over fr.prev.month</td>
-            <!-- <td></td> -->
             <td class="amount">-</td>
             <td colspan="2"></td>
-            <!-- <td></td> -->
             <td class="amount"></td>
         </tr>
         <tr class="total-row">
             <td colspan="2">Total Standard Salary</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->gross_salary, 2) }}</td>
             <td colspan="2">Gross Earnings</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->gross_salary, 2) }}</td>
             <td colspan="2">Gross Deductions</td>
-            <!-- <td></td> -->
             <td class="amount">{{ number_format($salarySlip->deductions, 2) }}</td>
         </tr>
         <tr style="font-weight: bold; font-size: 9px;">
