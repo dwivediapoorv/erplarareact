@@ -56,6 +56,8 @@ interface Project {
     project_status: 'Active' | 'On Hold' | 'Suspended';
     blogs_count: number | null;
     monthly_report_date: string | null;
+    payment_amount: string | null;
+    payment_type: string | null;
     service_ids: number[];
 }
 
@@ -84,6 +86,8 @@ export default function EditProject({ project, seoEmployees, projectManagers, se
         project_status: project.project_status || 'Active',
         blogs_count: project.blogs_count?.toString() || '',
         monthly_report_date: project.monthly_report_date || '',
+        payment_amount: project.payment_amount || '',
+        payment_type: project.payment_type || '',
         service_ids: project.service_ids || [] as number[],
     });
 
@@ -485,6 +489,50 @@ export default function EditProject({ project, seoEmployees, projectManagers, se
                                         }
                                     />
                                     <InputError message={errors.monthly_report_date} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Payment Information */}
+                        <div className="space-y-4">
+                            <h2 className="text-lg font-semibold">Payment Information</h2>
+                            <div className="grid gap-6 md:grid-cols-2">
+                                {/* Payment Amount */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="payment_amount">Payment Amount</Label>
+                                    <Input
+                                        id="payment_amount"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={data.payment_amount}
+                                        onChange={(e) =>
+                                            setData('payment_amount', e.target.value)
+                                        }
+                                        placeholder="0.00"
+                                    />
+                                    <InputError message={errors.payment_amount} />
+                                </div>
+
+                                {/* Payment Type */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="payment_type">Payment Type</Label>
+                                    <Select
+                                        value={data.payment_type}
+                                        onValueChange={(value) =>
+                                            setData('payment_type', value)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select payment type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="one_time">One Time</SelectItem>
+                                            <SelectItem value="monthly">Monthly</SelectItem>
+                                            <SelectItem value="quarterly">Quarterly</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.payment_type} />
                                 </div>
                             </div>
                         </div>

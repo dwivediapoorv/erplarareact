@@ -24,6 +24,7 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         $users = User::with(['employee.team:id,name', 'employee.reportingManager:id,first_name,last_name'])
+            ->where('is_active', true)
             ->select('id', 'name', 'email', 'is_active')
             ->orderBy('name', 'asc')
             ->get()
@@ -165,7 +166,7 @@ class UserController extends Controller
      */
     public function show(User $user): Response
     {
-        $user->load(['employee.team:id,name']);
+        $user->load(['employee.team:id,name', 'employee.reportingManager.user:id,name']);
 
         return Inertia::render('users/show', [
             'user' => [
@@ -176,8 +177,22 @@ class UserController extends Controller
                 'first_name' => $user->employee?->first_name,
                 'last_name' => $user->employee?->last_name,
                 'phone' => $user->employee?->phone,
+                'ein' => $user->employee?->ein,
+                'designation' => $user->employee?->designation,
+                'gender' => $user->employee?->gender,
                 'team_id' => $user->employee?->team_id,
                 'team_name' => $user->employee?->team?->name ?? 'N/A',
+                'date_of_joining' => $user->employee?->date_of_joining?->format('Y-m-d'),
+                'date_of_exit' => $user->employee?->date_of_exit?->format('Y-m-d'),
+                'salary' => $user->employee?->salary,
+                'reporting_manager_id' => $user->employee?->reporting_manager_id,
+                'reporting_manager_name' => $user->employee?->reportingManager?->user->name ?? 'N/A',
+                'aadhar_number' => $user->employee?->aadhar_number,
+                'pan_number' => $user->employee?->pan_number,
+                'uan_number' => $user->employee?->uan_number,
+                'account_holder_name' => $user->employee?->account_holder_name,
+                'account_number' => $user->employee?->account_number,
+                'ifsc_code' => $user->employee?->ifsc_code,
                 'created_at' => $user->created_at?->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at?->format('Y-m-d H:i:s'),
             ],

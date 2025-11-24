@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\Admin\LeaveRequestController as AdminLeaveRequestController;
 use App\Http\Controllers\Admin\SalarySlipController as AdminSalarySlipController;
+use App\Http\Controllers\CallLogController;
 use App\Http\Controllers\ContentFlowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\InteractionController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MOMController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PayrollController;
@@ -44,6 +47,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('users/{user}', [UserController::class, 'show'])->middleware('permission:view users')->name('users.show');
     Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit users')->name('users.edit');
     Route::put('users/{user}', [UserController::class, 'update'])->middleware('permission:edit users')->name('users.update');
+
+    // Employee routes (admin view all employees)
+    Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:view employees')->name('employees.index');
 
     // Team routes
     Route::get('teams', [TeamController::class, 'index'])->middleware('permission:view teams')->name('teams.index');
@@ -149,6 +155,42 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('admin/leave-requests', [AdminLeaveRequestController::class, 'index'])->middleware('permission:view leave-requests')->name('admin.leave-requests.index');
     Route::post('admin/leave-requests/{leaveRequest}/approve', [AdminLeaveRequestController::class, 'approve'])->middleware('permission:approve leave-requests')->name('admin.leave-requests.approve');
     Route::post('admin/leave-requests/{leaveRequest}/reject', [AdminLeaveRequestController::class, 'reject'])->middleware('permission:reject leave-requests')->name('admin.leave-requests.reject');
+
+    // Lead routes
+    Route::get('leads', [LeadController::class, 'index'])->middleware('permission:view leads')->name('leads.index');
+    Route::get('leads/create', [LeadController::class, 'create'])->middleware('permission:create leads')->name('leads.create');
+    Route::post('leads', [LeadController::class, 'store'])->middleware('permission:create leads')->name('leads.store');
+    Route::get('leads/upload', [LeadController::class, 'uploadForm'])->middleware('permission:upload leads')->name('leads.upload');
+    Route::post('leads/upload', [LeadController::class, 'upload'])->middleware('permission:upload leads')->name('leads.upload.store');
+    Route::post('leads/bulk-assign', [LeadController::class, 'bulkAssign'])->middleware('permission:assign leads')->name('leads.bulk-assign');
+    Route::get('leads/{lead}', [LeadController::class, 'show'])->middleware('permission:view leads')->name('leads.show');
+    Route::get('leads/{lead}/edit', [LeadController::class, 'edit'])->middleware('permission:edit leads')->name('leads.edit');
+    Route::put('leads/{lead}', [LeadController::class, 'update'])->middleware('permission:edit leads')->name('leads.update');
+    Route::delete('leads/{lead}', [LeadController::class, 'destroy'])->middleware('permission:delete leads')->name('leads.destroy');
+    Route::get('leads/{lead}/assign', [LeadController::class, 'assignForm'])->middleware('permission:assign leads')->name('leads.assign');
+    Route::post('leads/{lead}/assign', [LeadController::class, 'assign'])->middleware('permission:assign leads')->name('leads.assign.store');
+
+    // Call Log routes
+    Route::get('call-logs', [CallLogController::class, 'index'])->middleware('permission:view call-logs')->name('call-logs.index');
+    Route::get('call-logs/create', [CallLogController::class, 'create'])->middleware('permission:create call-logs')->name('call-logs.create');
+    Route::post('call-logs', [CallLogController::class, 'store'])->middleware('permission:create call-logs')->name('call-logs.store');
+    Route::get('call-logs/{callLog}', [CallLogController::class, 'show'])->middleware('permission:view call-logs')->name('call-logs.show');
+    Route::get('call-logs/{callLog}/edit', [CallLogController::class, 'edit'])->middleware('permission:edit call-logs')->name('call-logs.edit');
+    Route::put('call-logs/{callLog}', [CallLogController::class, 'update'])->middleware('permission:edit call-logs')->name('call-logs.update');
+    Route::delete('call-logs/{callLog}', [CallLogController::class, 'destroy'])->middleware('permission:delete call-logs')->name('call-logs.destroy');
+    Route::post('leads/{lead}/quick-log', [CallLogController::class, 'quickLog'])->middleware('permission:create call-logs')->name('leads.quick-log');
+
+    // Meeting routes
+    Route::get('meetings', [MeetingController::class, 'index'])->middleware('permission:view meetings')->name('meetings.index');
+    Route::get('meetings/create', [MeetingController::class, 'create'])->middleware('permission:create meetings')->name('meetings.create');
+    Route::post('meetings', [MeetingController::class, 'store'])->middleware('permission:create meetings')->name('meetings.store');
+    Route::get('meetings/{meeting}', [MeetingController::class, 'show'])->middleware('permission:view meetings')->name('meetings.show');
+    Route::get('meetings/{meeting}/edit', [MeetingController::class, 'edit'])->middleware('permission:edit meetings')->name('meetings.edit');
+    Route::put('meetings/{meeting}', [MeetingController::class, 'update'])->middleware('permission:edit meetings')->name('meetings.update');
+    Route::delete('meetings/{meeting}', [MeetingController::class, 'destroy'])->middleware('permission:delete meetings')->name('meetings.destroy');
+    Route::get('meetings/{meeting}/reschedule', [MeetingController::class, 'rescheduleForm'])->middleware('permission:reschedule meetings')->name('meetings.reschedule');
+    Route::post('meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->middleware('permission:reschedule meetings')->name('meetings.reschedule.store');
+    Route::post('leads/{lead}/quick-schedule', [MeetingController::class, 'quickSchedule'])->middleware('permission:create meetings')->name('leads.quick-schedule');
 });
 
 require __DIR__.'/settings.php';

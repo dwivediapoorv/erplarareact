@@ -39,7 +39,7 @@ export default function Dashboard({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-6">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     {/* Active Users Card */}
                     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
                         <p className="text-sm font-medium text-muted-foreground">Active Users</p>
@@ -57,7 +57,9 @@ export default function Dashboard({
                         <p className="text-sm font-medium text-muted-foreground">Open Tasks</p>
                         <h3 className="text-3xl font-bold mt-2">{openTasksCount}</h3>
                     </div>
+                </div>
 
+                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     {/* Green Projects Card */}
                     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
                         <p className="text-sm font-medium text-muted-foreground">Green Projects</p>

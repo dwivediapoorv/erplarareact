@@ -23,6 +23,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0100',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 357.81,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 2
@@ -35,6 +37,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // project 3
@@ -47,6 +51,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 4
@@ -59,6 +65,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 5
@@ -71,6 +79,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 6
@@ -83,6 +93,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 7
@@ -95,6 +107,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 8
@@ -119,6 +133,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 10
@@ -131,6 +147,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 11
@@ -143,6 +161,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 12
@@ -155,6 +175,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 13
@@ -167,6 +189,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 14
@@ -179,6 +203,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 15
@@ -191,6 +217,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 16
@@ -203,6 +231,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 17
@@ -215,6 +245,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             //'assigned_to' => '',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 18
@@ -227,6 +259,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 19
@@ -251,6 +285,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 21
@@ -263,6 +299,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 22
@@ -275,6 +313,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '39',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 23
@@ -287,6 +327,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '34',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 24
@@ -299,6 +341,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 25
@@ -311,6 +355,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 26
@@ -323,6 +369,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 27
@@ -347,6 +395,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '40',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 29
@@ -359,6 +409,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 30
@@ -371,6 +423,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 31
@@ -383,6 +437,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 32
@@ -395,6 +451,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 33
@@ -407,6 +465,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '40',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 34
@@ -419,6 +479,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 35
@@ -431,6 +493,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 36
@@ -443,6 +507,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 37
@@ -455,6 +521,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 38
@@ -479,6 +547,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '34',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 40
@@ -491,6 +561,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '39',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         // Project 41
@@ -503,6 +575,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '34',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
         
         //Project 42
@@ -515,6 +589,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 43
@@ -527,6 +603,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 44
@@ -539,6 +617,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 45
@@ -551,6 +631,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 46
@@ -563,6 +645,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 47
@@ -575,6 +659,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 48
@@ -587,6 +673,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '21',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 49
@@ -599,6 +687,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '7',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 50
@@ -611,6 +701,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 51
@@ -623,6 +715,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '19',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 52
@@ -635,6 +729,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '13',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 53
@@ -647,6 +743,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 54
@@ -659,6 +757,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '33',
             'project_manager_id' => '20',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 55
@@ -671,6 +771,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '27',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
         //Project 56
@@ -683,6 +785,8 @@ class ProjectSeeder extends Seeder
             'phone_number' => '+1-555-0200',
             'assigned_to' => '34',
             'project_manager_id' => '31',
+            'payment_amount' => 500.00,
+            'payment_type' => 'monthly',
         ]);
 
     }

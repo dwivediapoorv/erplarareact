@@ -136,6 +136,8 @@ class ProjectController extends Controller
             'project_manager_id' => ['nullable', 'exists:employees,id'],
             'blogs_count' => ['nullable', 'integer', 'min:0'],
             'monthly_report_date' => ['nullable', 'date'],
+            'payment_amount' => ['nullable', 'numeric', 'min:0'],
+            'payment_type' => ['nullable', 'in:one_time,monthly,quarterly'],
             'service_ids' => ['required', 'array', 'min:1'],
             'service_ids.*' => ['exists:services,id'],
         ]);
@@ -159,6 +161,8 @@ class ProjectController extends Controller
                 'project_manager_id' => $validated['project_manager_id'] ?? null,
                 'blogs_count' => $validated['blogs_count'] ?? null,
                 'monthly_report_date' => $validated['monthly_report_date'] ?? null,
+                'payment_amount' => $validated['payment_amount'] ?? null,
+                'payment_type' => $validated['payment_type'] ?? null,
             ]);
 
             // Attach services to the project
@@ -324,6 +328,8 @@ class ProjectController extends Controller
                 'project_status' => $project->project_status,
                 'blogs_count' => $project->blogs_count,
                 'monthly_report_date' => $project->monthly_report_date?->format('Y-m-d'),
+                'payment_amount' => $project->payment_amount,
+                'payment_type' => $project->payment_type,
                 'service_ids' => $project->services->pluck('id')->toArray(),
             ],
             'seoEmployees' => $seoEmployees,
@@ -361,6 +367,8 @@ class ProjectController extends Controller
             'project_status' => ['required', 'in:Active,On Hold,Suspended'],
             'blogs_count' => ['nullable', 'integer', 'min:0'],
             'monthly_report_date' => ['nullable', 'date'],
+            'payment_amount' => ['nullable', 'numeric', 'min:0'],
+            'payment_type' => ['nullable', 'in:one_time,monthly,quarterly'],
             'service_ids' => ['required', 'array', 'min:1'],
             'service_ids.*' => ['exists:services,id'],
         ]);
@@ -386,6 +394,8 @@ class ProjectController extends Controller
                 'project_status' => $validated['project_status'],
                 'blogs_count' => $validated['blogs_count'] ?? null,
                 'monthly_report_date' => $validated['monthly_report_date'] ?? null,
+                'payment_amount' => $validated['payment_amount'] ?? null,
+                'payment_type' => $validated['payment_type'] ?? null,
             ]);
 
             // Sync services (this will remove old and add new)

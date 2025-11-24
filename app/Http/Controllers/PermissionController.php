@@ -22,6 +22,7 @@ class PermissionController extends Controller
 
         $permissionGroups = [
             'User' => ['view users', 'create users', 'edit users', 'delete users'],
+            'Employee' => ['view employees', 'create employees', 'edit employees', 'delete employees'],
             'Team' => ['view teams', 'create teams', 'edit teams', 'delete teams'],
             'Project' => ['view projects', 'create projects', 'edit projects', 'delete projects'],
             'Task' => ['view tasks', 'create tasks', 'edit tasks', 'delete tasks', 'complete tasks', 'approve tasks'],
@@ -30,6 +31,10 @@ class PermissionController extends Controller
             'Payroll' => ['view payrolls', 'create payrolls', 'edit payrolls', 'delete payrolls'],
             'Payment' => ['view payments', 'create payments', 'edit payments', 'delete payments'],
             'Client Interaction' => ['view client-interactions', 'create client-interactions', 'edit client-interactions', 'delete client-interactions'],
+            'Leave Request' => ['view leave-requests', 'create leave-requests', 'edit leave-requests', 'delete leave-requests', 'approve leave-requests'],
+            'Salary Slip' => ['view salary-slips', 'create salary-slips', 'edit salary-slips', 'delete salary-slips'],
+            'Holiday' => ['view holidays', 'create holidays', 'edit holidays', 'delete holidays'],
+            'Content Flow' => ['view content-flows', 'create content-flows', 'edit content-flows', 'delete content-flows'],
             'Permission' => ['manage permissions', 'assign roles'],
         ];
 

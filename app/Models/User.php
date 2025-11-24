@@ -69,4 +69,44 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class, 'assigned_to');
     }
+
+    /**
+     * Get leads owned by the user.
+     */
+    public function ownedLeads()
+    {
+        return $this->hasMany(Lead::class, 'current_owner_id');
+    }
+
+    /**
+     * Get leads uploaded by the user.
+     */
+    public function uploadedLeads()
+    {
+        return $this->hasMany(Lead::class, 'uploaded_by');
+    }
+
+    /**
+     * Get call logs made by the user.
+     */
+    public function callLogs()
+    {
+        return $this->hasMany(CallLog::class, 'called_by');
+    }
+
+    /**
+     * Get meetings scheduled by the user.
+     */
+    public function scheduledMeetings()
+    {
+        return $this->hasMany(Meeting::class, 'scheduled_by');
+    }
+
+    /**
+     * Get meetings assigned to the user.
+     */
+    public function assignedMeetings()
+    {
+        return $this->hasMany(Meeting::class, 'assigned_to');
+    }
 }

@@ -28,6 +28,8 @@ class Project extends Model
         'project_status',
         'blogs_count',
         'monthly_report_date',
+        'payment_amount',
+        'payment_type',
     ];
 
     protected $casts = [

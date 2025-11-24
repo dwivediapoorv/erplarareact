@@ -38,6 +38,10 @@ return new class extends Migration
             $table->integer('blogs_count')->nullable();
             $table->date('monthly_report_date')->nullable();
 
+            // Payment Information
+            $table->decimal('payment_amount', 10, 2)->nullable();
+            $table->enum('payment_type', ['one_time', 'monthly', 'quarterly'])->nullable();
+
             $table->timestamps();
         });
     }

@@ -24,8 +24,22 @@ interface User {
     first_name: string;
     last_name: string;
     phone: string;
+    ein: string | null;
+    designation: string | null;
+    gender: string | null;
     team_id: number;
     team_name: string;
+    date_of_joining: string | null;
+    date_of_exit: string | null;
+    salary: number | null;
+    reporting_manager_id: number | null;
+    reporting_manager_name: string;
+    aadhar_number: string | null;
+    pan_number: string | null;
+    uan_number: string | null;
+    account_holder_name: string | null;
+    account_number: string | null;
+    ifsc_code: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -85,7 +99,19 @@ export default function UserShow({ user }: UserShowProps) {
                                     <label className="text-sm font-medium text-muted-foreground">
                                         Phone
                                     </label>
-                                    <p className="mt-1 text-sm">{user.phone}</p>
+                                    <p className="mt-1 text-sm">{user.phone || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Gender
+                                    </label>
+                                    <p className="mt-1 text-sm capitalize">{user.gender || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        EIN
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.ein || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
@@ -96,9 +122,39 @@ export default function UserShow({ user }: UserShowProps) {
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">
+                                        Designation
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.designation || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
                                         Team
                                     </label>
                                     <p className="mt-1 text-sm">{user.team_name}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Date of Joining
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.date_of_joining || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Date of Exit
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.date_of_exit || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Reporting Manager
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.reporting_manager_name}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Salary
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.salary ? `₹${user.salary.toLocaleString()}` : 'N/A'}</p>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">
@@ -115,6 +171,49 @@ export default function UserShow({ user }: UserShowProps) {
                                             </span>
                                         )}
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Financial Information */}
+                        <div>
+                            <h2 className="text-lg font-semibold mb-4">Financial Information</h2>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Aadhar Number
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.aadhar_number || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        PAN Number
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.pan_number || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        UAN Number
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.uan_number || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Account Holder Name
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.account_holder_name || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Account Number
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.account_number || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        IFSC Code
+                                    </label>
+                                    <p className="mt-1 text-sm">{user.ifsc_code || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
