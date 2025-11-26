@@ -13,16 +13,11 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->nullable();
-            $table->string('phone')->nullable();
             $table->string('website')->nullable();
-            $table->string('company_name')->nullable();
-            $table->string('designation')->nullable();
-            $table->text('address')->nullable();
-            $table->string('city')->nullable();
-            $table->string('state')->nullable();
-            $table->string('country')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('timezone')->nullable();
+            $table->date('lead_date')->nullable(); // Date when lead came in
             $table->string('source')->default('scrubbing_team'); // scrubbing_team, website, referral, etc
             $table->enum('status', [
                 'new',
@@ -49,6 +44,7 @@ return new class extends Migration
             $table->index('status');
             $table->index('current_owner_id');
             $table->index('next_follow_up_at');
+            $table->index('lead_date');
         });
     }
 

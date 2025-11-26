@@ -161,6 +161,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('leads/create', [LeadController::class, 'create'])->middleware('permission:create leads')->name('leads.create');
     Route::post('leads', [LeadController::class, 'store'])->middleware('permission:create leads')->name('leads.store');
     Route::get('leads/upload', [LeadController::class, 'uploadForm'])->middleware('permission:upload leads')->name('leads.upload');
+    Route::get('leads/sample-download', [LeadController::class, 'downloadSample'])->middleware('permission:upload leads')->name('leads.sample-download');
     Route::post('leads/upload', [LeadController::class, 'upload'])->middleware('permission:upload leads')->name('leads.upload.store');
     Route::post('leads/bulk-assign', [LeadController::class, 'bulkAssign'])->middleware('permission:assign leads')->name('leads.bulk-assign');
     Route::get('leads/{lead}', [LeadController::class, 'show'])->middleware('permission:view leads')->name('leads.show');

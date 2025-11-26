@@ -1,22 +1,24 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import leads from '@/routes/leads';
 import { PageProps } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, CheckCircle2, Upload } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, Download, Upload, Users } from 'lucide-react';
 
 export default function UploadLeads({ }: PageProps) {
     const { data, setData, post, processing, errors, progress } = useForm({
         file: null as File | null,
+        auto_assign: true,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(leads.upload.store());
+        post(leads.upload.store().url);
     };
 
     return (
@@ -40,10 +42,20 @@ export default function UploadLeads({ }: PageProps) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>File Requirements</CardTitle>
-                        <CardDescription>
-                            Please ensure your Excel file meets the following requirements
-                        </CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>File Requirements</CardTitle>
+                                <CardDescription>
+                                    Please ensure your Excel file meets the following requirements
+                                </CardDescription>
+                            </div>
+                            <a href="/leads/sample-download" download>
+                                <Button variant="outline" size="sm">
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download Sample
+                                </Button>
+                            </a>
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
@@ -57,35 +69,23 @@ export default function UploadLeads({ }: PageProps) {
 
                         <div className="space-y-2">
                             <h4 className="font-medium">Required Columns (in order)</h4>
-                            <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div className="grid grid-cols-2 gap-2 text-sm">
                                 <div className="rounded border p-2">
-                                    <strong>Column 1:</strong> Name
+                                    <strong>Column 1:</strong> Website
                                 </div>
                                 <div className="rounded border p-2">
-                                    <strong>Column 2:</strong> Email
+                                    <strong>Column 2:</strong> Phone
                                 </div>
                                 <div className="rounded border p-2">
-                                    <strong>Column 3:</strong> Phone
+                                    <strong>Column 3:</strong> Email
                                 </div>
                                 <div className="rounded border p-2">
-                                    <strong>Column 4:</strong> Website
-                                </div>
-                                <div className="rounded border p-2">
-                                    <strong>Column 5:</strong> Company Name
-                                </div>
-                                <div className="rounded border p-2">
-                                    <strong>Column 6:</strong> Designation
-                                </div>
-                                <div className="rounded border p-2">
-                                    <strong>Column 7:</strong> City
-                                </div>
-                                <div className="rounded border p-2">
-                                    <strong>Column 8:</strong> State
-                                </div>
-                                <div className="rounded border p-2">
-                                    <strong>Column 9:</strong> Country
+                                    <strong>Column 4:</strong> Timezone
                                 </div>
                             </div>
+                            <p className="text-sm text-muted-foreground mt-2">
+                                <strong>Note:</strong> Lead date will be automatically added as today's date during upload.
+                            </p>
                         </div>
 
                         <Alert>
@@ -127,6 +127,27 @@ export default function UploadLeads({ }: PageProps) {
                                 )}
                             </div>
 
+                            <div className="flex items-center space-x-2 rounded-lg border p-4 bg-muted/50">
+                                <Checkbox
+                                    id="auto_assign"
+                                    checked={data.auto_assign}
+                                    onCheckedChange={(checked) => setData('auto_assign', checked as boolean)}
+                                    disabled={processing}
+                                />
+                                <div className="flex-1">
+                                    <Label
+                                        htmlFor="auto_assign"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer"
+                                    >
+                                        <Users className="h-4 w-4" />
+                                        Automatically assign to calling team (Round-Robin)
+                                    </Label>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        Imported leads will be automatically distributed evenly among all active calling team members
+                                    </p>
+                                </div>
+                            </div>
+
                             {progress && (
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-sm">
@@ -166,8 +187,7 @@ export default function UploadLeads({ }: PageProps) {
                     <AlertTitle>After Upload</AlertTitle>
                     <AlertDescription>
                         Once the upload is complete, you'll see a summary of how many leads were
-                        imported and how many were skipped. All imported leads will have the status
-                        "New" and will be ready for assignment.
+                        imported and how many were skipped. {data.auto_assign ? 'Leads will be automatically assigned to calling team members using round-robin distribution.' : 'All imported leads will have the status "New" and will be ready for manual assignment.'}
                     </AlertDescription>
                 </Alert>
             </div>

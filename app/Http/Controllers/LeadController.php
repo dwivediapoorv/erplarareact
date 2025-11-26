@@ -21,7 +21,7 @@ class LeadController extends Controller
     public function index(Request $request): Response
     {
         $query = Lead::with(['uploadedBy:id,name', 'currentOwner:id,name'])
-            ->select('id', 'name', 'email', 'phone', 'website', 'company_name', 'status', 'priority', 'uploaded_by', 'current_owner_id', 'last_contacted_at', 'next_follow_up_at', 'created_at');
+            ->select('id', 'website', 'email', 'phone', 'timezone', 'lead_date', 'status', 'priority', 'uploaded_by', 'current_owner_id', 'last_contacted_at', 'next_follow_up_at', 'created_at');
 
         // Filter by status
         if ($request->has('status') && $request->status != '') {
@@ -42,10 +42,9 @@ class LeadController extends Controller
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->where('website', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('company_name', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -78,27 +77,68 @@ class LeadController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'website' => ['nullable', 'url', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
-            'website' => ['nullable', 'url', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'designation' => ['nullable', 'string', 'max:255'],
-            'address' => ['nullable', 'string'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
-            'country' => ['nullable', 'string', 'max:255'],
+            'timezone' => ['nullable', 'string', 'max:255'],
             'source' => ['nullable', 'string', 'max:255'],
             'priority' => ['nullable', 'in:low,medium,high'],
             'notes' => ['nullable', 'string'],
+            'auto_assign' => ['nullable', 'boolean'],
         ]);
 
         $validated['uploaded_by'] = $request->user()->id;
         $validated['status'] = 'new';
+        $validated['lead_date'] = now()->toDateString();
 
-        Lead::create($validated);
+        // Set default source if not provided or empty
+        if (!isset($validated['source']) || $validated['source'] === '' || $validated['source'] === null) {
+            $validated['source'] = 'scrubbing_team';
+        }
 
-        return to_route('leads.index')->with('success', 'Lead created successfully.');
+        // Handle auto-assignment with round-robin
+        $autoAssign = $request->boolean('auto_assign', false);
+
+        if ($autoAssign) {
+            // Get calling team members for round-robin assignment
+            $callingTeamMembers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Calling Team');
+            })
+                ->where('is_active', true)
+                ->get();
+
+            if ($callingTeamMembers->isNotEmpty()) {
+                // Use random assignment for single lead (round-robin makes more sense for bulk)
+                // But we'll use consistent logic by getting the next available member
+                // For simplicity, we'll assign to the member with the least current leads
+                $assignee = $callingTeamMembers->sortBy(function ($member) {
+                    return $member->ownedLeads()->count();
+                })->first();
+
+                $validated['current_owner_id'] = $assignee->id;
+                $validated['status'] = 'assigned';
+            }
+        }
+
+        $lead = Lead::create($validated);
+
+        // Create assignment record if auto-assigned
+        if ($autoAssign && isset($validated['current_owner_id'])) {
+            LeadAssignment::create([
+                'lead_id' => $lead->id,
+                'assigned_to' => $validated['current_owner_id'],
+                'assigned_by' => $request->user()->id,
+                'assigned_at' => now(),
+            ]);
+        }
+
+        $message = 'Lead created successfully.';
+        if ($autoAssign && isset($validated['current_owner_id'])) {
+            $assigneeName = User::find($validated['current_owner_id'])->name;
+            $message .= " Automatically assigned to {$assigneeName}.";
+        }
+
+        return to_route('leads.index')->with('success', $message);
     }
 
     /**
@@ -144,16 +184,10 @@ class LeadController extends Controller
     public function update(Request $request, Lead $lead): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'website' => ['nullable', 'url', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
-            'website' => ['nullable', 'url', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'designation' => ['nullable', 'string', 'max:255'],
-            'address' => ['nullable', 'string'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
-            'country' => ['nullable', 'string', 'max:255'],
+            'timezone' => ['nullable', 'string', 'max:255'],
             'priority' => ['nullable', 'in:low,medium,high'],
             'notes' => ['nullable', 'string'],
             'status' => ['nullable', 'in:new,assigned,in_progress,connected,hot_lead,meeting_scheduled,meeting_completed,converted,lost,unqualified'],
@@ -190,6 +224,7 @@ class LeadController extends Controller
     {
         $request->validate([
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'], // 10MB max
+            'auto_assign' => ['nullable', 'boolean'],
         ]);
 
         try {
@@ -203,37 +238,43 @@ class LeadController extends Controller
 
             $imported = 0;
             $skipped = 0;
+            $autoAssign = $request->boolean('auto_assign', false);
+
+            // Get calling team members for round-robin assignment if enabled
+            $callingTeamMembers = [];
+            $currentAssigneeIndex = 0;
+
+            if ($autoAssign) {
+                $callingTeamMembers = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Calling Team');
+                })
+                    ->where('is_active', true)
+                    ->get();
+
+                if ($callingTeamMembers->isEmpty()) {
+                    return back()->withErrors(['file' => 'No active calling team members available for assignment.']);
+                }
+            }
 
             DB::beginTransaction();
 
             foreach ($rows as $row) {
-                // Skip empty rows
+                // Skip only completely empty rows
                 if (empty(array_filter($row))) {
                     continue;
                 }
 
-                // Map columns: Name, Email, Phone, Website
-                // Adjust indices based on your Excel structure
+                // Map columns: Website, Phone, Email, Timezone
                 $leadData = [
-                    'name' => $row[0] ?? null,
-                    'email' => $row[1] ?? null,
-                    'phone' => $row[2] ?? null,
-                    'website' => $row[3] ?? null,
-                    'company_name' => $row[4] ?? null,
-                    'designation' => $row[5] ?? null,
-                    'city' => $row[6] ?? null,
-                    'state' => $row[7] ?? null,
-                    'country' => $row[8] ?? null,
+                    'website' => $row[0] ?? null,
+                    'phone' => $row[1] ?? null,
+                    'email' => $row[2] ?? null,
+                    'timezone' => $row[3] ?? null,
+                    'lead_date' => now()->toDateString(),
                     'uploaded_by' => $request->user()->id,
                     'status' => 'new',
                     'source' => 'scrubbing_team',
                 ];
-
-                // Skip if name is empty
-                if (empty($leadData['name'])) {
-                    $skipped++;
-                    continue;
-                }
 
                 // Check for duplicates (by email or phone)
                 $exists = Lead::where(function ($query) use ($leadData) {
@@ -250,18 +291,90 @@ class LeadController extends Controller
                     continue;
                 }
 
-                Lead::create($leadData);
+                // Round-robin assignment if enabled
+                if ($autoAssign && !empty($callingTeamMembers)) {
+                    $assignee = $callingTeamMembers[$currentAssigneeIndex];
+                    $leadData['current_owner_id'] = $assignee->id;
+                    $leadData['status'] = 'assigned';
+
+                    // Move to next assignee (round-robin)
+                    $currentAssigneeIndex = ($currentAssigneeIndex + 1) % $callingTeamMembers->count();
+                }
+
+                $lead = Lead::create($leadData);
+
+                // Create lead assignment record if auto-assigned
+                if ($autoAssign && isset($leadData['current_owner_id'])) {
+                    \App\Models\LeadAssignment::create([
+                        'lead_id' => $lead->id,
+                        'assigned_to' => $leadData['current_owner_id'],
+                        'assigned_by' => $request->user()->id,
+                        'assigned_at' => now(),
+                    ]);
+                }
+
                 $imported++;
             }
 
             DB::commit();
 
-            return to_route('leads.index')->with('success', "Successfully imported {$imported} leads. Skipped {$skipped} duplicates/invalid rows.");
+            $message = "Successfully imported {$imported} leads. Skipped {$skipped} duplicates/invalid rows.";
+            if ($autoAssign) {
+                $message .= " Leads automatically assigned to " . $callingTeamMembers->count() . " calling team members.";
+            }
+
+            return to_route('leads.index')->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Lead upload failed: ' . $e->getMessage());
             return back()->withErrors(['file' => 'Failed to import leads: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Download sample Excel file for lead upload.
+     */
+    public function downloadSample()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $sheet->setCellValue('A1', 'Website');
+        $sheet->setCellValue('B1', 'Phone');
+        $sheet->setCellValue('C1', 'Email');
+        $sheet->setCellValue('D1', 'Timezone');
+
+        // Style headers (bold)
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+        // Add sample data
+        $sheet->setCellValue('A2', 'https://example.com');
+        $sheet->setCellValue('B2', '+1234567890');
+        $sheet->setCellValue('C2', 'john@example.com');
+        $sheet->setCellValue('D2', 'America/New_York');
+
+        $sheet->setCellValue('A3', 'https://sample-website.com');
+        $sheet->setCellValue('B3', '+9876543210');
+        $sheet->setCellValue('C3', 'jane@sample.com');
+        $sheet->setCellValue('D3', 'Europe/London');
+
+        // Auto-size columns
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Create Excel file
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'leads_upload_sample_' . date('Y-m-d') . '.xlsx';
+
+        // Send file to browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 
     /**

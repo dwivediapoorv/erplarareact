@@ -113,14 +113,9 @@ export default function Index({ leads: leadsData, filters = {}, auth }: Props) {
         <AppLayout>
             <Head title="Leads" />
 
-            <div className="space-y-6">
+            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Leads</h1>
-                        <p className="text-muted-foreground">
-                            Manage and track your sales leads
-                        </p>
-                    </div>
+                    <h1 className="text-2xl font-semibold">Leads</h1>
                     <div className="flex gap-2">
                         {canUpload && (
                             <Link href={leads.upload()}>

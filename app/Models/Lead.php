@@ -12,16 +12,11 @@ class Lead extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
         'website',
-        'company_name',
-        'designation',
-        'address',
-        'city',
-        'state',
-        'country',
+        'phone',
+        'email',
+        'timezone',
+        'lead_date',
         'source',
         'status',
         'priority',
@@ -34,6 +29,7 @@ class Lead extends Model
     ];
 
     protected $casts = [
+        'lead_date' => 'date',
         'last_contacted_at' => 'datetime',
         'next_follow_up_at' => 'datetime',
     ];

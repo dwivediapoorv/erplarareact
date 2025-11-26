@@ -64,16 +64,11 @@ interface Note {
 
 interface Lead {
     id: number;
-    name: string;
+    website: string | null;
     email: string | null;
     phone: string | null;
-    website: string | null;
-    company_name: string | null;
-    designation: string | null;
-    address: string | null;
-    city: string | null;
-    state: string | null;
-    country: string | null;
+    timezone: string | null;
+    lead_date: string | null;
     status: string;
     priority: string | null;
     notes: string | null;
@@ -150,9 +145,9 @@ export default function Show({ lead, auth }: Props) {
 
     return (
         <AppLayout>
-            <Head title={`Lead: ${lead.name}`} />
+            <Head title={`Lead: ${lead.website || lead.email || lead.phone || 'Details'}`} />
 
-            <div className="space-y-6">
+            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center gap-4">
                     <Link href={leads.index()}>
                         <Button variant="outline" size="icon">
@@ -161,7 +156,7 @@ export default function Show({ lead, auth }: Props) {
                     </Link>
                     <div className="flex-1">
                         <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold tracking-tight">{lead.name}</h1>
+                            <h1 className="text-3xl font-bold tracking-tight">{lead.website || lead.email || lead.phone || 'Lead Details'}</h1>
                             <Badge className={statusColors[lead.status]}>
                                 {statusLabels[lead.status]}
                             </Badge>
@@ -169,8 +164,8 @@ export default function Show({ lead, auth }: Props) {
                                 <Badge variant="outline">{lead.priority.toUpperCase()}</Badge>
                             )}
                         </div>
-                        {lead.company_name && (
-                            <p className="text-muted-foreground">{lead.company_name}</p>
+                        {lead.email && lead.website && (
+                            <p className="text-muted-foreground">{lead.email}</p>
                         )}
                     </div>
                     <div className="flex gap-2">
@@ -391,20 +386,16 @@ export default function Show({ lead, auth }: Props) {
                                 <CardTitle>Additional Details</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3 text-sm">
-                                {lead.designation && (
+                                {lead.timezone && (
                                     <div>
-                                        <p className="font-medium">Designation</p>
-                                        <p className="text-muted-foreground">{lead.designation}</p>
+                                        <p className="font-medium">Timezone</p>
+                                        <p className="text-muted-foreground">{lead.timezone}</p>
                                     </div>
                                 )}
-                                {(lead.city || lead.state || lead.country) && (
+                                {lead.lead_date && (
                                     <div>
-                                        <p className="font-medium">Location</p>
-                                        <p className="text-muted-foreground">
-                                            {[lead.city, lead.state, lead.country]
-                                                .filter(Boolean)
-                                                .join(', ')}
-                                        </p>
+                                        <p className="font-medium">Lead Date</p>
+                                        <p className="text-muted-foreground">{lead.lead_date}</p>
                                     </div>
                                 )}
                                 {lead.source && (

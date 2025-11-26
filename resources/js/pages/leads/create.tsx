@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,28 +10,23 @@ import AppLayout from '@/layouts/app-layout';
 import leads from '@/routes/leads';
 import { PageProps } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 
 export default function Create({ }: PageProps) {
     const { data, setData, post, processing, errors } = useForm({
-        name: '',
+        website: '',
         email: '',
         phone: '',
-        website: '',
-        company_name: '',
-        designation: '',
-        address: '',
-        city: '',
-        state: '',
-        country: '',
+        timezone: '',
         source: '',
         priority: 'medium',
         notes: '',
+        auto_assign: true,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(leads.store());
+        post(leads.store().url);
     };
 
     return (
@@ -54,25 +50,34 @@ export default function Create({ }: PageProps) {
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Basic Information</CardTitle>
+                                <CardTitle>Lead Information</CardTitle>
                                 <CardDescription>
-                                    Enter the lead's basic contact information
+                                    Enter the lead's contact information
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">
-                                            Name <span className="text-destructive">*</span>
-                                        </Label>
+                                        <Label htmlFor="website">Website</Label>
                                         <Input
-                                            id="name"
-                                            value={data.name}
-                                            onChange={(e) => setData('name', e.target.value)}
-                                            placeholder="John Doe"
-                                            required
+                                            id="website"
+                                            type="url"
+                                            value={data.website}
+                                            onChange={(e) => setData('website', e.target.value)}
+                                            placeholder="https://example.com"
                                         />
-                                        <InputError message={errors.name} />
+                                        <InputError message={errors.website} />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone">Phone</Label>
+                                        <Input
+                                            id="phone"
+                                            value={data.phone}
+                                            onChange={(e) => setData('phone', e.target.value)}
+                                            placeholder="+1234567890"
+                                        />
+                                        <InputError message={errors.phone} />
                                     </div>
 
                                     <div className="space-y-2">
@@ -88,104 +93,14 @@ export default function Create({ }: PageProps) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="phone">Phone</Label>
+                                        <Label htmlFor="timezone">Timezone</Label>
                                         <Input
-                                            id="phone"
-                                            value={data.phone}
-                                            onChange={(e) => setData('phone', e.target.value)}
-                                            placeholder="+1234567890"
+                                            id="timezone"
+                                            value={data.timezone}
+                                            onChange={(e) => setData('timezone', e.target.value)}
+                                            placeholder="America/New_York"
                                         />
-                                        <InputError message={errors.phone} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="website">Website</Label>
-                                        <Input
-                                            id="website"
-                                            type="url"
-                                            value={data.website}
-                                            onChange={(e) => setData('website', e.target.value)}
-                                            placeholder="https://example.com"
-                                        />
-                                        <InputError message={errors.website} />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Company Information</CardTitle>
-                                <CardDescription>Details about the lead's company</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="company_name">Company Name</Label>
-                                        <Input
-                                            id="company_name"
-                                            value={data.company_name}
-                                            onChange={(e) => setData('company_name', e.target.value)}
-                                            placeholder="Acme Inc."
-                                        />
-                                        <InputError message={errors.company_name} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="designation">Designation</Label>
-                                        <Input
-                                            id="designation"
-                                            value={data.designation}
-                                            onChange={(e) => setData('designation', e.target.value)}
-                                            placeholder="CEO"
-                                        />
-                                        <InputError message={errors.designation} />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="address">Address</Label>
-                                    <Input
-                                        id="address"
-                                        value={data.address}
-                                        onChange={(e) => setData('address', e.target.value)}
-                                        placeholder="123 Main Street"
-                                    />
-                                    <InputError message={errors.address} />
-                                </div>
-
-                                <div className="grid gap-4 md:grid-cols-3">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="city">City</Label>
-                                        <Input
-                                            id="city"
-                                            value={data.city}
-                                            onChange={(e) => setData('city', e.target.value)}
-                                            placeholder="New York"
-                                        />
-                                        <InputError message={errors.city} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="state">State</Label>
-                                        <Input
-                                            id="state"
-                                            value={data.state}
-                                            onChange={(e) => setData('state', e.target.value)}
-                                            placeholder="NY"
-                                        />
-                                        <InputError message={errors.state} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="country">Country</Label>
-                                        <Input
-                                            id="country"
-                                            value={data.country}
-                                            onChange={(e) => setData('country', e.target.value)}
-                                            placeholder="USA"
-                                        />
-                                        <InputError message={errors.country} />
+                                        <InputError message={errors.timezone} />
                                     </div>
                                 </div>
                             </CardContent>
@@ -237,6 +152,31 @@ export default function Create({ }: PageProps) {
                                         rows={4}
                                     />
                                     <InputError message={errors.notes} />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center space-x-2 rounded-lg border p-4 bg-muted/50">
+                                    <Checkbox
+                                        id="auto_assign"
+                                        checked={data.auto_assign}
+                                        onCheckedChange={(checked) => setData('auto_assign', checked as boolean)}
+                                        disabled={processing}
+                                    />
+                                    <div className="flex-1">
+                                        <Label
+                                            htmlFor="auto_assign"
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <Users className="h-4 w-4" />
+                                            Automatically assign to calling team (Load Balancing)
+                                        </Label>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                            Lead will be automatically assigned to the calling team member with the fewest current leads
+                                        </p>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
