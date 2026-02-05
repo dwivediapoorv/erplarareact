@@ -17,11 +17,23 @@ class Project extends Model
         'date_of_onboarding',
         'project_start_date',
         'client_name',
+        'business_name',
+        'business_type',
         'website',
         'email_address',
         'alternate_email_address',
         'phone_number',
         'alternate_phone_number',
+        'business_address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
+        'preferred_contact_method',
+        'timezone',
+        'industry',
+        'social_media_links',
+        'competitors',
         'assigned_to',
         'project_manager_id',
         'project_health',
@@ -36,6 +48,8 @@ class Project extends Model
         'date_of_onboarding' => 'date',
         'project_start_date' => 'date',
         'monthly_report_date' => 'date',
+        'social_media_links' => 'array',
+        'competitors' => 'array',
     ];
 
     /**
@@ -84,5 +98,14 @@ class Project extends Model
     public function interactions(): HasMany
     {
         return $this->hasMany(Interaction::class);
+    }
+
+    /**
+     * Get the accesses received for this project
+     */
+    public function accesses(): BelongsToMany
+    {
+        return $this->belongsToMany(Access::class, 'project_access')
+            ->withTimestamps();
     }
 }

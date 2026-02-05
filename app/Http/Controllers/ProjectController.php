@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Access;
 use App\Models\Employee;
 use App\Models\Project;
 use App\Models\Services;
@@ -102,10 +103,14 @@ class ProjectController extends Controller
         // Get all services
         $services = Services::select('id', 'name')->get();
 
+        // Get all access types
+        $accesses = Access::select('id', 'name')->orderBy('name')->get();
+
         return Inertia::render('projects/create', [
             'seoEmployees' => $seoEmployees,
             'projectManagers' => $projectManagers,
             'services' => $services,
+            'accesses' => $accesses,
         ]);
     }
 
@@ -127,11 +132,25 @@ class ProjectController extends Controller
             'date_of_onboarding' => ['nullable', 'date'],
             'project_start_date' => ['nullable', 'date'],
             'client_name' => ['required', 'string', 'max:255'],
+            'business_name' => ['nullable', 'string', 'max:255'],
+            'business_type' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
             'email_address' => ['required', 'email', 'max:255'],
             'alternate_email_address' => ['nullable', 'email', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20'],
             'alternate_phone_number' => ['nullable', 'string', 'max:20'],
+            'business_address' => ['nullable', 'string'],
+            'city' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'max:255'],
+            'postal_code' => ['nullable', 'string', 'max:20'],
+            'preferred_contact_method' => ['nullable', 'in:email,phone,whatsapp,video_call'],
+            'timezone' => ['nullable', 'string', 'max:255'],
+            'industry' => ['nullable', 'string', 'max:255'],
+            'social_media_links' => ['nullable', 'array'],
+            'social_media_links.*' => ['nullable', 'string', 'max:500'],
+            'competitors' => ['nullable', 'array'],
+            'competitors.*' => ['nullable', 'string', 'max:500'],
             'assigned_to' => ['nullable', 'exists:employees,id'],
             'project_manager_id' => ['nullable', 'exists:employees,id'],
             'blogs_count' => ['nullable', 'integer', 'min:0'],
@@ -140,11 +159,17 @@ class ProjectController extends Controller
             'payment_type' => ['nullable', 'in:one_time,monthly,quarterly'],
             'service_ids' => ['required', 'array', 'min:1'],
             'service_ids.*' => ['exists:services,id'],
+            'access_ids' => ['nullable', 'array'],
+            'access_ids.*' => ['exists:accesses,id'],
         ]);
 
         DB::beginTransaction();
 
         try {
+            // Filter out empty values from arrays
+            $socialMediaLinks = array_values(array_filter($validated['social_media_links'] ?? [], fn($link) => !empty($link)));
+            $competitors = array_values(array_filter($validated['competitors'] ?? [], fn($comp) => !empty($comp)));
+
             // Create the project (project_health and project_status will use database defaults: Green and Active)
             $project = Project::create([
                 'project_name' => $validated['project_name'],
@@ -152,11 +177,23 @@ class ProjectController extends Controller
                 'date_of_onboarding' => $validated['date_of_onboarding'] ?? null,
                 'project_start_date' => $validated['project_start_date'] ?? null,
                 'client_name' => $validated['client_name'],
+                'business_name' => $validated['business_name'] ?? null,
+                'business_type' => $validated['business_type'] ?? null,
                 'website' => $validated['website'] ?? null,
                 'email_address' => $validated['email_address'],
                 'alternate_email_address' => $validated['alternate_email_address'] ?? null,
                 'phone_number' => $validated['phone_number'],
                 'alternate_phone_number' => $validated['alternate_phone_number'] ?? null,
+                'business_address' => $validated['business_address'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'state' => $validated['state'] ?? null,
+                'country' => $validated['country'] ?? null,
+                'postal_code' => $validated['postal_code'] ?? null,
+                'preferred_contact_method' => $validated['preferred_contact_method'] ?? null,
+                'timezone' => $validated['timezone'] ?? null,
+                'industry' => $validated['industry'] ?? null,
+                'social_media_links' => !empty($socialMediaLinks) ? $socialMediaLinks : null,
+                'competitors' => !empty($competitors) ? $competitors : null,
                 'assigned_to' => $validated['assigned_to'] ?? null,
                 'project_manager_id' => $validated['project_manager_id'] ?? null,
                 'blogs_count' => $validated['blogs_count'] ?? null,
@@ -167,6 +204,11 @@ class ProjectController extends Controller
 
             // Attach services to the project
             $project->services()->attach($validated['service_ids']);
+
+            // Attach accesses to the project
+            if (!empty($validated['access_ids'])) {
+                $project->accesses()->attach($validated['access_ids']);
+            }
 
             DB::commit();
 
@@ -271,7 +313,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): Response
     {
-        $project->load('services:id');
+        $project->load(['services:id', 'accesses:id']);
 
         // Get SEO team employees for "Assigned To" dropdown (only active users)
         $seoEmployees = Employee::with('team:id,name')
@@ -309,6 +351,9 @@ class ProjectController extends Controller
 
         $services = Services::select('id', 'name')->get();
 
+        // Get all access types
+        $accesses = Access::select('id', 'name')->orderBy('name')->get();
+
         return Inertia::render('projects/edit', [
             'project' => [
                 'id' => $project->id,
@@ -317,11 +362,23 @@ class ProjectController extends Controller
                 'date_of_onboarding' => $project->date_of_onboarding?->format('Y-m-d'),
                 'project_start_date' => $project->project_start_date?->format('Y-m-d'),
                 'client_name' => $project->client_name,
+                'business_name' => $project->business_name,
+                'business_type' => $project->business_type,
                 'website' => $project->website,
                 'email_address' => $project->email_address,
                 'alternate_email_address' => $project->alternate_email_address,
                 'phone_number' => $project->phone_number,
                 'alternate_phone_number' => $project->alternate_phone_number,
+                'business_address' => $project->business_address,
+                'city' => $project->city,
+                'state' => $project->state,
+                'country' => $project->country,
+                'postal_code' => $project->postal_code,
+                'preferred_contact_method' => $project->preferred_contact_method,
+                'timezone' => $project->timezone,
+                'industry' => $project->industry,
+                'social_media_links' => $project->social_media_links ?? [],
+                'competitors' => $project->competitors ?? [],
                 'assigned_to' => $project->assigned_to,
                 'project_manager_id' => $project->project_manager_id,
                 'project_health' => $project->project_health,
@@ -331,10 +388,12 @@ class ProjectController extends Controller
                 'payment_amount' => $project->payment_amount,
                 'payment_type' => $project->payment_type,
                 'service_ids' => $project->services->pluck('id')->toArray(),
+                'access_ids' => $project->accesses->pluck('id')->toArray(),
             ],
             'seoEmployees' => $seoEmployees,
             'projectManagers' => $projectManagers,
             'services' => $services,
+            'accesses' => $accesses,
         ]);
     }
 
@@ -356,11 +415,25 @@ class ProjectController extends Controller
             'date_of_onboarding' => ['nullable', 'date'],
             'project_start_date' => ['nullable', 'date'],
             'client_name' => ['required', 'string', 'max:255'],
+            'business_name' => ['nullable', 'string', 'max:255'],
+            'business_type' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
             'email_address' => ['required', 'email', 'max:255'],
             'alternate_email_address' => ['nullable', 'email', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20'],
             'alternate_phone_number' => ['nullable', 'string', 'max:20'],
+            'business_address' => ['nullable', 'string'],
+            'city' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'max:255'],
+            'postal_code' => ['nullable', 'string', 'max:20'],
+            'preferred_contact_method' => ['nullable', 'in:email,phone,whatsapp,video_call'],
+            'timezone' => ['nullable', 'string', 'max:255'],
+            'industry' => ['nullable', 'string', 'max:255'],
+            'social_media_links' => ['nullable', 'array'],
+            'social_media_links.*' => ['nullable', 'string', 'max:500'],
+            'competitors' => ['nullable', 'array'],
+            'competitors.*' => ['nullable', 'string', 'max:500'],
             'assigned_to' => ['nullable', 'exists:employees,id'],
             'project_manager_id' => ['nullable', 'exists:employees,id'],
             'project_health' => ['required', 'in:Red,Green,Orange'],
@@ -371,11 +444,17 @@ class ProjectController extends Controller
             'payment_type' => ['nullable', 'in:one_time,monthly,quarterly'],
             'service_ids' => ['required', 'array', 'min:1'],
             'service_ids.*' => ['exists:services,id'],
+            'access_ids' => ['nullable', 'array'],
+            'access_ids.*' => ['exists:accesses,id'],
         ]);
 
         DB::beginTransaction();
 
         try {
+            // Filter out empty values from arrays
+            $socialMediaLinks = array_values(array_filter($validated['social_media_links'] ?? [], fn($link) => !empty($link)));
+            $competitors = array_values(array_filter($validated['competitors'] ?? [], fn($comp) => !empty($comp)));
+
             // Update the project
             $project->update([
                 'project_name' => $validated['project_name'],
@@ -383,11 +462,23 @@ class ProjectController extends Controller
                 'date_of_onboarding' => $validated['date_of_onboarding'] ?? null,
                 'project_start_date' => $validated['project_start_date'] ?? null,
                 'client_name' => $validated['client_name'],
+                'business_name' => $validated['business_name'] ?? null,
+                'business_type' => $validated['business_type'] ?? null,
                 'website' => $validated['website'] ?? null,
                 'email_address' => $validated['email_address'],
                 'alternate_email_address' => $validated['alternate_email_address'] ?? null,
                 'phone_number' => $validated['phone_number'],
                 'alternate_phone_number' => $validated['alternate_phone_number'] ?? null,
+                'business_address' => $validated['business_address'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'state' => $validated['state'] ?? null,
+                'country' => $validated['country'] ?? null,
+                'postal_code' => $validated['postal_code'] ?? null,
+                'preferred_contact_method' => $validated['preferred_contact_method'] ?? null,
+                'timezone' => $validated['timezone'] ?? null,
+                'industry' => $validated['industry'] ?? null,
+                'social_media_links' => !empty($socialMediaLinks) ? $socialMediaLinks : null,
+                'competitors' => !empty($competitors) ? $competitors : null,
                 'assigned_to' => $validated['assigned_to'] ?? null,
                 'project_manager_id' => $validated['project_manager_id'] ?? null,
                 'project_health' => $validated['project_health'],
@@ -400,6 +491,9 @@ class ProjectController extends Controller
 
             // Sync services (this will remove old and add new)
             $project->services()->sync($validated['service_ids']);
+
+            // Sync accesses (this will remove old and add new)
+            $project->accesses()->sync($validated['access_ids'] ?? []);
 
             DB::commit();
 

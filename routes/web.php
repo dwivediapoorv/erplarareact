@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccessController;
 use App\Http\Controllers\Admin\LeaveRequestController as AdminLeaveRequestController;
 use App\Http\Controllers\Admin\SalarySlipController as AdminSalarySlipController;
 use App\Http\Controllers\ContentFlowController;
@@ -125,6 +126,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
     // User preferences route
     Route::post('user-preferences', [UserPreferenceController::class, 'update'])->name('user-preferences.update');
+
+    // Access types route (for adding new access types from project form)
+    Route::post('accesses', [AccessController::class, 'store'])->name('accesses.store');
 
     // Employee routes (self-service)
     Route::get('employee/my-details', [EmployeeController::class, 'myDetails'])->name('employee.my-details');
