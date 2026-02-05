@@ -2,8 +2,8 @@ import AppLayout from '@/layouts/app-layout';
 import tasks from '@/routes/tasks';
 import projects from '@/routes/projects';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
+import { ArrowLeft, Pencil, CheckCircle, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -22,6 +22,8 @@ interface Task {
     id: number;
     name: string;
     description: string | null;
+    created_by: number;
+    assigned_to: number;
     creator_name: string;
     assignee_name: string;
     project_name: string;
@@ -38,6 +40,30 @@ interface TaskShowProps {
 }
 
 export default function TaskShow({ task }: TaskShowProps) {
+    const { auth } = usePage<{ auth: { user: { id: number } } }>().props;
+    const isCreator = auth.user.id === task.created_by;
+    const isAssignee = auth.user.id === task.assigned_to;
+
+    const handleMarkComplete = () => {
+        router.patch(
+            `/tasks/${task.id}/complete`,
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
+    };
+
+    const handleApprove = () => {
+        router.patch(
+            `/tasks/${task.id}/approve`,
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
+    };
+
     const getStatusVariant = (status: string) => {
         if (status === 'Pending') return 'outline';
         if (status === 'Completed') return 'default';
@@ -66,9 +92,31 @@ export default function TaskShow({ task }: TaskShowProps) {
                             <h1 className="text-2xl font-semibold">#{task.id} - {task.name}</h1>
                         </div>
                     </div>
-                    <Badge variant={getStatusVariant(task.status)} className={getStatusColor(task.status)}>
-                        {task.status}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                        <Badge variant={getStatusVariant(task.status)} className={getStatusColor(task.status)}>
+                            {task.status}
+                        </Badge>
+                        {isAssignee && task.status === 'Pending' && (
+                            <Button variant="default" size="sm" onClick={handleMarkComplete}>
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Mark Complete
+                            </Button>
+                        )}
+                        {isCreator && task.status === 'Completed' && (
+                            <Button variant="default" size="sm" onClick={handleApprove} className="bg-green-600 hover:bg-green-700">
+                                <ThumbsUp className="h-4 w-4 mr-1" />
+                                Approve
+                            </Button>
+                        )}
+                        {isCreator && (
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href={tasks.edit(task.id).url}>
+                                    <Pencil className="h-4 w-4 mr-1" />
+                                    Edit
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-4">

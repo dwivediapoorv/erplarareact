@@ -10,11 +10,8 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import callLogs from '@/routes/call-logs';
 import clientInteractions from '@/routes/client-interactions';
 import employees from '@/routes/employees';
-import leads from '@/routes/leads';
-import meetings from '@/routes/meetings';
 import minutesOfMeetings from '@/routes/minutes-of-meetings';
 import payments from '@/routes/payments';
 import payroll from '@/routes/payroll';
@@ -26,7 +23,7 @@ import teams from '@/routes/teams';
 import users from '@/routes/users';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound, FileText, Receipt, Plane, UserPlus, Phone, Calendar } from 'lucide-react';
+import { Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound, FileText, Receipt, Plane } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const allNavItems: (NavItem & { permission?: string })[] = [
@@ -117,24 +114,6 @@ const allNavItems: (NavItem & { permission?: string })[] = [
         href: services.index(),
         icon: Settings,
         permission: 'view services',
-    },
-    {
-        title: 'Leads',
-        href: leads.index(),
-        icon: UserPlus,
-        permission: 'view leads',
-    },
-    {
-        title: 'Call Logs',
-        href: callLogs.index(),
-        icon: Phone,
-        permission: 'view call-logs',
-    },
-    {
-        title: 'Meetings',
-        href: meetings.index(),
-        icon: Calendar,
-        permission: 'view meetings',
     },
     {
         title: 'Permissions',

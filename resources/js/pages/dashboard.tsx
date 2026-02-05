@@ -1,11 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
-import leads from '@/routes/leads';
 import { type BreadcrumbItem, type PageProps } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { Users, Briefcase, CheckSquare, Phone, Calendar, TrendingUp, Upload, UserPlus, Clock, Target } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Briefcase, CheckSquare } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,35 +18,11 @@ interface UserWithTasks {
     open_tasks_count: number;
 }
 
-interface RecentUpload {
+interface ProjectWithTasks {
     id: number;
     name: string;
-    company_name: string | null;
-    status: string;
-    assigned_to: string | null;
-    created_at: string;
-}
-
-interface CallingTeamMember {
-    id: number;
-    name: string;
-    assigned_leads_count: number;
-}
-
-interface UpcomingMeeting {
-    id: number;
-    title: string;
-    lead_name: string;
-    company: string | null;
-    scheduled_at: string;
-}
-
-interface FollowUp {
-    id: number;
-    name: string;
-    company_name: string | null;
-    phone: string | null;
-    next_follow_up_at: string | null;
+    open_tasks_count: number;
+    health: string;
 }
 
 interface MyTask {
@@ -63,31 +37,13 @@ interface MyTask {
 interface DashboardProps extends PageProps {
     dashboardType?: string;
     // Admin Dashboard
-    activeUsersCount?: number;
     totalProjects?: number;
     openTasksCount?: number;
     greenProjectsCount?: number;
     orangeProjectsCount?: number;
     redProjectsCount?: number;
     usersWithOpenTasks?: UserWithTasks[];
-    totalLeads?: number;
-    newLeads?: number;
-    hotLeads?: number;
-    convertedLeads?: number;
-    // Scrubbing Team Dashboard
-    totalUploaded?: number;
-    unassignedLeads?: number;
-    assignedLeads?: number;
-    recentUploads?: RecentUpload[];
-    // WFM Dashboard
-    todayCalls?: number;
-    todayMeetings?: number;
-    callingTeamMembers?: CallingTeamMember[];
-    // Calling Team Dashboard
-    meetingsScheduled?: number;
-    todayConnected?: number;
-    upcomingMeetings?: UpcomingMeeting[];
-    followUpsNeeded?: FollowUp[];
+    projectsWithOpenTasks?: ProjectWithTasks[];
     // Employee Dashboard
     myOpenTasks?: number;
     myProjects?: number;
@@ -97,18 +53,6 @@ interface DashboardProps extends PageProps {
 export default function Dashboard(props: DashboardProps) {
     const { dashboardType = 'admin' } = props;
 
-    if (dashboardType === 'scrubbing') {
-        return <ScrubbingDashboard {...props} />;
-    }
-
-    if (dashboardType === 'wfm') {
-        return <WFMDashboard {...props} />;
-    }
-
-    if (dashboardType === 'calling') {
-        return <CallingDashboard {...props} />;
-    }
-
     if (dashboardType === 'employee') {
         return <EmployeeDashboard {...props} />;
     }
@@ -117,33 +61,19 @@ export default function Dashboard(props: DashboardProps) {
 }
 
 function AdminDashboard({
-    activeUsersCount = 0,
     totalProjects = 0,
     openTasksCount = 0,
     greenProjectsCount = 0,
     orangeProjectsCount = 0,
     redProjectsCount = 0,
     usersWithOpenTasks = [],
-    totalLeads = 0,
-    newLeads = 0,
-    hotLeads = 0,
-    convertedLeads = 0,
+    projectsWithOpenTasks = [],
 }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{activeUsersCount}</div>
-                        </CardContent>
-                    </Card>
-
+                <div className="grid auto-rows-min gap-4 md:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
@@ -163,51 +93,7 @@ function AdminDashboard({
                             <div className="text-2xl font-bold">{openTasksCount}</div>
                         </CardContent>
                     </Card>
-                </div>
 
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
-                            <UserPlus className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{totalLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">New Leads</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{newLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Hot Leads</CardTitle>
-                            <Target className="h-4 w-4 text-red-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{hotLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Converted</CardTitle>
-                            <CheckSquare className="h-4 w-4 text-green-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{convertedLeads}</div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Green Projects</CardTitle>
@@ -236,391 +122,53 @@ function AdminDashboard({
                     </Card>
                 </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Open Tasks by User</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {usersWithOpenTasks.length === 0 ? (
-                            <p className="text-center text-sm text-muted-foreground py-8">No users with open tasks</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {usersWithOpenTasks.map((user) => (
-                                    <div key={user.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
-                                        <span className="text-sm font-medium">{user.name}</span>
-                                        <span className="text-sm text-muted-foreground">{user.open_tasks_count} tasks</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
-        </AppLayout>
-    );
-}
-
-function ScrubbingDashboard({
-    totalUploaded = 0,
-    unassignedLeads = 0,
-    assignedLeads = 0,
-    convertedLeads = 0,
-    recentUploads = [],
-}: DashboardProps) {
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard - Scrubbing Team" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div>
-                    <h2 className="text-2xl font-bold">Scrubbing Team Dashboard</h2>
-                    <p className="text-muted-foreground">Your lead upload and management statistics</p>
-                </div>
-
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-2">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Uploaded</CardTitle>
-                            <Upload className="h-4 w-4 text-muted-foreground" />
+                        <CardHeader>
+                            <CardTitle>Open Tasks by User</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{totalUploaded}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Unassigned</CardTitle>
-                            <Clock className="h-4 w-4 text-orange-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-orange-600">{unassignedLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Assigned</CardTitle>
-                            <UserPlus className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{assignedLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Converted</CardTitle>
-                            <CheckSquare className="h-4 w-4 text-green-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{convertedLeads}</div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Uploads</CardTitle>
-                        <CardDescription>Your most recently uploaded leads</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {recentUploads.length === 0 ? (
-                            <p className="text-center text-sm text-muted-foreground py-8">No recent uploads</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {recentUploads.map((lead) => (
-                                    <Link key={lead.id} href={leads.show(lead.id)} className="block">
-                                        <div className="flex items-center justify-between p-3 rounded border hover:bg-muted/50 transition-colors">
-                                            <div className="flex-1">
-                                                <p className="font-medium">{lead.name}</p>
-                                                {lead.company_name && (
-                                                    <p className="text-sm text-muted-foreground">{lead.company_name}</p>
-                                                )}
-                                            </div>
-                                            <div className="text-right text-sm">
-                                                <p className="text-muted-foreground">{lead.created_at}</p>
-                                                {lead.assigned_to && (
-                                                    <p className="text-xs text-blue-600">Assigned to: {lead.assigned_to}</p>
-                                                )}
-                                            </div>
+                            {usersWithOpenTasks.length === 0 ? (
+                                <p className="text-center text-sm text-muted-foreground py-8">No users with open tasks</p>
+                            ) : (
+                                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                                    {usersWithOpenTasks.map((user) => (
+                                        <div key={user.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
+                                            <span className="text-sm font-medium">{user.name}</span>
+                                            <span className="text-sm text-muted-foreground">{user.open_tasks_count} tasks</span>
                                         </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <div className="flex gap-2">
-                    <Link href={leads.upload()}>
-                        <Button>
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Leads
-                        </Button>
-                    </Link>
-                    <Link href={leads.index()}>
-                        <Button variant="outline">View All Leads</Button>
-                    </Link>
-                </div>
-            </div>
-        </AppLayout>
-    );
-}
-
-function WFMDashboard({
-    totalLeads = 0,
-    unassignedLeads = 0,
-    assignedLeads = 0,
-    hotLeads = 0,
-    todayCalls = 0,
-    todayMeetings = 0,
-    callingTeamMembers = [],
-}: DashboardProps) {
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard - WFM" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div>
-                    <h2 className="text-2xl font-bold">WFM Dashboard</h2>
-                    <p className="text-muted-foreground">Workforce management and team performance</p>
-                </div>
-
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
-                            <UserPlus className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{totalLeads}</div>
+                                    ))}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Unassigned Leads</CardTitle>
-                            <Clock className="h-4 w-4 text-orange-600" />
+                        <CardHeader>
+                            <CardTitle>Open Tasks by Project</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-orange-600">{unassignedLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Hot Leads</CardTitle>
-                            <Target className="h-4 w-4 text-red-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{hotLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Assigned Leads</CardTitle>
-                            <CheckSquare className="h-4 w-4 text-green-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{assignedLeads}</div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Today's Calls</CardTitle>
-                            <Phone className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{todayCalls}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Today's Meetings</CardTitle>
-                            <Calendar className="h-4 w-4 text-purple-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-purple-600">{todayMeetings}</div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Calling Team Performance</CardTitle>
-                        <CardDescription>Assigned leads per team member</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {callingTeamMembers.length === 0 ? (
-                            <p className="text-center text-sm text-muted-foreground py-8">No calling team members</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {callingTeamMembers.map((member) => (
-                                    <div key={member.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
-                                        <span className="text-sm font-medium">{member.name}</span>
-                                        <span className="text-sm text-muted-foreground">{member.assigned_leads_count} leads</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Link href={leads.index()}>
-                    <Button>Manage Leads</Button>
-                </Link>
-            </div>
-        </AppLayout>
-    );
-}
-
-function CallingDashboard({
-    assignedLeads = 0,
-    newLeads = 0,
-    hotLeads = 0,
-    meetingsScheduled = 0,
-    todayCalls = 0,
-    todayConnected = 0,
-    upcomingMeetings = [],
-    followUpsNeeded = [],
-}: DashboardProps) {
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard - Calling Team" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div>
-                    <h2 className="text-2xl font-bold">Calling Team Dashboard</h2>
-                    <p className="text-muted-foreground">Your assigned leads and call activities</p>
-                </div>
-
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Assigned Leads</CardTitle>
-                            <UserPlus className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{assignedLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">New Leads</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{newLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Hot Leads</CardTitle>
-                            <Target className="h-4 w-4 text-red-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{hotLeads}</div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Meetings Scheduled</CardTitle>
-                            <Calendar className="h-4 w-4 text-purple-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-purple-600">{meetingsScheduled}</div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Today's Calls</CardTitle>
-                            <Phone className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{todayCalls}</div>
-                            <p className="text-xs text-muted-foreground mt-1">{todayConnected} connected</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Connection Rate</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-green-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-green-600">
-                                {todayCalls > 0 ? Math.round((todayConnected / todayCalls) * 100) : 0}%
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Upcoming Meetings</CardTitle>
-                        <CardDescription>Your scheduled meetings</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {upcomingMeetings.length === 0 ? (
-                            <p className="text-center text-sm text-muted-foreground py-8">No upcoming meetings</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {upcomingMeetings.map((meeting) => (
-                                    <div key={meeting.id} className="flex items-center justify-between p-3 rounded border">
-                                        <div className="flex-1">
-                                            <p className="font-medium">{meeting.title}</p>
-                                            <p className="text-sm text-muted-foreground">{meeting.lead_name} {meeting.company && `- ${meeting.company}`}</p>
-                                        </div>
-                                        <div className="text-right text-sm text-muted-foreground">
-                                            {meeting.scheduled_at}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Follow-ups Needed</CardTitle>
-                        <CardDescription>Leads requiring follow-up in the next 2 days</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {followUpsNeeded.length === 0 ? (
-                            <p className="text-center text-sm text-muted-foreground py-8">No follow-ups needed</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {followUpsNeeded.map((lead) => (
-                                    <Link key={lead.id} href={leads.show(lead.id)} className="block">
-                                        <div className="flex items-center justify-between p-3 rounded border hover:bg-muted/50 transition-colors">
-                                            <div className="flex-1">
-                                                <p className="font-medium">{lead.name}</p>
-                                                <p className="text-sm text-muted-foreground">{lead.company_name || lead.phone}</p>
+                            {projectsWithOpenTasks.length === 0 ? (
+                                <p className="text-center text-sm text-muted-foreground py-8">No projects with open tasks</p>
+                            ) : (
+                                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                                    {projectsWithOpenTasks.map((project) => (
+                                        <div key={project.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`w-2 h-2 rounded-full ${
+                                                    project.health === 'Green' ? 'bg-green-500' :
+                                                    project.health === 'Orange' ? 'bg-orange-500' : 'bg-red-500'
+                                                }`} />
+                                                <span className="text-sm font-medium">{project.name}</span>
                                             </div>
-                                            <div className="text-right text-sm text-orange-600">
-                                                {lead.next_follow_up_at}
-                                            </div>
+                                            <span className="text-sm text-muted-foreground">{project.open_tasks_count} tasks</span>
                                         </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Link href={leads.index()}>
-                    <Button>View All My Leads</Button>
-                </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </AppLayout>
     );

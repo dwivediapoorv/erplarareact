@@ -140,6 +140,8 @@ class TaskController extends Controller
                 'id' => $task->id,
                 'name' => $task->name,
                 'description' => $task->description,
+                'created_by' => $task->created_by,
+                'assigned_to' => $task->assigned_to,
                 'creator_name' => $task->creator->name,
                 'assignee_name' => $task->assignee->name,
                 'project_name' => $task->project->project_name,
@@ -151,6 +153,71 @@ class TaskController extends Controller
                 'created_at' => $task->created_at->format('d F Y'),
             ],
         ]);
+    }
+
+    /**
+     * Show the form for editing the specified task.
+     */
+    public function edit(Task $task): Response
+    {
+        // Only the task creator can edit
+        if ($task->created_by !== auth()->id()) {
+            abort(403, 'You are not authorized to edit this task.');
+        }
+
+        // Get all active users for assignment
+        $users = User::where('is_active', true)
+            ->select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        // Get all projects
+        $projects = Project::select('id', 'project_name')
+            ->orderBy('project_name', 'asc')
+            ->get();
+
+        return Inertia::render('tasks/edit', [
+            'task' => [
+                'id' => $task->id,
+                'name' => $task->name,
+                'description' => $task->description,
+                'assigned_to' => $task->assigned_to,
+                'project_id' => $task->project_id,
+                'due_date' => $task->due_date?->format('Y-m-d'),
+                'status' => $task->status,
+            ],
+            'users' => $users,
+            'projects' => $projects,
+        ]);
+    }
+
+    /**
+     * Update the specified task in storage.
+     */
+    public function update(Request $request, Task $task): RedirectResponse
+    {
+        // Only the task creator can update
+        if ($task->created_by !== auth()->id()) {
+            abort(403, 'You are not authorized to update this task.');
+        }
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'assigned_to' => ['required', 'exists:users,id'],
+            'project_id' => ['required', 'exists:projects,id'],
+            'due_date' => ['nullable', 'date'],
+        ]);
+
+        $task->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'assigned_to' => $validated['assigned_to'],
+            'project_id' => $validated['project_id'],
+            'due_date' => $validated['due_date'] ?? null,
+        ]);
+
+        return to_route('tasks.show', $task)->with('success', 'Task updated successfully.');
     }
 
     /**

@@ -136,6 +136,11 @@ export default function TasksIndex({ tasksCreatedByUser, tasksAssignedToUser }: 
                                                     {task.status}
                                                 </span>
                                             </div>
+                                            {task.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                                                    {task.description.length > 100 ? task.description.substring(0, 100) + '...' : task.description}
+                                                </p>
+                                            )}
                                             <div className="space-y-2">
                                                 <p className="text-sm text-muted-foreground font-medium">
                                                     {task.project_name}
@@ -203,6 +208,11 @@ export default function TasksIndex({ tasksCreatedByUser, tasksAssignedToUser }: 
                                                     {task.status}
                                                 </span>
                                             </div>
+                                            {task.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                                                    {task.description.length > 100 ? task.description.substring(0, 100) + '...' : task.description}
+                                                </p>
+                                            )}
                                             <div className="space-y-2">
                                                 <p className="text-sm text-muted-foreground font-medium">
                                                     {task.project_name}
