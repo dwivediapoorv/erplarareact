@@ -36,6 +36,7 @@ interface Service {
 interface Task {
     id: number;
     name: string;
+    description: string | null;
     status: 'Pending' | 'Completed' | 'Approved';
     due_date: string | null;
     assignee_name: string;
@@ -56,6 +57,11 @@ interface Interaction {
     created_at: string;
 }
 
+interface Access {
+    id: number;
+    name: string;
+}
+
 interface Project {
     id: number;
     project_name: string;
@@ -63,18 +69,33 @@ interface Project {
     date_of_onboarding: string | null;
     project_start_date: string | null;
     client_name: string;
+    business_name: string | null;
+    business_type: string | null;
     website: string | null;
     email_address: string;
     alternate_email_address: string | null;
     phone_number: string;
     alternate_phone_number: string | null;
+    business_address: string | null;
+    city: string | null;
+    state: string | null;
+    country: string | null;
+    postal_code: string | null;
+    preferred_contact_method: string | null;
+    timezone: string | null;
+    industry: string | null;
+    social_media_links: string[];
+    competitors: string[];
     assigned_to_name: string;
     project_manager_name: string;
     project_health: 'Red' | 'Green' | 'Orange';
     project_status: 'Active' | 'On Hold' | 'Suspended';
     blogs_count: number | null;
     monthly_report_date: string | null;
+    payment_amount: string | null;
+    payment_type: string | null;
     services: Service[];
+    accesses: Access[];
     created_at: string;
     updated_at: string;
 }
@@ -139,7 +160,7 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <div className="space-y-6 mt-4">
                                     {/* Project Information */}
                                     <div>
-                                        {/* <h3 className="text-lg font-semibold mb-3">Project Information</h3> */}
+                                        <h3 className="text-lg font-semibold mb-3">Project Information</h3>
                                         <div className="grid gap-4 md:grid-cols-2">
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">
@@ -178,18 +199,36 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                                 </label>
                                                 <p className="mt-1 text-sm">{project.project_start_date || 'N/A'}</p>
                                             </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Industry / Niche
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.industry || 'N/A'}</p>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Client Information */}
+                                    {/* Client & Business Information */}
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-3">Client Information</h3>
+                                        <h3 className="text-lg font-semibold mb-3">Client & Business Information</h3>
                                         <div className="grid gap-4 md:grid-cols-2">
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">
                                                     Client Name
                                                 </label>
                                                 <p className="mt-1 text-sm">{project.client_name}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Business Name
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.business_name || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Business Type
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.business_type || 'N/A'}</p>
                                             </div>
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">
@@ -230,6 +269,119 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                         </div>
                                     </div>
 
+                                    {/* Business Address */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Business Address</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div className="md:col-span-2">
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Street Address
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.business_address || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    City
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.city || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    State / Province
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.state || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Country
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.country || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Postal Code
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.postal_code || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Communication Preferences */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Communication Preferences</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Preferred Contact Method
+                                                </label>
+                                                <p className="mt-1 text-sm capitalize">{project.preferred_contact_method?.replace('_', ' ') || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Timezone
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.timezone || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Social Media & Competitors */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Social Media & Competitors</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Social Media Links
+                                                </label>
+                                                <div className="mt-1">
+                                                    {project.social_media_links && project.social_media_links.length > 0 ? (
+                                                        <ul className="space-y-1">
+                                                            {project.social_media_links.map((link, index) => (
+                                                                <li key={index}>
+                                                                    <a
+                                                                        href={link}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                                                                    >
+                                                                        {link}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p className="text-sm">N/A</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Competitors
+                                                </label>
+                                                <div className="mt-1">
+                                                    {project.competitors && project.competitors.length > 0 ? (
+                                                        <ul className="space-y-1">
+                                                            {project.competitors.map((competitor, index) => (
+                                                                <li key={index}>
+                                                                    <a
+                                                                        href={competitor}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                                                                    >
+                                                                        {competitor}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <p className="text-sm">N/A</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {/* Project Assignment */}
                                     <div>
                                         <h3 className="text-lg font-semibold mb-3">Project Assignment</h3>
@@ -249,11 +401,11 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                         </div>
                                     </div>
 
-                                    {/* Services & Blog Information */}
+                                    {/* Services & Access */}
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-3">Services & Blog Information</h3>
+                                        <h3 className="text-lg font-semibold mb-3">Services & Access</h3>
                                         <div className="grid gap-4 md:grid-cols-2">
-                                            <div className="md:col-span-2">
+                                            <div>
                                                 <label className="text-sm font-medium text-muted-foreground">
                                                     Services Offered
                                                 </label>
@@ -271,6 +423,29 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                             </div>
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">
+                                                    Access Received
+                                                </label>
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    {project.accesses && project.accesses.length > 0 ? (
+                                                        project.accesses.map((access) => (
+                                                            <Badge key={access.id} variant="outline">
+                                                                {access.name}
+                                                            </Badge>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-sm">N/A</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Blog & Reporting */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Blog & Reporting</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
                                                     Blogs Count
                                                 </label>
                                                 <p className="mt-1 text-sm">{project.blogs_count ?? 'N/A'}</p>
@@ -280,6 +455,25 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                                     Monthly Report Date
                                                 </label>
                                                 <p className="mt-1 text-sm">{project.monthly_report_date || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Payment Information */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Payment Information</h3>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Payment Amount
+                                                </label>
+                                                <p className="mt-1 text-sm">{project.payment_amount ? `$${project.payment_amount}` : 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-muted-foreground">
+                                                    Payment Type
+                                                </label>
+                                                <p className="mt-1 text-sm capitalize">{project.payment_type?.replace('_', ' ') || 'N/A'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -371,6 +565,13 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                                 <Link href={tasks.show(task.id).url} className="hover:underline">
                                                     <p className="text-sm font-medium">{task.name}</p>
                                                 </Link>
+                                                {task.description && (
+                                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                                        {task.description.length > 100
+                                                            ? task.description.substring(0, 100) + '...'
+                                                            : task.description}
+                                                    </p>
+                                                )}
                                                 <div className="flex items-center gap-3 mt-1.5">
                                                     <span className="text-xs text-muted-foreground">
                                                         Assigned to: {task.assignee_name}

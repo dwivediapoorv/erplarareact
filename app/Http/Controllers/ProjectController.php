@@ -227,6 +227,7 @@ class ProjectController extends Controller
     {
         $project->load([
             'services:id,name',
+            'accesses:id,name',
             'assignedTo:id,first_name,last_name',
             'projectManager:id,first_name,last_name'
         ]);
@@ -234,7 +235,7 @@ class ProjectController extends Controller
         // Get latest tasks for this project
         $tasks = $project->tasks()
             ->with(['assignee:id,name'])
-            ->select('id', 'name', 'status', 'due_date', 'assigned_to', 'created_at')
+            ->select('id', 'name', 'description', 'status', 'due_date', 'assigned_to', 'created_at')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
@@ -242,6 +243,7 @@ class ProjectController extends Controller
                 return [
                     'id' => $task->id,
                     'name' => $task->name,
+                    'description' => $task->description,
                     'status' => $task->status,
                     'due_date' => $task->due_date?->format('d M Y'),
                     'assignee_name' => $task->assignee?->name ?? 'N/A',
@@ -287,18 +289,33 @@ class ProjectController extends Controller
                 'date_of_onboarding' => $project->date_of_onboarding?->format('Y-m-d'),
                 'project_start_date' => $project->project_start_date?->format('Y-m-d'),
                 'client_name' => $project->client_name,
+                'business_name' => $project->business_name,
+                'business_type' => $project->business_type,
                 'website' => $project->website,
                 'email_address' => $project->email_address,
                 'alternate_email_address' => $project->alternate_email_address,
                 'phone_number' => $project->phone_number,
                 'alternate_phone_number' => $project->alternate_phone_number,
+                'business_address' => $project->business_address,
+                'city' => $project->city,
+                'state' => $project->state,
+                'country' => $project->country,
+                'postal_code' => $project->postal_code,
+                'preferred_contact_method' => $project->preferred_contact_method,
+                'timezone' => $project->timezone,
+                'industry' => $project->industry,
+                'social_media_links' => $project->social_media_links ?? [],
+                'competitors' => $project->competitors ?? [],
                 'assigned_to_name' => $project->assignedTo ? $project->assignedTo->first_name . ' ' . $project->assignedTo->last_name : 'N/A',
                 'project_manager_name' => $project->projectManager ? $project->projectManager->first_name . ' ' . $project->projectManager->last_name : 'N/A',
                 'project_health' => $project->project_health,
                 'project_status' => $project->project_status,
                 'blogs_count' => $project->blogs_count,
                 'monthly_report_date' => $project->monthly_report_date?->format('Y-m-d'),
+                'payment_amount' => $project->payment_amount,
+                'payment_type' => $project->payment_type,
                 'services' => $project->services,
+                'accesses' => $project->accesses,
                 'created_at' => $project->created_at?->format('Y-m-d'),
                 'updated_at' => $project->updated_at?->format('Y-m-d'),
             ],
