@@ -14,7 +14,6 @@ import clientInteractions from '@/routes/client-interactions';
 import employees from '@/routes/employees';
 import minutesOfMeetings from '@/routes/minutes-of-meetings';
 import payments from '@/routes/payments';
-import payroll from '@/routes/payroll';
 import permissions from '@/routes/permissions';
 import projects from '@/routes/projects';
 import services from '@/routes/services';
@@ -23,7 +22,7 @@ import teams from '@/routes/teams';
 import users from '@/routes/users';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Briefcase, CheckSquare, ClipboardList, CreditCard, DollarSign, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound, FileText, Receipt, Plane } from 'lucide-react';
+import { Briefcase, CheckSquare, ClipboardList, CreditCard, LayoutGrid, MessageSquare, Settings, Shield, Users, UsersRound, FileText } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const allNavItems: (NavItem & { permission?: string })[] = [
@@ -78,24 +77,6 @@ const allNavItems: (NavItem & { permission?: string })[] = [
         href: minutesOfMeetings.index(),
         icon: ClipboardList,
         permission: 'view minutes-of-meetings',
-    },
-    {
-        title: 'Payroll',
-        href: payroll.index(),
-        icon: DollarSign,
-        permission: 'view payrolls',
-    },
-    {
-        title: 'Salary Slips',
-        href: '/admin/salary-slips',
-        icon: Receipt,
-        permission: 'view salary-slips',
-    },
-    {
-        title: 'Leave Requests',
-        href: '/admin/leave-requests',
-        icon: Plane,
-        permission: 'view leave-requests',
     },
     {
         title: 'Payments',

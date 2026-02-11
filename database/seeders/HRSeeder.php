@@ -34,25 +34,6 @@ class HRSeeder extends Seeder
             'edit employees',
             'delete employees',
 
-            // Leave Request permissions
-            'view leave-requests',
-            'create leave-requests',
-            'edit leave-requests',
-            'delete leave-requests',
-            'approve leave-requests',
-
-            // Salary Slip permissions
-            'view salary-slips',
-            'create salary-slips',
-            'edit salary-slips',
-            'delete salary-slips',
-
-            // Holiday permissions
-            'view holidays',
-            'create holidays',
-            'edit holidays',
-            'delete holidays',
-
             // Permission permissions
             'assign roles',
         ];

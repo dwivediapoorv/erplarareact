@@ -62,12 +62,6 @@ class RoleAndPermissionSeeder extends Seeder
                 'edit minutes-of-meetings',
                 'delete minutes-of-meetings',
             ],
-            'Payroll' => [
-                'view payrolls',
-                'create payrolls',
-                'edit payrolls',
-                'delete payrolls',
-            ],
             'Payment' => [
                 'view payments',
                 'create payments',
@@ -79,26 +73,6 @@ class RoleAndPermissionSeeder extends Seeder
                 'create client-interactions',
                 'edit client-interactions',
                 'delete client-interactions',
-            ],
-            'Leave Request' => [
-                'view leave-requests',
-                'create leave-requests',
-                'edit leave-requests',
-                'delete leave-requests',
-                'approve leave-requests',
-            ],
-            'Salary Slip' => [
-                'view salary-slips',
-                'create salary-slips',
-                'edit salary-slips',
-                'delete salary-slips',
-                'generate salary-slips',
-            ],
-            'Holiday' => [
-                'view holidays',
-                'create holidays',
-                'edit holidays',
-                'delete holidays',
             ],
             'Content Flow' => [
                 'view content-flows',
@@ -136,9 +110,6 @@ class RoleAndPermissionSeeder extends Seeder
             'view services',
             'view minutes-of-meetings', 'create minutes-of-meetings', 'edit minutes-of-meetings',
             'view client-interactions', 'create client-interactions', 'edit client-interactions',
-            'view leave-requests', 'approve leave-requests',
-            'view salary-slips',
-            'view holidays',
             'view content-flows', 'create content-flows', 'edit content-flows',
         ];
         $managerRole->syncPermissions($managerPermissions);
@@ -149,9 +120,6 @@ class RoleAndPermissionSeeder extends Seeder
             'view tasks', 'complete tasks',
             'view minutes-of-meetings',
             'view client-interactions',
-            'view leave-requests', 'create leave-requests',
-            'view salary-slips',
-            'view holidays',
             'view content-flows',
         ];
         $employeeRole->syncPermissions($employeePermissions);
