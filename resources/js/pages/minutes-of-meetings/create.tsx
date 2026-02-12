@@ -33,14 +33,12 @@ interface Project {
 
 interface CreateMinutesOfMeetingProps {
     projects: Project[];
+    defaultProjectId: string;
 }
 
-export default function CreateMinutesOfMeeting({ projects }: CreateMinutesOfMeetingProps) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectIdFromUrl = urlParams.get('project_id') || '';
-
+export default function CreateMinutesOfMeeting({ projects, defaultProjectId }: CreateMinutesOfMeetingProps) {
     const { data, setData, post, processing, errors } = useForm({
-        project_id: projectIdFromUrl,
+        project_id: defaultProjectId,
         title: '',
         description: '',
         meeting_date: '',

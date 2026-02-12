@@ -32,6 +32,7 @@ interface Task {
     assigned_to: number;
     project_id: number;
     due_date: string | null;
+    freshdesk_ticket_id: string | null;
     status: string;
 }
 
@@ -63,6 +64,7 @@ export default function EditTask({ task, users, projects }: EditTaskProps) {
         assigned_to: task.assigned_to.toString(),
         project_id: task.project_id.toString(),
         due_date: task.due_date || '',
+        freshdesk_ticket_id: task.freshdesk_ticket_id || '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -171,7 +173,7 @@ export default function EditTask({ task, users, projects }: EditTaskProps) {
                             </div>
 
                             {/* Due Date */}
-                            <div className="space-y-2 md:col-span-2">
+                            <div className="space-y-2">
                                 <Label htmlFor="due_date">
                                     Due Date
                                 </Label>
@@ -184,6 +186,23 @@ export default function EditTask({ task, users, projects }: EditTaskProps) {
                                     }
                                 />
                                 <InputError message={errors.due_date} />
+                            </div>
+
+                            {/* Freshdesk Ticket ID */}
+                            <div className="space-y-2">
+                                <Label htmlFor="freshdesk_ticket_id">
+                                    Freshdesk Ticket #
+                                </Label>
+                                <Input
+                                    id="freshdesk_ticket_id"
+                                    type="text"
+                                    value={data.freshdesk_ticket_id}
+                                    onChange={(e) =>
+                                        setData('freshdesk_ticket_id', e.target.value)
+                                    }
+                                    placeholder="e.g. 12345"
+                                />
+                                <InputError message={errors.freshdesk_ticket_id} />
                             </div>
                         </div>
 

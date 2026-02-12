@@ -1,8 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import clientInteractions from '@/routes/client-interactions';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { CheckCircle, Plus } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { CheckCircle, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 
@@ -29,8 +29,15 @@ interface ClientInteractionsIndexProps {
 }
 
 export default function ClientInteractionsIndex({ interactions: interactionList }: ClientInteractionsIndexProps) {
-    const { flash } = usePage().props as any;
+    const { flash, auth } = usePage().props as any;
+    const canDelete = (auth?.permissions as string[] ?? []).includes('delete client-interactions');
     const [showSuccess, setShowSuccess] = useState(false);
+
+    const handleDelete = (id: number) => {
+        if (confirm('Are you sure you want to delete this client interaction?')) {
+            router.delete(clientInteractions.destroy(id).url);
+        }
+    };
 
     useEffect(() => {
         if (flash?.success) {
@@ -85,6 +92,11 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                                     <th className="px-6 py-3 text-left text-sm font-medium">
                                         Notes
                                     </th>
+                                    {canDelete && (
+                                        <th className="px-6 py-3 text-left text-sm font-medium">
+                                            Actions
+                                        </th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-sidebar-border/70 dark:divide-sidebar-border">
@@ -115,12 +127,24 @@ export default function ClientInteractionsIndex({ interactions: interactionList 
                                             <td className="px-6 py-4 text-sm">
                                                 {interaction.notes || 'N/A'}
                                             </td>
+                                            {canDelete && (
+                                                <td className="px-6 py-4 text-sm">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDelete(interaction.id)}
+                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={7}
+                                            colSpan={canDelete ? 8 : 7}
                                             className="px-6 py-8 text-center text-sm text-muted-foreground"
                                         >
                                             No client interactions found

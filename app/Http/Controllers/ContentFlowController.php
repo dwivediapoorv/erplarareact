@@ -87,7 +87,7 @@ class ContentFlowController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $user = auth()->user();
         $employee = $user->employee;
@@ -102,6 +102,7 @@ class ContentFlowController extends Controller
 
         return Inertia::render('content-flows/create', [
             'projects' => $projects,
+            'defaultProjectId' => $request->query('project_id', ''),
         ]);
     }
 

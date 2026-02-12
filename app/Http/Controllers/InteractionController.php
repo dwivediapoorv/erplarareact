@@ -35,7 +35,7 @@ class InteractionController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
         // Get all projects for the dropdown
         $projects = Project::select('id', 'project_name')
@@ -44,6 +44,7 @@ class InteractionController extends Controller
 
         return Inertia::render('client-interactions/create', [
             'projects' => $projects,
+            'defaultProjectId' => $request->query('project_id', ''),
         ]);
     }
 
@@ -67,5 +68,16 @@ class InteractionController extends Controller
 
         return redirect()->route('client-interactions.index')
             ->with('success', 'Client interaction created successfully.');
+    }
+
+    /**
+     * Remove the specified client interaction from storage.
+     */
+    public function destroy(Interaction $interaction): RedirectResponse
+    {
+        $interaction->delete();
+
+        return redirect()->route('client-interactions.index')
+            ->with('success', 'Client interaction deleted successfully.');
     }
 }

@@ -108,4 +108,12 @@ class Project extends Model
         return $this->belongsToMany(Access::class, 'project_access')
             ->withTimestamps();
     }
+
+    /**
+     * Get the content flows for this project
+     */
+    public function contentFlows(): HasMany
+    {
+        return $this->hasMany(ContentFlow::class);
+    }
 }

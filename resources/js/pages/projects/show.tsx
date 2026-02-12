@@ -3,6 +3,8 @@ import projects from '@/routes/projects';
 import tasks from '@/routes/tasks';
 import minutesOfMeetings from '@/routes/minutes-of-meetings';
 import clientInteractions from '@/routes/client-interactions';
+import contentFlows from '@/routes/content-flows';
+import { formatMonthlyReportDate } from '@/utils/format';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Pencil, CheckSquare, Calendar, Phone, Info, Plus, FileText } from 'lucide-react';
@@ -105,31 +107,11 @@ interface ProjectShowProps {
     tasks: Task[];
     moms: MOM[];
     interactions: Interaction[];
+    openContentFlowsCount: number;
 }
 
-export default function ProjectShow({ project, tasks: projectTasks, moms, interactions }: ProjectShowProps) {
+export default function ProjectShow({ project, tasks: projectTasks, moms, interactions, openContentFlowsCount }: ProjectShowProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // Format monthly report date to show only the day with ordinal suffix
-    const formatMonthlyReportDate = (date: string | null) => {
-        if (!date) return 'N/A';
-
-        const dateObj = new Date(date);
-        const day = dateObj.getDate();
-
-        // Add ordinal suffix (st, nd, rd, th)
-        const getOrdinalSuffix = (day: number) => {
-            if (day > 3 && day < 21) return 'th';
-            switch (day % 10) {
-                case 1: return 'st';
-                case 2: return 'nd';
-                case 3: return 'rd';
-                default: return 'th';
-            }
-        };
-
-        return `${day}${getOrdinalSuffix(day)} of every month`;
-    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -551,7 +533,7 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                     <Badge variant="secondary">{projectTasks.filter(t => t.status === 'Pending').length}</Badge>
                                 </div>
                                 <Button size="sm" variant="outline" asChild>
-                                    <Link href={`${tasks.create().url}?project_id=${project.id}`}>
+                                    <Link href={tasks.create({ query: { project_id: project.id } }).url}>
                                         <Plus className="h-4 w-4 mr-1.5" />
                                         Add Task
                                     </Link>
@@ -603,10 +585,10 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <div className="flex items-center gap-3">
                                     <FileText className="h-5 w-5 text-muted-foreground" />
                                     <h3 className="text-lg font-semibold">Open Content Workflows</h3>
-                                    <Badge variant="secondary">0</Badge>
+                                    <Badge variant="secondary">{openContentFlowsCount}</Badge>
                                 </div>
                                 <Button size="sm" variant="outline" asChild>
-                                    <Link href={`/content-flows/create?project_id=${project.id}`}>
+                                    <Link href={contentFlows.create({ query: { project_id: project.id } }).url}>
                                         <Plus className="h-4 w-4 mr-1.5" />
                                         Add Content Flow
                                     </Link>
@@ -711,7 +693,7 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                             <FileText className="h-4 w-4 text-muted-foreground" />
                                             <span className="text-sm">Pending Workflows</span>
                                         </div>
-                                        <span className="text-sm font-semibold">0</span>
+                                        <span className="text-sm font-semibold">{openContentFlowsCount}</span>
                                     </div>
                                     <div className="flex items-center justify-between p-2 rounded-lg bg-sidebar-accent/30">
                                         <div className="flex items-center gap-2">
@@ -744,7 +726,7 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <h3 className="text-lg font-semibold">Minutes of Meetings</h3>
                             </div>
                             <Button size="sm" variant="outline" asChild>
-                                <Link href={`${minutesOfMeetings.create().url}?project_id=${project.id}`}>
+                                <Link href={minutesOfMeetings.create({ query: { project_id: project.id } }).url}>
                                     <Plus className="h-3 w-3" />
                                 </Link>
                             </Button>
@@ -778,7 +760,7 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                                 <h3 className="text-lg font-semibold">Call Interactions</h3>
                             </div>
                             <Button size="sm" variant="outline" asChild>
-                                <Link href={`${clientInteractions.create().url}?project_id=${project.id}`}>
+                                <Link href={clientInteractions.create({ query: { project_id: project.id } }).url}>
                                     <Plus className="h-3 w-3" />
                                 </Link>
                             </Button>

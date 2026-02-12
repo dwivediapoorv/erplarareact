@@ -26,7 +26,7 @@ class TaskController extends Controller
             'approver:id,name'
         ])
             ->where('created_by', $userId)
-            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'completed_at', 'approved_by', 'created_at')
+            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'freshdesk_ticket_id', 'completed_at', 'approved_by', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($task) {
@@ -34,9 +34,10 @@ class TaskController extends Controller
                     'id' => $task->id,
                     'name' => $task->name,
                     'description' => $task->description,
-                    'assignee_name' => $task->assignee->name,
-                    'project_name' => $task->project->project_name,
+                    'assignee_name' => $task->assignee?->name,
+                    'project_name' => $task->project?->project_name,
                     'status' => $task->status,
+                    'freshdesk_ticket_id' => $task->freshdesk_ticket_id,
                     'due_date' => $task->due_date?->format('Y-m-d'),
                     'completed_at' => $task->completed_at?->format('Y-m-d'),
                     'approver_name' => $task->approver?->name,
@@ -51,7 +52,7 @@ class TaskController extends Controller
             'approver:id,name'
         ])
             ->where('assigned_to', $userId)
-            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'completed_at', 'approved_by', 'created_at')
+            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'freshdesk_ticket_id', 'completed_at', 'approved_by', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($task) {
@@ -59,9 +60,10 @@ class TaskController extends Controller
                     'id' => $task->id,
                     'name' => $task->name,
                     'description' => $task->description,
-                    'creator_name' => $task->creator->name,
-                    'project_name' => $task->project->project_name,
+                    'creator_name' => $task->creator?->name,
+                    'project_name' => $task->project?->project_name,
                     'status' => $task->status,
+                    'freshdesk_ticket_id' => $task->freshdesk_ticket_id,
                     'due_date' => $task->due_date?->format('Y-m-d'),
                     'completed_at' => $task->completed_at?->format('Y-m-d'),
                     'approver_name' => $task->approver?->name,
@@ -78,7 +80,7 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new task.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         // Get all active users for assignment
         $users = User::where('is_active', true)
@@ -94,6 +96,7 @@ class TaskController extends Controller
         return Inertia::render('tasks/create', [
             'users' => $users,
             'projects' => $projects,
+            'defaultProjectId' => $request->query('project_id', ''),
         ]);
     }
 
@@ -108,6 +111,7 @@ class TaskController extends Controller
             'assigned_to' => ['required', 'exists:users,id'],
             'project_id' => ['required', 'exists:projects,id'],
             'due_date' => ['nullable', 'date'],
+            'freshdesk_ticket_id' => ['nullable', 'string', 'max:50'],
         ]);
 
         Task::create([
@@ -117,6 +121,7 @@ class TaskController extends Controller
             'assigned_to' => $validated['assigned_to'],
             'project_id' => $validated['project_id'],
             'due_date' => $validated['due_date'] ?? null,
+            'freshdesk_ticket_id' => $validated['freshdesk_ticket_id'] ?? null,
             'status' => 'Pending',
         ]);
 
@@ -132,7 +137,8 @@ class TaskController extends Controller
             'creator:id,name',
             'assignee:id,name',
             'project:id,project_name',
-            'approver:id,name'
+            'approver:id,name',
+            'comments.user:id,name',
         ]);
 
         return Inertia::render('tasks/show', [
@@ -142,15 +148,23 @@ class TaskController extends Controller
                 'description' => $task->description,
                 'created_by' => $task->created_by,
                 'assigned_to' => $task->assigned_to,
-                'creator_name' => $task->creator->name,
-                'assignee_name' => $task->assignee->name,
-                'project_name' => $task->project->project_name,
+                'creator_name' => $task->creator?->name,
+                'assignee_name' => $task->assignee?->name,
+                'project_name' => $task->project?->project_name,
                 'project_id' => $task->project_id,
                 'status' => $task->status,
+                'freshdesk_ticket_id' => $task->freshdesk_ticket_id,
                 'due_date' => $task->due_date?->format('d F Y'),
                 'completed_at' => $task->completed_at?->format('d F Y'),
                 'approver_name' => $task->approver?->name,
                 'created_at' => $task->created_at->format('d F Y'),
+                'comments' => $task->comments->map(fn ($c) => [
+                    'id' => $c->id,
+                    'comment' => $c->comment,
+                    'user_id' => $c->user_id,
+                    'user_name' => $c->user?->name,
+                    'created_at' => $c->created_at->format('d M Y, h:i A'),
+                ]),
             ],
         ]);
     }
@@ -184,6 +198,7 @@ class TaskController extends Controller
                 'assigned_to' => $task->assigned_to,
                 'project_id' => $task->project_id,
                 'due_date' => $task->due_date?->format('Y-m-d'),
+                'freshdesk_ticket_id' => $task->freshdesk_ticket_id,
                 'status' => $task->status,
             ],
             'users' => $users,
@@ -207,6 +222,7 @@ class TaskController extends Controller
             'assigned_to' => ['required', 'exists:users,id'],
             'project_id' => ['required', 'exists:projects,id'],
             'due_date' => ['nullable', 'date'],
+            'freshdesk_ticket_id' => ['nullable', 'string', 'max:50'],
         ]);
 
         $task->update([
@@ -215,6 +231,7 @@ class TaskController extends Controller
             'assigned_to' => $validated['assigned_to'],
             'project_id' => $validated['project_id'],
             'due_date' => $validated['due_date'] ?? null,
+            'freshdesk_ticket_id' => $validated['freshdesk_ticket_id'] ?? null,
         ]);
 
         return to_route('tasks.show', $task)->with('success', 'Task updated successfully.');

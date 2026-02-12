@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
 {
@@ -17,6 +18,7 @@ class Task extends Model
         'project_id',
         'status',
         'due_date',
+        'freshdesk_ticket_id',
         'completed_at',
         'approved_by',
     ];
@@ -56,5 +58,13 @@ class Task extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the comments for the task.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(TaskComment::class)->with('user:id,name')->orderBy('created_at', 'asc');
     }
 }

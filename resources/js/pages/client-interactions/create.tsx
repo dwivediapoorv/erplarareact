@@ -33,14 +33,12 @@ interface Project {
 
 interface CreateClientInteractionProps {
     projects: Project[];
+    defaultProjectId: string;
 }
 
-export default function CreateClientInteraction({ projects }: CreateClientInteractionProps) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectIdFromUrl = urlParams.get('project_id') || '';
-
+export default function CreateClientInteraction({ projects, defaultProjectId }: CreateClientInteractionProps) {
     const { data, setData, post, processing, errors } = useForm({
-        project_id: projectIdFromUrl,
+        project_id: defaultProjectId,
         client_name: '',
         interaction_type: '',
         interaction_date: '',

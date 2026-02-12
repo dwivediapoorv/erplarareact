@@ -1,5 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
+import { formatMonthlyReportDate } from '@/utils/format';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { CheckCircle, Plus } from 'lucide-react';
@@ -49,27 +50,6 @@ export default function ProjectsIndex({ projects: projectsList, columnPreference
             return () => clearTimeout(timer);
         }
     }, [flash]);
-
-    // Format monthly report date to show only the day with ordinal suffix
-    const formatMonthlyReportDate = (date: string | null) => {
-        if (!date) return 'N/A';
-
-        const dateObj = new Date(date);
-        const day = dateObj.getDate();
-
-        // Add ordinal suffix (st, nd, rd, th)
-        const getOrdinalSuffix = (day: number) => {
-            if (day > 3 && day < 21) return 'th';
-            switch (day % 10) {
-                case 1: return 'st';
-                case 2: return 'nd';
-                case 3: return 'rd';
-                default: return 'th';
-            }
-        };
-
-        return `${day}${getOrdinalSuffix(day)} of every month`;
-    };
 
     const columns: Column<Project>[] = [
         {

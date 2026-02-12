@@ -2,10 +2,11 @@ import AppLayout from '@/layouts/app-layout';
 import tasks from '@/routes/tasks';
 import projects from '@/routes/projects';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage, router } from '@inertiajs/react';
-import { ArrowLeft, Pencil, CheckCircle, ThumbsUp } from 'lucide-react';
+import { Head, Link, usePage, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, Pencil, CheckCircle, ThumbsUp, Trash2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,6 +19,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface Comment {
+    id: number;
+    comment: string;
+    user_id: number;
+    user_name: string;
+    created_at: string;
+}
+
 interface Task {
     id: number;
     name: string;
@@ -29,10 +38,12 @@ interface Task {
     project_name: string;
     project_id: number;
     status: 'Pending' | 'Completed' | 'Approved';
+    freshdesk_ticket_id: string | null;
     due_date: string | null;
     completed_at: string | null;
     approver_name: string | null;
     created_at: string;
+    comments: Comment[];
 }
 
 interface TaskShowProps {
@@ -44,13 +55,15 @@ export default function TaskShow({ task }: TaskShowProps) {
     const isCreator = auth.user.id === task.created_by;
     const isAssignee = auth.user.id === task.assigned_to;
 
+    const { data, setData, post, processing, reset, errors } = useForm({
+        comment: '',
+    });
+
     const handleMarkComplete = () => {
         router.patch(
             `/tasks/${task.id}/complete`,
             {},
-            {
-                preserveScroll: true,
-            }
+            { preserveScroll: true }
         );
     };
 
@@ -58,15 +71,26 @@ export default function TaskShow({ task }: TaskShowProps) {
         router.patch(
             `/tasks/${task.id}/approve`,
             {},
-            {
-                preserveScroll: true,
-            }
+            { preserveScroll: true }
         );
+    };
+
+    const handleCommentSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(`/tasks/${task.id}/comments`, {
+            preserveScroll: true,
+            onSuccess: () => reset('comment'),
+        });
+    };
+
+    const handleDeleteComment = (commentId: number) => {
+        router.delete(`/tasks/${task.id}/comments/${commentId}`, {
+            preserveScroll: true,
+        });
     };
 
     const getStatusVariant = (status: string) => {
         if (status === 'Pending') return 'outline';
-        if (status === 'Completed') return 'default';
         return 'default';
     };
 
@@ -120,18 +144,82 @@ export default function TaskShow({ task }: TaskShowProps) {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-4">
-                    {/* Task Information */}
-                    <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border md:col-span-3">
-                        <h2 className="text-lg font-semibold mb-4">Task Information</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">
-                                    Description
-                                </label>
-                                <p className="mt-1 text-sm whitespace-pre-wrap">
-                                    {task.description || 'No description provided'}
-                                </p>
+                    {/* Left column: description + comments */}
+                    <div className="md:col-span-3 flex flex-col gap-6">
+                        {/* Task Information */}
+                        <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                            <h2 className="text-lg font-semibold mb-4">Task Information</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Description
+                                    </label>
+                                    <p className="mt-1 text-sm whitespace-pre-wrap">
+                                        {task.description || 'No description provided'}
+                                    </p>
+                                </div>
                             </div>
+                        </div>
+
+                        {/* Comments */}
+                        <div className="rounded-xl border border-sidebar-border/70 bg-card p-6 dark:border-sidebar-border">
+                            <h2 className="text-lg font-semibold mb-4">
+                                Comments
+                                {task.comments.length > 0 && (
+                                    <span className="ml-2 text-sm font-normal text-muted-foreground">
+                                        ({task.comments.length})
+                                    </span>
+                                )}
+                            </h2>
+
+                            {/* Comment list */}
+                            <div className="space-y-4 mb-6">
+                                {task.comments.length === 0 && (
+                                    <p className="text-sm text-muted-foreground">No comments yet. Be the first to add one.</p>
+                                )}
+                                {task.comments.map((c) => (
+                                    <div key={c.id} className="flex gap-3">
+                                        <div className="flex-1 rounded-lg border border-sidebar-border/50 bg-muted/30 p-3">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-sm font-medium">{c.user_name}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-muted-foreground">{c.created_at}</span>
+                                                    {c.user_id === auth.user.id && (
+                                                        <button
+                                                            onClick={() => handleDeleteComment(c.id)}
+                                                            className="text-muted-foreground hover:text-destructive transition-colors"
+                                                            title="Delete comment"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <p className="text-sm whitespace-pre-wrap">{c.comment}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Add comment form */}
+                            <form onSubmit={handleCommentSubmit} className="flex gap-2 items-end">
+                                <div className="flex-1">
+                                    <Textarea
+                                        value={data.comment}
+                                        onChange={(e) => setData('comment', e.target.value)}
+                                        placeholder="Add a comment or follow-up note..."
+                                        rows={2}
+                                        className="resize-none"
+                                    />
+                                    {errors.comment && (
+                                        <p className="text-xs text-destructive mt-1">{errors.comment}</p>
+                                    )}
+                                </div>
+                                <Button type="submit" disabled={processing || !data.comment.trim()} size="sm">
+                                    <Send className="h-4 w-4 mr-1" />
+                                    Post
+                                </Button>
+                            </form>
                         </div>
                     </div>
 
@@ -176,6 +264,23 @@ export default function TaskShow({ task }: TaskShowProps) {
                                 </label>
                                 <p className="mt-1 text-sm">{task.due_date || 'Not set'}</p>
                             </div>
+                            {task.freshdesk_ticket_id && (
+                                <div>
+                                    <label className="text-sm font-medium text-muted-foreground">
+                                        Freshdesk Ticket #
+                                    </label>
+                                    <p className="mt-1 text-sm">
+                                        <a
+                                            href={`https://support.digirocket.io/a/tickets/${task.freshdesk_ticket_id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="font-mono hover:underline text-primary"
+                                        >
+                                            #{task.freshdesk_ticket_id}
+                                        </a>
+                                    </p>
+                                </div>
+                            )}
                             {task.completed_at && (
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">

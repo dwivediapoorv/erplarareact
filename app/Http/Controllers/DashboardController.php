@@ -47,43 +47,37 @@ class DashboardController extends Controller
         $orangeProjectsCount = Project::where('project_health', 'Orange')->count();
         $redProjectsCount = Project::where('project_health', 'Red')->count();
 
-        // Get users with their open task counts
+        // Get users with open tasks — whereHas filters in DB, withCount adds the count
         $usersWithOpenTasks = User::where('is_active', true)
+            ->whereHas('assignedTasks', function ($query) {
+                $query->whereIn('status', ['Pending', 'Completed']);
+            })
             ->withCount(['assignedTasks as open_tasks_count' => function ($query) {
                 $query->whereIn('status', ['Pending', 'Completed']);
             }])
-            ->get()
-            ->filter(function ($user) {
-                return $user->open_tasks_count > 0;
-            })
-            ->sortByDesc('open_tasks_count')
-            ->values()
-            ->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'open_tasks_count' => $user->open_tasks_count,
-                ];
-            });
+            ->orderByDesc('open_tasks_count')
+            ->get(['id', 'name'])
+            ->map(fn ($user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'open_tasks_count' => $user->open_tasks_count,
+            ]);
 
-        // Get projects with their open task counts
-        $projectsWithOpenTasks = Project::withCount(['tasks as open_tasks_count' => function ($query) {
+        // Get projects with open tasks — whereHas filters in DB, withCount adds the count
+        $projectsWithOpenTasks = Project::whereHas('tasks', function ($query) {
+                $query->whereIn('status', ['Pending', 'Completed']);
+            })
+            ->withCount(['tasks as open_tasks_count' => function ($query) {
                 $query->whereIn('status', ['Pending', 'Completed']);
             }])
-            ->get()
-            ->filter(function ($project) {
-                return $project->open_tasks_count > 0;
-            })
-            ->sortByDesc('open_tasks_count')
-            ->values()
-            ->map(function ($project) {
-                return [
-                    'id' => $project->id,
-                    'name' => $project->project_name,
-                    'open_tasks_count' => $project->open_tasks_count,
-                    'health' => $project->project_health,
-                ];
-            });
+            ->orderByDesc('open_tasks_count')
+            ->get(['id', 'project_name', 'project_health'])
+            ->map(fn ($project) => [
+                'id' => $project->id,
+                'name' => $project->project_name,
+                'open_tasks_count' => $project->open_tasks_count,
+                'health' => $project->project_health,
+            ]);
 
         return Inertia::render('dashboard', [
             'dashboardType' => 'admin',
@@ -103,7 +97,7 @@ class DashboardController extends Controller
     private function employeeDashboard(): Response
     {
         $userId = auth()->id();
-        $user = auth()->user();
+        $user = auth()->user()->load('employee');
 
         $myOpenTasks = Task::where('assigned_to', $userId)
             ->whereIn('status', ['Pending', 'Completed'])
@@ -130,8 +124,8 @@ class DashboardController extends Controller
                     'title' => $task->name,
                     'status' => $task->status,
                     'due_date' => $task->due_date?->format('Y-m-d'),
-                    'project_name' => $task->project->project_name,
-                    'project_health' => $task->project->project_health,
+                    'project_name' => $task->project?->project_name,
+                    'project_health' => $task->project?->project_health,
                 ];
             });
 

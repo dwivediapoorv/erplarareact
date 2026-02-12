@@ -39,7 +39,7 @@ class MOMController extends Controller
     /**
      * Show the form for creating a new minutes of meeting.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         // Get all projects for the dropdown
         $projects = Project::select('id', 'project_name')
@@ -48,6 +48,7 @@ class MOMController extends Controller
 
         return Inertia::render('minutes-of-meetings/create', [
             'projects' => $projects,
+            'defaultProjectId' => $request->query('project_id', ''),
         ]);
     }
 
@@ -71,5 +72,15 @@ class MOMController extends Controller
         MOM::create($validated);
 
         return to_route('minutes-of-meetings.index')->with('success', 'Minutes of Meeting created successfully.');
+    }
+
+    /**
+     * Remove the specified minutes of meeting from storage.
+     */
+    public function destroy(MOM $mom): RedirectResponse
+    {
+        $mom->delete();
+
+        return to_route('minutes-of-meetings.index')->with('success', 'Minutes of Meeting deleted successfully.');
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
@@ -74,11 +75,14 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::put('tasks/{task}', [TaskController::class, 'update'])->middleware('permission:edit tasks')->name('tasks.update');
     Route::patch('tasks/{task}/complete', [TaskController::class, 'complete'])->middleware('permission:complete tasks')->name('tasks.complete');
     Route::patch('tasks/{task}/approve', [TaskController::class, 'approve'])->middleware('permission:approve tasks')->name('tasks.approve');
+    Route::post('tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
+    Route::delete('tasks/{task}/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('tasks.comments.destroy');
 
     // Minutes of Meetings routes
     Route::get('minutes-of-meetings', [MOMController::class, 'index'])->middleware('permission:view minutes-of-meetings')->name('minutes-of-meetings.index');
     Route::get('minutes-of-meetings/create', [MOMController::class, 'create'])->middleware('permission:create minutes-of-meetings')->name('minutes-of-meetings.create');
     Route::post('minutes-of-meetings', [MOMController::class, 'store'])->middleware('permission:create minutes-of-meetings')->name('minutes-of-meetings.store');
+    Route::delete('minutes-of-meetings/{mom}', [MOMController::class, 'destroy'])->middleware('permission:delete minutes-of-meetings')->name('minutes-of-meetings.destroy');
 
     // Payment routes
     Route::get('payments', [PaymentController::class, 'index'])->middleware('permission:view payments')->name('payments.index');
@@ -89,16 +93,17 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('client-interactions', [InteractionController::class, 'index'])->middleware('permission:view client-interactions')->name('client-interactions.index');
     Route::get('client-interactions/create', [InteractionController::class, 'create'])->middleware('permission:create client-interactions')->name('client-interactions.create');
     Route::post('client-interactions', [InteractionController::class, 'store'])->middleware('permission:create client-interactions')->name('client-interactions.store');
+    Route::delete('client-interactions/{interaction}', [InteractionController::class, 'destroy'])->middleware('permission:delete client-interactions')->name('client-interactions.destroy');
 
     // Content Flow routes
-    Route::get('content-flows', [ContentFlowController::class, 'index'])->name('content-flows.index');
-    Route::get('content-flows/by-project/{project}', [ContentFlowController::class, 'byProject'])->name('content-flows.by-project');
-    Route::get('content-flows/create', [ContentFlowController::class, 'create'])->name('content-flows.create');
-    Route::post('content-flows', [ContentFlowController::class, 'store'])->name('content-flows.store');
-    Route::get('content-flows/{contentFlow}', [ContentFlowController::class, 'show'])->name('content-flows.show');
-    Route::get('content-flows/{contentFlow}/edit', [ContentFlowController::class, 'edit'])->name('content-flows.edit');
-    Route::put('content-flows/{contentFlow}', [ContentFlowController::class, 'update'])->name('content-flows.update');
-    Route::delete('content-flows/{contentFlow}', [ContentFlowController::class, 'destroy'])->name('content-flows.destroy');
+    Route::get('content-flows', [ContentFlowController::class, 'index'])->middleware('permission:view content-flows')->name('content-flows.index');
+    Route::get('content-flows/by-project/{project}', [ContentFlowController::class, 'byProject'])->middleware('permission:view content-flows')->name('content-flows.by-project');
+    Route::get('content-flows/create', [ContentFlowController::class, 'create'])->middleware('permission:create content-flows')->name('content-flows.create');
+    Route::post('content-flows', [ContentFlowController::class, 'store'])->middleware('permission:create content-flows')->name('content-flows.store');
+    Route::get('content-flows/{contentFlow}', [ContentFlowController::class, 'show'])->middleware('permission:view content-flows')->name('content-flows.show');
+    Route::get('content-flows/{contentFlow}/edit', [ContentFlowController::class, 'edit'])->middleware('permission:edit content-flows')->name('content-flows.edit');
+    Route::put('content-flows/{contentFlow}', [ContentFlowController::class, 'update'])->middleware('permission:edit content-flows')->name('content-flows.update');
+    Route::delete('content-flows/{contentFlow}', [ContentFlowController::class, 'destroy'])->middleware('permission:delete content-flows')->name('content-flows.destroy');
 
     // Permissions management routes
     Route::get('permissions', [PermissionController::class, 'index'])->middleware('permission:manage permissions')->name('permissions.index');

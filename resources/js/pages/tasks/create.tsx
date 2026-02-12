@@ -39,18 +39,17 @@ interface Project {
 interface CreateTaskProps {
     users: User[];
     projects: Project[];
+    defaultProjectId: string;
 }
 
-export default function CreateTask({ users, projects }: CreateTaskProps) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectIdFromUrl = urlParams.get('project_id') || '';
-
+export default function CreateTask({ users, projects, defaultProjectId }: CreateTaskProps) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
         assigned_to: '',
-        project_id: projectIdFromUrl,
+        project_id: defaultProjectId,
         due_date: '',
+        freshdesk_ticket_id: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -159,7 +158,7 @@ export default function CreateTask({ users, projects }: CreateTaskProps) {
                             </div>
 
                             {/* Due Date */}
-                            <div className="space-y-2 md:col-span-2">
+                            <div className="space-y-2">
                                 <Label htmlFor="due_date">
                                     Due Date
                                 </Label>
@@ -172,6 +171,23 @@ export default function CreateTask({ users, projects }: CreateTaskProps) {
                                     }
                                 />
                                 <InputError message={errors.due_date} />
+                            </div>
+
+                            {/* Freshdesk Ticket ID */}
+                            <div className="space-y-2">
+                                <Label htmlFor="freshdesk_ticket_id">
+                                    Freshdesk Ticket #
+                                </Label>
+                                <Input
+                                    id="freshdesk_ticket_id"
+                                    type="text"
+                                    value={data.freshdesk_ticket_id}
+                                    onChange={(e) =>
+                                        setData('freshdesk_ticket_id', e.target.value)
+                                    }
+                                    placeholder="e.g. 12345"
+                                />
+                                <InputError message={errors.freshdesk_ticket_id} />
                             </div>
                         </div>
 

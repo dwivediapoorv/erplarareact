@@ -15,7 +15,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { router } from '@inertiajs/react';
 
 export interface Column<T> {
@@ -34,6 +34,7 @@ interface DataTableProps<T> {
     pageName?: string; // e.g., 'projects.index'
     savedPreferences?: Record<string, boolean> | null;
     showSearch?: boolean;
+    pageSize?: number;
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -44,8 +45,10 @@ export function DataTable<T extends Record<string, any>>({
     pageName,
     savedPreferences,
     showSearch = true,
+    pageSize = 25,
 }: DataTableProps<T>) {
     const [searchQuery, setSearchQuery] = React.useState('');
+    const [currentPage, setCurrentPage] = React.useState(1);
 
     // Initialize column visibility from saved preferences or defaults
     const [columnVisibility, setColumnVisibility] = React.useState<
@@ -103,6 +106,14 @@ export function DataTable<T extends Record<string, any>>({
         });
     }, [data, searchQuery, columns]);
 
+    // Reset to page 1 when search changes
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+    const pagedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
@@ -153,8 +164,8 @@ export function DataTable<T extends Record<string, any>>({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredData.length > 0 ? (
-                            filteredData.map((item, index) => (
+                        {pagedData.length > 0 ? (
+                            pagedData.map((item, index) => (
                                 <TableRow key={item.id || index}>
                                     {visibleColumns.map((column) => (
                                         <TableCell key={column.key}>
@@ -178,6 +189,36 @@ export function DataTable<T extends Record<string, any>>({
                     </TableBody>
                 </Table>
             </div>
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>
+                        Showing {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, filteredData.length)} of {filteredData.length}
+                    </span>
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                        </Button>
+                        <span className="px-2">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

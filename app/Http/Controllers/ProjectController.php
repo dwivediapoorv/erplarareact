@@ -26,7 +26,7 @@ class ProjectController extends Controller
         ])
             ->withCount([
                 'tasks as open_tasks_count' => function ($query) {
-                    $query->whereIn('status', ['Pending', 'Completed']);
+                    $query->where('status', 'Pending');
                 }
             ])
             ->orderBy('project_name', 'asc')
@@ -66,51 +66,11 @@ class ProjectController extends Controller
      */
     public function create(): Response
     {
-        // Get SEO team employees for "Assigned To" dropdown (only active users)
-        $seoEmployees = Employee::with('team:id,name')
-            ->whereHas('team', function ($query) {
-                $query->where('name', 'Search Engine Optimization');
-            })
-            ->whereHas('user', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->select('id', 'team_id', 'first_name', 'last_name')
-            ->get()
-            ->map(function ($employee) {
-                return [
-                    'id' => $employee->id,
-                    'name' => $employee->first_name . ' ' . $employee->last_name,
-                ];
-            });
-
-        // Get Project Management team employees for "Project Manager" dropdown (only active users)
-        $projectManagers = Employee::with('team:id,name')
-            ->whereHas('team', function ($query) {
-                $query->where('name', 'Project Management');
-            })
-            ->whereHas('user', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->select('id', 'team_id', 'first_name', 'last_name')
-            ->get()
-            ->map(function ($employee) {
-                return [
-                    'id' => $employee->id,
-                    'name' => $employee->first_name . ' ' . $employee->last_name,
-                ];
-            });
-
-        // Get all services
-        $services = Services::select('id', 'name')->get();
-
-        // Get all access types
-        $accesses = Access::select('id', 'name')->orderBy('name')->get();
-
         return Inertia::render('projects/create', [
-            'seoEmployees' => $seoEmployees,
-            'projectManagers' => $projectManagers,
-            'services' => $services,
-            'accesses' => $accesses,
+            'seoEmployees' => $this->getSeoEmployees(),
+            'projectManagers' => $this->getProjectManagers(),
+            'services' => Services::select('id', 'name')->get(),
+            'accesses' => Access::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 
@@ -232,6 +192,10 @@ class ProjectController extends Controller
             'projectManager:id,first_name,last_name'
         ]);
 
+        $openContentFlowsCount = $project->contentFlows()
+            ->whereIn('approval_status', ['Awaiting Approval', 'Internally Approved'])
+            ->count();
+
         // Get latest tasks for this project
         $tasks = $project->tasks()
             ->with(['assignee:id,name'])
@@ -322,6 +286,7 @@ class ProjectController extends Controller
             'tasks' => $tasks,
             'moms' => $moms,
             'interactions' => $interactions,
+            'openContentFlowsCount' => $openContentFlowsCount,
         ]);
     }
 
@@ -331,45 +296,6 @@ class ProjectController extends Controller
     public function edit(Project $project): Response
     {
         $project->load(['services:id', 'accesses:id']);
-
-        // Get SEO team employees for "Assigned To" dropdown (only active users)
-        $seoEmployees = Employee::with('team:id,name')
-            ->whereHas('team', function ($query) {
-                $query->where('name', 'Search Engine Optimization');
-            })
-            ->whereHas('user', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->select('id', 'team_id', 'first_name', 'last_name')
-            ->get()
-            ->map(function ($employee) {
-                return [
-                    'id' => $employee->id,
-                    'name' => $employee->first_name . ' ' . $employee->last_name,
-                ];
-            });
-
-        // Get Project Management team employees for "Project Manager" dropdown (only active users)
-        $projectManagers = Employee::with('team:id,name')
-            ->whereHas('team', function ($query) {
-                $query->where('name', 'Project Management');
-            })
-            ->whereHas('user', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->select('id', 'team_id', 'first_name', 'last_name')
-            ->get()
-            ->map(function ($employee) {
-                return [
-                    'id' => $employee->id,
-                    'name' => $employee->first_name . ' ' . $employee->last_name,
-                ];
-            });
-
-        $services = Services::select('id', 'name')->get();
-
-        // Get all access types
-        $accesses = Access::select('id', 'name')->orderBy('name')->get();
 
         return Inertia::render('projects/edit', [
             'project' => [
@@ -407,10 +333,10 @@ class ProjectController extends Controller
                 'service_ids' => $project->services->pluck('id')->toArray(),
                 'access_ids' => $project->accesses->pluck('id')->toArray(),
             ],
-            'seoEmployees' => $seoEmployees,
-            'projectManagers' => $projectManagers,
-            'services' => $services,
-            'accesses' => $accesses,
+            'seoEmployees' => $this->getSeoEmployees(),
+            'projectManagers' => $this->getProjectManagers(),
+            'services' => Services::select('id', 'name')->get(),
+            'accesses' => Access::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 
@@ -534,7 +460,7 @@ class ProjectController extends Controller
             ->where('assigned_to', $employee->id)
             ->withCount([
                 'tasks as open_tasks_count' => function ($query) {
-                    $query->whereIn('status', ['Pending', 'Completed']);
+                    $query->where('status', 'Pending');
                 }
             ])
             ->orderBy('project_name', 'asc')
@@ -583,7 +509,7 @@ class ProjectController extends Controller
             ->where('project_manager_id', $employee->id)
             ->withCount([
                 'tasks as open_tasks_count' => function ($query) {
-                    $query->whereIn('status', ['Pending', 'Completed']);
+                    $query->where('status', 'Pending');
                 }
             ])
             ->orderBy('project_name', 'asc')
@@ -649,5 +575,31 @@ class ProjectController extends Controller
         return Inertia::render('projects/assigned', [
             'employees' => $employeesWithProjects,
         ]);
+    }
+
+    /**
+     * Get active SEO team employees for dropdowns.
+     */
+    private function getSeoEmployees(): \Illuminate\Support\Collection
+    {
+        return Employee::whereHas('team', fn($q) => $q->where('name', 'Search Engine Optimization'))
+            ->whereHas('user', fn($q) => $q->where('is_active', true))
+            ->select('id', 'first_name', 'last_name')
+            ->orderBy('first_name')
+            ->get()
+            ->map(fn($e) => ['id' => $e->id, 'name' => $e->first_name . ' ' . $e->last_name]);
+    }
+
+    /**
+     * Get active Project Management team employees for dropdowns.
+     */
+    private function getProjectManagers(): \Illuminate\Support\Collection
+    {
+        return Employee::whereHas('team', fn($q) => $q->where('name', 'Project Management'))
+            ->whereHas('user', fn($q) => $q->where('is_active', true))
+            ->select('id', 'first_name', 'last_name')
+            ->orderBy('first_name')
+            ->get()
+            ->map(fn($e) => ['id' => $e->id, 'name' => $e->first_name . ' ' . $e->last_name]);
     }
 }
