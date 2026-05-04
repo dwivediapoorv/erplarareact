@@ -7,7 +7,7 @@ import contentFlows from '@/routes/content-flows';
 import { formatMonthlyReportDate } from '@/utils/format';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil, CheckSquare, Info, Plus, FileText, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, Pencil, CheckSquare, Info, Plus, FileText, BadgeCheck, Calendar, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -752,7 +752,7 @@ export default function ProjectShow({ project, openTasks, approvedTasks, moms, i
                                             <CheckSquare className="h-4 w-4 text-muted-foreground" />
                                             <span className="text-sm">Pending Tasks</span>
                                         </div>
-                                        <span className="text-sm font-semibold">{projectTasks.filter(t => t.status === 'Pending').length}</span>
+                                        <span className="text-sm font-semibold">{openTasks.filter(t => t.status === 'Pending').length}</span>
                                     </div>
                                     <div className="flex items-center justify-between p-2 rounded-lg bg-sidebar-accent/30">
                                         <div className="flex items-center gap-2">

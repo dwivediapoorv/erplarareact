@@ -127,12 +127,15 @@ function AdminDashboard({
                     <Card>
                         <CardHeader>
                             <CardTitle>Open Tasks by User</CardTitle>
+                            {usersWithOpenTasks.length > 0 && (
+                                <p className="text-sm text-muted-foreground">{usersWithOpenTasks.length} user{usersWithOpenTasks.length !== 1 ? 's' : ''}</p>
+                            )}
                         </CardHeader>
                         <CardContent>
                             {usersWithOpenTasks.length === 0 ? (
                                 <p className="text-center text-sm text-muted-foreground py-8">No users with open tasks</p>
                             ) : (
-                                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                                <div className="space-y-2">
                                     {usersWithOpenTasks.map((user) => (
                                         <div key={user.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
                                             <Link
@@ -152,12 +155,15 @@ function AdminDashboard({
                     <Card>
                         <CardHeader>
                             <CardTitle>Open Tasks by Project</CardTitle>
+                            {projectsWithOpenTasks.length > 0 && (
+                                <p className="text-sm text-muted-foreground">{projectsWithOpenTasks.length} project{projectsWithOpenTasks.length !== 1 ? 's' : ''}</p>
+                            )}
                         </CardHeader>
                         <CardContent>
                             {projectsWithOpenTasks.length === 0 ? (
                                 <p className="text-center text-sm text-muted-foreground py-8">No projects with open tasks</p>
                             ) : (
-                                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                                <div className="space-y-2">
                                     {projectsWithOpenTasks.map((project) => (
                                         <div key={project.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
                                             <div className="flex items-center gap-2">

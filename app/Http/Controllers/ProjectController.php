@@ -26,8 +26,11 @@ class ProjectController extends Controller
         ])
             ->withCount([
                 'tasks as open_tasks_count' => function ($query) {
-                    $query->where('status', 'Pending');
-                }
+                    $query->whereIn('status', ['Pending', 'Completed']);
+                },
+                'tasks as approved_tasks_count' => function ($query) {
+                    $query->where('status', 'Approved');
+                },
             ])
             ->orderBy('project_name', 'asc')
             ->get()
@@ -46,6 +49,7 @@ class ProjectController extends Controller
                     'project_manager_name' => $project->projectManager ? $project->projectManager->first_name . ' ' . $project->projectManager->last_name : 'N/A',
                     'project_manager_id' => $project->projectManager?->id,
                     'open_tasks_count' => $project->open_tasks_count ?? 0,
+                    'approved_tasks_count' => $project->approved_tasks_count ?? 0,
                 ];
             });
 
@@ -196,23 +200,23 @@ class ProjectController extends Controller
             ->whereIn('approval_status', ['Awaiting Approval', 'Internally Approved'])
             ->count();
 
-        $mapTask = fn($task) => [
-            'id' => $task->id,
-            'name' => $task->name,
-            'description' => $task->description,
-            'status' => $task->status,
-            'due_date' => $task->due_date?->format('d M Y'),
-            'assignee_name' => $task->assignee?->name ?? 'N/A',
-            'created_at' => $task->created_at->format('d M Y'),
-        ];
-
         $openTasks = $project->tasks()
             ->with(['assignee:id,name'])
             ->select('id', 'name', 'description', 'status', 'due_date', 'assigned_to', 'created_at')
             ->whereIn('status', ['Pending', 'Completed'])
             ->orderBy('due_date')
             ->get()
-            ->map($mapTask);
+            ->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'name' => $task->name,
+                    'description' => $task->description,
+                    'status' => $task->status,
+                    'due_date' => $task->due_date?->format('d M Y'),
+                    'assignee_name' => $task->assignee?->name ?? 'N/A',
+                    'created_at' => $task->created_at->format('d M Y'),
+                ];
+            });
 
         $approvedTasks = $project->tasks()
             ->with(['assignee:id,name'])
@@ -220,7 +224,17 @@ class ProjectController extends Controller
             ->where('status', 'Approved')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map($mapTask);
+            ->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'name' => $task->name,
+                    'description' => $task->description,
+                    'status' => $task->status,
+                    'due_date' => $task->due_date?->format('d M Y'),
+                    'assignee_name' => $task->assignee?->name ?? 'N/A',
+                    'created_at' => $task->created_at->format('d M Y'),
+                ];
+            });
 
         // Get latest MOMs for this project
         $moms = $project->moms()

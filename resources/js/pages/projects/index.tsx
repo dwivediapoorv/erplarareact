@@ -3,7 +3,7 @@ import projects from '@/routes/projects';
 import { formatMonthlyReportDate } from '@/utils/format';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { CheckCircle, Plus } from 'lucide-react';
+import { CheckCircle, Plus, BadgeCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DataTable, type Column } from '@/components/data-table';
@@ -30,6 +30,7 @@ interface Project {
     project_manager_name: string;
     project_manager_id: number | null;
     open_tasks_count: number;
+    approved_tasks_count: number;
 }
 
 interface ProjectsIndexProps {
@@ -106,6 +107,20 @@ export default function ProjectsIndex({ projects: projectsList, columnPreference
             filterable: false,
             render: (project) => (
                 <span className="font-medium">{project.open_tasks_count}</span>
+            ),
+        },
+        {
+            key: 'approved_tasks_count',
+            label: 'Approved Tasks',
+            filterable: false,
+            render: (project) => (
+                <Link
+                    href={projects.show(project.id).url}
+                    className="inline-flex items-center gap-1 text-green-700 dark:text-green-400 font-medium hover:underline"
+                >
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    {project.approved_tasks_count}
+                </Link>
             ),
         },
         {

@@ -73,8 +73,8 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('tasks/create', [TaskController::class, 'create'])->middleware('permission:create tasks')->name('tasks.create');
     Route::post('tasks', [TaskController::class, 'store'])->middleware('permission:create tasks')->name('tasks.store');
     Route::get('tasks/{task}', [TaskController::class, 'show'])->middleware('permission:view tasks')->name('tasks.show');
-    Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->middleware('permission:edit tasks')->name('tasks.edit');
-    Route::put('tasks/{task}', [TaskController::class, 'update'])->middleware('permission:edit tasks')->name('tasks.update');
+    Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::patch('tasks/{task}/complete', [TaskController::class, 'complete'])->middleware('permission:complete tasks')->name('tasks.complete');
     Route::patch('tasks/{task}/approve', [TaskController::class, 'approve'])->middleware('permission:approve tasks')->name('tasks.approve');
     Route::post('tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
