@@ -78,6 +78,81 @@ class TaskController extends Controller
     }
 
     /**
+     * Display all open tasks for a specific project (for admin dashboard drill-down).
+     */
+    public function byProject(Project $project): Response
+    {
+        $tasks = Task::with([
+            'assignee:id,name',
+            'creator:id,name',
+        ])
+            ->where('project_id', $project->id)
+            ->whereIn('status', ['Pending', 'Completed'])
+            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'freshdesk_ticket_id', 'completed_at', 'approved_by', 'created_at')
+            ->orderBy('due_date')
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'name' => $task->name,
+                    'description' => $task->description,
+                    'assignee_name' => $task->assignee?->name,
+                    'creator_name' => $task->creator?->name,
+                    'status' => $task->status,
+                    'freshdesk_ticket_id' => $task->freshdesk_ticket_id,
+                    'due_date' => $task->due_date?->format('Y-m-d'),
+                    'completed_at' => $task->completed_at?->format('Y-m-d'),
+                    'created_at' => $task->created_at->format('Y-m-d'),
+                ];
+            });
+
+        return Inertia::render('tasks/by-project', [
+            'project' => [
+                'id' => $project->id,
+                'name' => $project->project_name,
+                'health' => $project->project_health,
+            ],
+            'tasks' => $tasks,
+        ]);
+    }
+
+    /**
+     * Display all open tasks assigned to a specific user (for admin dashboard drill-down).
+     */
+    public function byUser(User $user): Response
+    {
+        $tasks = Task::with([
+            'creator:id,name',
+            'project:id,project_name,project_health',
+        ])
+            ->where('assigned_to', $user->id)
+            ->whereIn('status', ['Pending', 'Completed'])
+            ->select('id', 'name', 'description', 'created_by', 'assigned_to', 'project_id', 'status', 'due_date', 'freshdesk_ticket_id', 'completed_at', 'approved_by', 'created_at')
+            ->orderBy('due_date')
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'name' => $task->name,
+                    'description' => $task->description,
+                    'creator_name' => $task->creator?->name,
+                    'project_name' => $task->project?->project_name,
+                    'project_health' => $task->project?->project_health,
+                    'status' => $task->status,
+                    'freshdesk_ticket_id' => $task->freshdesk_ticket_id,
+                    'due_date' => $task->due_date?->format('Y-m-d'),
+                    'completed_at' => $task->completed_at?->format('Y-m-d'),
+                    'created_at' => $task->created_at->format('Y-m-d'),
+                ];
+            });
+
+        return Inertia::render('tasks/by-user', [
+            'user' => ['id' => $user->id, 'name' => $user->name],
+            'tasks' => $tasks,
+        ]);
+    }
+
+    /**
      * Show the form for creating a new task.
      */
     public function create(Request $request): Response

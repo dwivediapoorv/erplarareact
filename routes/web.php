@@ -68,6 +68,8 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
     // Task routes
     Route::get('tasks', [TaskController::class, 'index'])->middleware('permission:view tasks')->name('tasks.index');
+    Route::get('tasks/by-user/{user}', [TaskController::class, 'byUser'])->middleware('permission:view tasks')->name('tasks.by-user');
+    Route::get('tasks/by-project/{project}', [TaskController::class, 'byProject'])->middleware('permission:view tasks')->name('tasks.by-project');
     Route::get('tasks/create', [TaskController::class, 'create'])->middleware('permission:create tasks')->name('tasks.create');
     Route::post('tasks', [TaskController::class, 'store'])->middleware('permission:create tasks')->name('tasks.store');
     Route::get('tasks/{task}', [TaskController::class, 'show'])->middleware('permission:view tasks')->name('tasks.show');

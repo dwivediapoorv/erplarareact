@@ -23,9 +23,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Profile({
     mustVerifyEmail,
     status,
+    canChangeEmail,
 }: {
     mustVerifyEmail: boolean;
     status?: string;
+    canChangeEmail: boolean;
 }) {
     const { auth } = usePage<SharedData>().props;
 
@@ -80,7 +82,14 @@ export default function Profile({
                                         required
                                         autoComplete="username"
                                         placeholder="Email address"
+                                        disabled={!canChangeEmail}
                                     />
+
+                                    {!canChangeEmail && (
+                                        <p className="text-xs text-muted-foreground">
+                                            Email can only be changed by an Admin or HR.
+                                        </p>
+                                    )}
 
                                     <InputError
                                         className="mt-2"

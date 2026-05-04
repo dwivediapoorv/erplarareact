@@ -196,24 +196,31 @@ class ProjectController extends Controller
             ->whereIn('approval_status', ['Awaiting Approval', 'Internally Approved'])
             ->count();
 
-        // Get latest tasks for this project
-        $tasks = $project->tasks()
+        $mapTask = fn($task) => [
+            'id' => $task->id,
+            'name' => $task->name,
+            'description' => $task->description,
+            'status' => $task->status,
+            'due_date' => $task->due_date?->format('d M Y'),
+            'assignee_name' => $task->assignee?->name ?? 'N/A',
+            'created_at' => $task->created_at->format('d M Y'),
+        ];
+
+        $openTasks = $project->tasks()
             ->with(['assignee:id,name'])
             ->select('id', 'name', 'description', 'status', 'due_date', 'assigned_to', 'created_at')
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->whereIn('status', ['Pending', 'Completed'])
+            ->orderBy('due_date')
             ->get()
-            ->map(function ($task) {
-                return [
-                    'id' => $task->id,
-                    'name' => $task->name,
-                    'description' => $task->description,
-                    'status' => $task->status,
-                    'due_date' => $task->due_date?->format('d M Y'),
-                    'assignee_name' => $task->assignee?->name ?? 'N/A',
-                    'created_at' => $task->created_at->format('d M Y'),
-                ];
-            });
+            ->map($mapTask);
+
+        $approvedTasks = $project->tasks()
+            ->with(['assignee:id,name'])
+            ->select('id', 'name', 'description', 'status', 'due_date', 'assigned_to', 'created_at')
+            ->where('status', 'Approved')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map($mapTask);
 
         // Get latest MOMs for this project
         $moms = $project->moms()
@@ -283,7 +290,8 @@ class ProjectController extends Controller
                 'created_at' => $project->created_at?->format('Y-m-d'),
                 'updated_at' => $project->updated_at?->format('Y-m-d'),
             ],
-            'tasks' => $tasks,
+            'openTasks' => $openTasks,
+            'approvedTasks' => $approvedTasks,
             'moms' => $moms,
             'interactions' => $interactions,
             'openContentFlowsCount' => $openContentFlowsCount,

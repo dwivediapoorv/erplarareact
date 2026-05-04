@@ -7,7 +7,7 @@ import contentFlows from '@/routes/content-flows';
 import { formatMonthlyReportDate } from '@/utils/format';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Pencil, CheckSquare, Calendar, Phone, Info, Plus, FileText } from 'lucide-react';
+import { ArrowLeft, Pencil, CheckSquare, Info, Plus, FileText, BadgeCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -104,14 +104,16 @@ interface Project {
 
 interface ProjectShowProps {
     project: Project;
-    tasks: Task[];
+    openTasks: Task[];
+    approvedTasks: Task[];
     moms: MOM[];
     interactions: Interaction[];
     openContentFlowsCount: number;
 }
 
-export default function ProjectShow({ project, tasks: projectTasks, moms, interactions, openContentFlowsCount }: ProjectShowProps) {
+export default function ProjectShow({ project, openTasks, approvedTasks, moms, interactions, openContentFlowsCount }: ProjectShowProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showApproved, setShowApproved] = useState(false);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -524,57 +526,121 @@ export default function ProjectShow({ project, tasks: projectTasks, moms, intera
                 <div className="grid gap-4 lg:grid-cols-12">
                     {/* Left Side - Pendencies */}
                     <div className="lg:col-span-9 space-y-4">
-                        {/* Open Tasks */}
+                        {/* Tasks */}
                         <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <CheckSquare className="h-5 w-5 text-muted-foreground" />
-                                    <h3 className="text-lg font-semibold">Open Tasks</h3>
-                                    <Badge variant="secondary">{projectTasks.filter(t => t.status === 'Pending').length}</Badge>
+                                    {showApproved ? (
+                                        <BadgeCheck className="h-5 w-5 text-muted-foreground" />
+                                    ) : (
+                                        <CheckSquare className="h-5 w-5 text-muted-foreground" />
+                                    )}
+                                    <h3 className="text-lg font-semibold">
+                                        {showApproved ? 'Approved Tasks' : 'Open Tasks'}
+                                    </h3>
+                                    <Badge variant="secondary">
+                                        {showApproved ? approvedTasks.length : openTasks.length}
+                                    </Badge>
                                 </div>
-                                <Button size="sm" variant="outline" asChild>
-                                    <Link href={tasks.create({ query: { project_id: project.id } }).url}>
-                                        <Plus className="h-4 w-4 mr-1.5" />
-                                        Add Task
-                                    </Link>
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        size="sm"
+                                        variant={showApproved ? 'default' : 'outline'}
+                                        onClick={() => setShowApproved(!showApproved)}
+                                    >
+                                        <BadgeCheck className="h-4 w-4 mr-1.5" />
+                                        Approved Tasks
+                                        {approvedTasks.length > 0 && (
+                                            <span className="ml-1.5 rounded-full bg-primary/20 px-1.5 py-0.5 text-xs font-medium">
+                                                {approvedTasks.length}
+                                            </span>
+                                        )}
+                                    </Button>
+                                    {!showApproved && (
+                                        <Button size="sm" variant="outline" asChild>
+                                            <Link href={tasks.create({ query: { project_id: project.id } }).url}>
+                                                <Plus className="h-4 w-4 mr-1.5" />
+                                                Add Task
+                                            </Link>
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                             <div className="space-y-3">
-                                {projectTasks.filter(t => t.status === 'Pending').length > 0 ? (
-                                    projectTasks.filter(t => t.status === 'Pending').map((task) => (
-                                        <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-sidebar-border/50 hover:border-sidebar-border hover:bg-sidebar-accent/50 transition-colors">
-                                            <div className="flex-1 min-w-0">
-                                                <Link href={tasks.show(task.id).url} className="hover:underline">
-                                                    <p className="text-sm font-medium">{task.name}</p>
-                                                </Link>
-                                                {task.description && (
-                                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                                                        {task.description.length > 100
-                                                            ? task.description.substring(0, 100) + '...'
-                                                            : task.description}
-                                                    </p>
-                                                )}
-                                                <div className="flex items-center gap-3 mt-1.5">
-                                                    <span className="text-xs text-muted-foreground">
-                                                        Assigned to: {task.assignee_name}
-                                                    </span>
-                                                    {task.due_date && (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            Due: {task.due_date}
-                                                        </span>
+                                {showApproved ? (
+                                    approvedTasks.length > 0 ? (
+                                        approvedTasks.map((task) => (
+                                            <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-sidebar-border/50 hover:border-sidebar-border hover:bg-sidebar-accent/50 transition-colors">
+                                                <div className="flex-1 min-w-0">
+                                                    <Link href={tasks.show(task.id).url} className="hover:underline">
+                                                        <p className="text-sm font-medium">{task.name}</p>
+                                                    </Link>
+                                                    {task.description && (
+                                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                                            {task.description.length > 100
+                                                                ? task.description.substring(0, 100) + '...'
+                                                                : task.description}
+                                                        </p>
                                                     )}
+                                                    <div className="flex items-center gap-3 mt-1.5">
+                                                        <span className="text-xs text-muted-foreground">
+                                                            Assigned to: {task.assignee_name}
+                                                        </span>
+                                                        {task.due_date && (
+                                                            <span className="text-xs text-muted-foreground">
+                                                                Due: {task.due_date}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
+                                                <Badge className="ml-3 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-0">
+                                                    Approved
+                                                </Badge>
                                             </div>
-                                            <Badge variant="outline" className="ml-3">
-                                                {task.status}
-                                            </Badge>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            <BadgeCheck className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                                            <p className="text-sm">No approved tasks</p>
                                         </div>
-                                    ))
+                                    )
                                 ) : (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <CheckSquare className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                                        <p className="text-sm">No open tasks</p>
-                                    </div>
+                                    openTasks.length > 0 ? (
+                                        openTasks.map((task) => (
+                                            <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-sidebar-border/50 hover:border-sidebar-border hover:bg-sidebar-accent/50 transition-colors">
+                                                <div className="flex-1 min-w-0">
+                                                    <Link href={tasks.show(task.id).url} className="hover:underline">
+                                                        <p className="text-sm font-medium">{task.name}</p>
+                                                    </Link>
+                                                    {task.description && (
+                                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                                            {task.description.length > 100
+                                                                ? task.description.substring(0, 100) + '...'
+                                                                : task.description}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex items-center gap-3 mt-1.5">
+                                                        <span className="text-xs text-muted-foreground">
+                                                            Assigned to: {task.assignee_name}
+                                                        </span>
+                                                        {task.due_date && (
+                                                            <span className="text-xs text-muted-foreground">
+                                                                Due: {task.due_date}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <Badge variant="outline" className="ml-3">
+                                                    {task.status}
+                                                </Badge>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            <CheckSquare className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                                            <p className="text-sm">No open tasks</p>
+                                        </div>
+                                    )
                                 )}
                             </div>
                         </div>

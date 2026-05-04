@@ -1,8 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboard } from '@/routes';
+import tasks from '@/routes/tasks';
 import { type BreadcrumbItem, type PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Briefcase, CheckSquare } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -134,7 +135,12 @@ function AdminDashboard({
                                 <div className="space-y-2 max-h-[400px] overflow-y-auto">
                                     {usersWithOpenTasks.map((user) => (
                                         <div key={user.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
-                                            <span className="text-sm font-medium">{user.name}</span>
+                                            <Link
+                                                href={`/tasks/by-user/${user.id}`}
+                                                className="text-sm font-medium hover:text-primary hover:underline"
+                                            >
+                                                {user.name}
+                                            </Link>
                                             <span className="text-sm text-muted-foreground">{user.open_tasks_count} tasks</span>
                                         </div>
                                     ))}
@@ -159,7 +165,12 @@ function AdminDashboard({
                                                     project.health === 'Green' ? 'bg-green-500' :
                                                     project.health === 'Orange' ? 'bg-orange-500' : 'bg-red-500'
                                                 }`} />
-                                                <span className="text-sm font-medium">{project.name}</span>
+                                                <Link
+                                                    href={`/tasks/by-project/${project.id}`}
+                                                    className="text-sm font-medium hover:text-primary hover:underline"
+                                                >
+                                                    {project.name}
+                                                </Link>
                                             </div>
                                             <span className="text-sm text-muted-foreground">{project.open_tasks_count} tasks</span>
                                         </div>
@@ -221,9 +232,11 @@ function EmployeeDashboard({
                         ) : (
                             <div className="space-y-2">
                                 {myTasks.map((task) => (
-                                    <div key={task.id} className="flex items-center justify-between p-3 rounded border">
+                                    <div key={task.id} className="flex items-center justify-between p-3 rounded border hover:bg-muted/50 transition-colors">
                                         <div className="flex-1">
-                                            <p className="font-medium">{task.title}</p>
+                                            <Link href={tasks.show(task.id).url} className="font-medium hover:text-primary hover:underline">
+                                                {task.title}
+                                            </Link>
                                             <p className="text-sm text-muted-foreground">{task.project_name}</p>
                                         </div>
                                         <div className="text-right text-sm">
